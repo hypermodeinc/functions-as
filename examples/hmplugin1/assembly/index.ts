@@ -72,7 +72,7 @@ export function newPerson1(firstName: string, lastName: string): string {
   `;
 
   const response = dql.mutate(statement);
-  return response.data.uids.get("x")!;
+  return response.data.uids.get("x");
 }
 
 export function newPerson2(firstName: string, lastName: string): string {
