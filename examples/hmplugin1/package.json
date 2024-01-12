@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "hypermode-as": "file:../../src",
-    "json-as": "^0.7.0"
+    "json-as": "^0.7.1"
   },
   "devDependencies": {
     "@assemblyscript/wasi-shim": "^0.1.0",
