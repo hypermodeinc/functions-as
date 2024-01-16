@@ -24,3 +24,25 @@ export abstract class graphql {
         return JSON.parse<GQLResponse<TData>>(response);
     }
 }
+
+export abstract class model {
+    public static classify(modelId: string, text: string): ClassificationResult {
+        const response = host.invokeClassifier(modelId, text);
+        return JSON.parse<ClassificationResult>(response);
+    }
+}
+
+// @ts-ignore
+@json
+class ClassificationProbability { // must be defined in the library
+  label!: string;
+  probability!: f32;
+};
+
+// @ts-ignore
+@json
+class ClassificationResult { // must be defined in the library
+  label: string = "";
+  confidence: f32 = 0.0;
+  probabilities!: ClassificationProbability[]
+};
