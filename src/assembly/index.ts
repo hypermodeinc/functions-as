@@ -58,7 +58,7 @@ export abstract class classifier {
         return min;
     }
 
-    public static getMaxWithThreshold(res: ClassificationResult, max: f32): ClassificationProbability {
+    public static maxWithThreshold(res: ClassificationResult, max: f32): ClassificationProbability {
         let prob = this.max(res);
         if (prob.probability < max) {
             return <ClassificationProbability>({
@@ -69,7 +69,7 @@ export abstract class classifier {
         return prob;
     }
 
-    public static getMinWithThreshold(res: ClassificationResult, min: f32): ClassificationProbability {
+    public static minWithThreshold(res: ClassificationResult, min: f32): ClassificationProbability {
         let prob = this.min(res);
         if (prob.probability > min) {
             return <ClassificationProbability>({
