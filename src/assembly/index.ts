@@ -36,39 +36,48 @@ export abstract class model {
 }
 
 export abstract class classifier {
-    public static max(arr: ClassificationProbability[]): ClassificationProbability {
-        let max = arr[0];
-        for (let i = 1; i < arr.length; i++) {
-            if (arr[i].probability > max.probability) {
-                max = arr[i];
+    public static max(res: ClassificationResult): ClassificationProbability {
+        let probabilities = res.probabilities;
+        let max = probabilities[0];
+        for (let i = 1; i < probabilities.length; i++) {
+            if (probabilities[i].probability > max.probability) {
+                max = probabilities[i];
             }
         }
         return max;
     }
 
-    public static min(arr: ClassificationProbability[]): ClassificationProbability {
-        let min = arr[0];
-        for (let i = 1; i < arr.length; i++) {
-            if (arr[i].probability < min.probability) {
-                min = arr[i];
+    public static min(res: ClassificationResult): ClassificationProbability {
+        let probabilities = res.probabilities;
+        let min = probabilities[0];
+        for (let i = 1; i < probabilities.length; i++) {
+            if (probabilities[i].probability < min.probability) {
+                min = probabilities[i];
             }
         }
         return min;
     }
 
-    public static checkUncertaintyRange(arr: ClassificationProbability[], min: f32, 
-        max: f32): ClassificationProbability {
-
-        for (let i = 1; i < arr.length; i++) {
-            if (arr[i].probability < min || arr[i].probability > max) {
-                return this.max(arr);
-            }
+    public static getMaxWithThreshold(res: ClassificationResult, max: f32): ClassificationProbability {
+        let prob = this.max(res);
+        if (prob.probability < max) {
+            return <ClassificationProbability>({
+                label: UNCERTAIN_LABEL,
+                probability: UNCERTAIN_PROBABILITY
+            });
         }
-        let uncertain = <ClassificationProbability>({
-            label: UNCERTAIN_LABEL,
-            probability: UNCERTAIN_PROBABILITY
-        });
-        return uncertain;
+        return prob;
+    }
+
+    public static getMinWithThreshold(res: ClassificationResult, min: f32): ClassificationProbability {
+        let prob = this.min(res);
+        if (prob.probability > min) {
+            return <ClassificationProbability>({
+                label: UNCERTAIN_LABEL,
+                probability: UNCERTAIN_PROBABILITY
+            });
+        }
+        return prob;
     }
 }
 
