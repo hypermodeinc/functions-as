@@ -4,7 +4,7 @@ import { GQLResponse } from "./gqltypes";
 import { JSON } from "json-as";
 
 const UNCERTAIN_LABEL = "UNCERTAIN";
-const UNCERTAIN_PROBABILITY = 1.0;
+const UNCERTAIN_PROBABILITY = f32(1.0);
 
 export abstract class dql {
     public static mutate(query: string): DQLResponse<DQLMutationResponse> {
@@ -83,7 +83,7 @@ export abstract class classifier {
 
 // @ts-ignore
 @json
-class ClassificationProbability { // must be defined in the library
+export class ClassificationProbability { // must be defined in the library
   label!: string;
   probability!: f32;
 };
