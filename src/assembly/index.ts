@@ -36,7 +36,7 @@ export abstract class model {
 }
 
 export abstract class classifier {
-    public static max(res: ClassificationResult): ClassificationProbability {
+    public static getMaxProbability(res: ClassificationResult, threshold: f32 = 0.0): ClassificationProbability {
         let probabilities = res.probabilities;
         let max = probabilities[0];
         for (let i = 1; i < probabilities.length; i++) {
@@ -44,10 +44,16 @@ export abstract class classifier {
                 max = probabilities[i];
             }
         }
+        if (max.probability < threshold) {
+            return <ClassificationProbability>({
+                label: UNCERTAIN_LABEL,
+                probability: UNCERTAIN_PROBABILITY
+            });
+        }
         return max;
     }
 
-    public static min(res: ClassificationResult): ClassificationProbability {
+    public static getMinProbability(res: ClassificationResult, threshold: f32 = 1.0): ClassificationProbability {
         let probabilities = res.probabilities;
         let min = probabilities[0];
         for (let i = 1; i < probabilities.length; i++) {
@@ -55,29 +61,13 @@ export abstract class classifier {
                 min = probabilities[i];
             }
         }
+        if (min.probability > threshold) {
+            return <ClassificationProbability>({
+                label: UNCERTAIN_LABEL,
+                probability: UNCERTAIN_PROBABILITY
+            });
+        }
         return min;
-    }
-
-    public static maxWithThreshold(res: ClassificationResult, max: f32): ClassificationProbability {
-        let prob = this.max(res);
-        if (prob.probability < max) {
-            return <ClassificationProbability>({
-                label: UNCERTAIN_LABEL,
-                probability: UNCERTAIN_PROBABILITY
-            });
-        }
-        return prob;
-    }
-
-    public static minWithThreshold(res: ClassificationResult, min: f32): ClassificationProbability {
-        let prob = this.min(res);
-        if (prob.probability > min) {
-            return <ClassificationProbability>({
-                label: UNCERTAIN_LABEL,
-                probability: UNCERTAIN_PROBABILITY
-            });
-        }
-        return prob;
     }
 }
 
