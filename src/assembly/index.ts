@@ -3,6 +3,9 @@ import { DQLResponse, DQLMutationResponse } from "./dqltypes";
 import { GQLResponse } from "./gqltypes";
 import { JSON } from "json-as";
 
+const UNCERTAIN_LABEL = "uncertain";
+const UNCERTAIN_PROBABILITY = 1.0;
+
 export abstract class dql {
     public static mutate(query: string): DQLResponse<DQLMutationResponse> {
         return this.execute<DQLMutationResponse>(query, true);
@@ -32,6 +35,43 @@ export abstract class model {
     }
 }
 
+export abstract class classifier {
+    public static max(arr: ClassificationProbability[]): ClassificationProbability {
+        let max = arr[0];
+        for (let i = 1; i < arr.length; i++) {
+            if (arr[i].probability > max.probability) {
+                max = arr[i];
+            }
+        }
+        return max;
+    }
+
+    public static min(arr: ClassificationProbability[]): ClassificationProbability {
+        let min = arr[0];
+        for (let i = 1; i < arr.length; i++) {
+            if (arr[i].probability < min.probability) {
+                min = arr[i];
+            }
+        }
+        return min;
+    }
+
+    public static checkUncertaintyRange(arr: ClassificationProbability[], min: f32, 
+        max: f32): ClassificationProbability {
+
+        for (let i = 1; i < arr.length; i++) {
+            if (arr[i].probability < min || arr[i].probability > max) {
+                return this.max(arr);
+            }
+        }
+        let uncertain = <ClassificationProbability>({
+            label: UNCERTAIN_LABEL,
+            probability: UNCERTAIN_PROBABILITY
+        });
+        return uncertain;
+    }
+}
+
 // @ts-ignore
 @json
 class ClassificationProbability { // must be defined in the library
@@ -42,7 +82,5 @@ class ClassificationProbability { // must be defined in the library
 // @ts-ignore
 @json
 class ClassificationResult { // must be defined in the library
-  label: string = "";
-  confidence: f32 = 0.0;
   probabilities!: ClassificationProbability[]
 };
