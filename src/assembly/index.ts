@@ -3,7 +3,7 @@ import { DQLResponse, DQLMutationResponse } from "./dqltypes";
 import { GQLResponse } from "./gqltypes";
 import { JSON } from "json-as";
 
-const UNCERTAIN_LABEL = "uncertain";
+const UNCERTAIN_LABEL = "UNCERTAIN";
 const UNCERTAIN_PROBABILITY = 1.0;
 
 export abstract class dql {
