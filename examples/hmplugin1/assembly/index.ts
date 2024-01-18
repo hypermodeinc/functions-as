@@ -121,7 +121,6 @@ export function getRandomPerson(): string {
   return JSON.stringify(results.data.people[0]);
 }
 
-// @ts-ignore
 @json
 class Person {
   id: string | null = null;
@@ -134,25 +133,21 @@ class Person {
   }
 }
 
-// @ts-ignore
 @json
 class PeopleData {
   people!: Person[];
 }
 
-// @ts-ignore
 @json
 class AddPersonPayload {
   addPerson!: PeopleData;
 }
 
-// @ts-ignore
 @json
 class AggregatePersonResult {
   aggregatePerson!: GQLAggregateValues;
 }
 
-// @ts-ignore
 @json
 class GQLAggregateValues {
   count: u32 = 0;
