@@ -5,11 +5,17 @@
   "author": "Hypermode, Inc.",
   "license": "MIT",
   "type": "module",
+  "scripts": {
+    "pretty": "prettier --write .",
+    "pretty:check": "prettier --check ."
+  },
   "dependencies": {
     "json-as": "^0.7.2"
   },
   "devDependencies": {
     "assemblyscript": "^0.27.23",
+    "assemblyscript-prettier": "^3.0.1",
+    "prettier": "^3.2.4",
     "visitor-as": "^0.11.4"
   },
   "overrides": {
