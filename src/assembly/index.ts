@@ -71,14 +71,12 @@ export abstract class classifier {
     }
 }
 
-// @ts-ignore
 @json
 export class ClassificationProbability { // must be defined in the library
   label!: string;
   probability!: f32;
 };
 
-// @ts-ignore
 @json
 class ClassificationResult { // must be defined in the library
   probabilities!: ClassificationProbability[]
