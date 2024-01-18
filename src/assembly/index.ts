@@ -23,7 +23,8 @@ export abstract class dql {
 
 export abstract class graphql {
     static execute<TData>(statement: string, variables: Map<string, string> = new Map<string, string>()): GQLResponse<TData> {
-        const response = host.executeGQL(statement, variables);
+        let variablesJson = JSON.stringify<Map<string, string>>(variables);
+        const response = host.executeGQL(statement, variablesJson);
         return JSON.parse<GQLResponse<TData>>(response);
     }
 }
