@@ -1,11 +1,9 @@
-// @ts-ignore
 @json
 export class DQLResponse<T> {
     data!: T;
     // TODO: errors, extensions
 }
 
-// @ts-ignore
 @json
 export class DQLMutationResponse {
     code!: string;
