@@ -22,8 +22,8 @@ export abstract class dql {
 }
 
 export abstract class graphql {
-    static execute<TData>(statement: string): GQLResponse<TData> {
-        const response = host.executeGQL(statement);
+    static execute<TData>(statement: string, variables: Map<string, string> = new Map<string, string>()): GQLResponse<TData> {
+        const response = host.executeGQL(statement, variables);
         return JSON.parse<GQLResponse<TData>>(response);
     }
 }
