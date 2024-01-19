@@ -11,11 +11,11 @@ export function getFullName(firstName: string, lastName: string): string {
 
 export function getPeople(): string {
   const people = [
-    <Person> {firstName: "Bob", lastName: "Smith"},
-    <Person> {firstName: "Alice", lastName: "Jones"}
+    <Person>{ firstName: "Bob", lastName: "Smith" },
+    <Person>{ firstName: "Alice", lastName: "Jones" },
   ];
 
-  people.forEach(p => p.updateFullName());
+  people.forEach((p) => p.updateFullName());
   return JSON.stringify(people);
 }
 
@@ -32,7 +32,7 @@ export function queryPeople1(): string {
 
   const response = dql.query<PeopleData>(query);
   const people = response.data.people;
-  people.forEach(p => p.updateFullName());
+  people.forEach((p) => p.updateFullName());
   return JSON.stringify(people);
 }
 
@@ -47,7 +47,7 @@ export function queryPeople2(): string {
       }
     }
   `;
-  
+
   const results = graphql.execute<PeopleData>(statement);
 
   // completely optional, but let's log some tracing info
@@ -87,7 +87,7 @@ export function newPerson2(firstName: string, lastName: string): string {
   `;
 
   const response = graphql.execute<AddPersonPayload>(statement);
-  return response.data.addPerson.people[0].id!; 
+  return response.data.addPerson.people[0].id!;
 }
 
 function getPersonCount(): i32 {
@@ -105,7 +105,7 @@ function getPersonCount(): i32 {
 
 export function getRandomPerson(): string {
   const count = getPersonCount();
-  const offset = <u32> Math.floor(Math.random() * count);
+  const offset = <u32>Math.floor(Math.random() * count);
   const statement = `
     query {
       people: queryPerson(first: 1, offset: ${offset}) {
@@ -116,10 +116,11 @@ export function getRandomPerson(): string {
       }
     }
   `;
-  
+
   const results = graphql.execute<PeopleData>(statement);
   return JSON.stringify(results.data.people[0]);
 }
+
 
 @json
 class Person {
@@ -133,20 +134,24 @@ class Person {
   }
 }
 
+
 @json
 class PeopleData {
   people!: Person[];
 }
+
 
 @json
 class AddPersonPayload {
   addPerson!: PeopleData;
 }
 
+
 @json
 class AggregatePersonResult {
   aggregatePerson!: GQLAggregateValues;
 }
+
 
 @json
 class GQLAggregateValues {
