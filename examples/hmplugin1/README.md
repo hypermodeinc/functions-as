@@ -46,7 +46,7 @@ Try some graphql queries on the Dgraph endpoint:
 
 ```graphql
 {
-  getFullName(firstName: "John", lastName:"Doe")
+  getFullName(firstName: "John", lastName: "Doe")
 }
 ```
 
@@ -55,13 +55,14 @@ These will invoke the respective Hypermode functions within `hmplugin1`.
 Next, try adding some data:
 
 ```graphql
-
 mutation {
-  addPerson(input: [
-    { firstName: "Harry", lastName: "Potter" },
-    { firstName: "Tom", lastName: "Riddle" },
-    { firstName: "Albus", lastName: "Dumbledore" }
-    ]) {
+  addPerson(
+    input: [
+      { firstName: "Harry", lastName: "Potter" }
+      { firstName: "Tom", lastName: "Riddle" }
+      { firstName: "Albus", lastName: "Dumbledore" }
+    ]
+  ) {
     person {
       id
       firstName
