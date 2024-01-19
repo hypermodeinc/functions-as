@@ -43,7 +43,7 @@ export abstract class classifier {
     res: ClassificationResult,
     threshold: f32 = 0.0,
   ): ClassificationProbability {
-    let probabilities = res.probabilities;
+    const probabilities = res.probabilities;
     let max = probabilities[0];
     for (let i = 1; i < probabilities.length; i++) {
       if (probabilities[i].probability > max.probability) {
@@ -63,7 +63,7 @@ export abstract class classifier {
     res: ClassificationResult,
     threshold: f32 = 1.0,
   ): ClassificationProbability {
-    let probabilities = res.probabilities;
+    const probabilities = res.probabilities;
     let min = probabilities[0];
     for (let i = 1; i < probabilities.length; i++) {
       if (probabilities[i].probability < min.probability) {
