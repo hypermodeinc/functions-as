@@ -1,0 +1,47 @@
+name: ci-as-lint
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+jobs:
+  get-dirs:
+    name: Get Directories
+    runs-on: ubuntu-latest
+    outputs:
+      dirs: ${{ steps.get-dirs.outputs.dirs }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Get subdirectories
+        id: get-dirs
+        # we need to lint the src directory and all the examples
+        run: echo "dirs=$(ls -d examples/*/ | jq -Rsc '["src/"] + split("\n")[:-1]' )" >> ${GITHUB_OUTPUT}
+
+  as-lint:
+    needs: get-dirs
+    if: github.event_name == 'pull_request'
+    name: Lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dir: ${{ fromJson(needs.get-dirs.outputs.dirs) }}
+    defaults:
+      run:
+        working-directory: ${{ matrix.dir }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ">=20"
+      - run: node --version
+      - run: npm --version
+      - run: npm install
+      - run: npm run pretty:check
+      - run: npm run lint
