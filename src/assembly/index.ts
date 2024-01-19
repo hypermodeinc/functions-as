@@ -28,6 +28,16 @@ export abstract class graphql {
     }
 }
 
+// Instead of type checking the JSON as a Person just pass through the JSON string.
+// Idea is to have a thin, generic shim that works for any Python function
+// avoids creating a class for every different POST body.
+export abstract class localPost {
+    static execute<TData>(endpoint: string, statement: string): string {
+        const response = host.executeLocalPost(endpoint, statement);
+        return response
+    }
+}
+
 export abstract class model {
     public static classify(modelId: string, text: string): ClassificationResult {
         const response = host.invokeClassifier(modelId, text);
