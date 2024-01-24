@@ -42,7 +42,7 @@ export abstract class classifier {
   public static getMaxProbability(
     res: ClassificationResult,
     threshold: f32 = 0.0,
-  ): (ClassificationProbability | null) {
+  ): ClassificationProbability | null {
     const probabilities = res.probabilities;
     if (probabilities.length === 0) {
       return null;
@@ -65,7 +65,7 @@ export abstract class classifier {
   public static getMinProbability(
     res: ClassificationResult,
     threshold: f32 = 1.0,
-  ): (ClassificationProbability | null) {
+  ): ClassificationProbability | null {
     const probabilities = res.probabilities;
     if (probabilities.length === 0) {
       return null;
