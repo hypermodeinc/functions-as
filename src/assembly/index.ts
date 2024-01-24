@@ -42,10 +42,10 @@ export abstract class classifier {
   public static getMaxProbability(
     res: ClassificationResult,
     threshold: f32 = 0.0,
-  ): (ClassificationProbability | Error) {
+  ): (ClassificationProbability | null) {
     const probabilities = res.probabilities;
     if (probabilities.length === 0) {
-      return new Error("No probabilities found");
+      return null;
     }
     let max = probabilities[0];
     for (let i = 1; i < probabilities.length; i++) {
@@ -65,10 +65,10 @@ export abstract class classifier {
   public static getMinProbability(
     res: ClassificationResult,
     threshold: f32 = 1.0,
-  ): (ClassificationProbability | Error) {
+  ): (ClassificationProbability | null) {
     const probabilities = res.probabilities;
     if (probabilities.length === 0) {
-      return new Error("No probabilities found");
+      return null;
     }
     let min = probabilities[0];
     for (let i = 1; i < probabilities.length; i++) {
