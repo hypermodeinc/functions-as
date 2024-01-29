@@ -7,19 +7,27 @@ const UNCERTAIN_LABEL = "UNCERTAIN";
 const UNCERTAIN_PROBABILITY = f32(1.0);
 
 export abstract class dql {
-  public static mutate(query: string): DQLResponse<DQLMutationResponse> {
-    return this.execute<DQLMutationResponse>(query, true);
+  public static mutate(
+    query: string,
+    variables: Map<string, string> = new Map<string, string>(),
+  ): DQLResponse<DQLMutationResponse> {
+    return this.execute<DQLMutationResponse>(query, variables, true);
   }
 
-  public static query<TData>(query: string): DQLResponse<TData> {
-    return this.execute<TData>(query, false);
+  public static query<TData>(
+    query: string,
+    variables: Map<string, string> = new Map<string, string>(),
+  ): DQLResponse<TData> {
+    return this.execute<TData>(query, variables, false);
   }
 
   private static execute<TData>(
     query: string,
+    variables: Map<string, string> = new Map<string, string>(),
     isMutation: bool,
   ): DQLResponse<TData> {
-    const response = host.executeDQL(query, isMutation);
+    const variablesJson = JSON.stringify(variables);
+    const response = host.executeDQL(query, variablesJson, isMutation);
     return JSON.parse<DQLResponse<TData>>(response);
   }
 }
