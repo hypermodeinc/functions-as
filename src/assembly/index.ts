@@ -7,26 +7,38 @@ const UNCERTAIN_LABEL = "UNCERTAIN";
 const UNCERTAIN_PROBABILITY = f32(1.0);
 
 export abstract class dql {
-  public static mutate(query: string): DQLResponse<DQLMutationResponse> {
-    return this.execute<DQLMutationResponse>(query, true);
+  public static mutate(
+    query: string,
+    variables: Map<string, string> = new Map<string, string>(),
+  ): DQLResponse<DQLMutationResponse> {
+    return this.execute<DQLMutationResponse>(true, query, variables);
   }
 
-  public static query<TData>(query: string): DQLResponse<TData> {
-    return this.execute<TData>(query, false);
+  public static query<TData>(
+    query: string,
+    variables: Map<string, string> = new Map<string, string>(),
+  ): DQLResponse<TData> {
+    return this.execute<TData>(false, query, variables);
   }
 
   private static execute<TData>(
-    query: string,
     isMutation: bool,
+    query: string,
+    variables: Map<string, string> = new Map<string, string>(),
   ): DQLResponse<TData> {
-    const response = host.executeDQL(query, isMutation);
+    const variablesJson = JSON.stringify(variables);
+    const response = host.executeDQL(query, variablesJson, isMutation);
     return JSON.parse<DQLResponse<TData>>(response);
   }
 }
 
 export abstract class graphql {
-  static execute<TData>(statement: string): GQLResponse<TData> {
-    const response = host.executeGQL(statement);
+  static execute<TData>(
+    statement: string,
+    variables: Map<string, string> = new Map<string, string>(),
+  ): GQLResponse<TData> {
+    const variablesJson = JSON.stringify(variables);
+    const response = host.executeGQL(statement, variablesJson);
     return JSON.parse<GQLResponse<TData>>(response);
   }
 }
