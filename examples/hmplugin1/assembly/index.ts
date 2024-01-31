@@ -36,12 +36,12 @@ export function queryPeople1(): string {
   return JSON.stringify(people);
 }
 
-export function queryPersonWithVars(
+export function queryPeopleWithVars(
   firstName: string,
   lastName: string,
-): Person {
+): string {
   const query = `
-    query personWithVars($firstName: string, $lastName: string) {
+    query peopleWithVars($firstName: string, $lastName: string) {
       people(func: eq(Person.firstName, $firstName)) @filter(eq(Person.lastName, $lastName)) {
         id: uid
         firstName: Person.firstName
@@ -57,7 +57,7 @@ export function queryPersonWithVars(
   const response = dql.query<PeopleData>(query, vars);
   const people = response.data.people;
   people.forEach((p) => p.updateFullName());
-  return people[0];
+  return JSON.stringify(people);
 }
 
 export function queryPeople2(): string {
