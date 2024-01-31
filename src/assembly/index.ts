@@ -11,20 +11,20 @@ export abstract class dql {
     query: string,
     variables: Map<string, string> = new Map<string, string>(),
   ): DQLResponse<DQLMutationResponse> {
-    return this.execute<DQLMutationResponse>(query, variables, true);
+    return this.execute<DQLMutationResponse>(true, query, variables);
   }
 
   public static query<TData>(
     query: string,
     variables: Map<string, string> = new Map<string, string>(),
   ): DQLResponse<TData> {
-    return this.execute<TData>(query, variables, false);
+    return this.execute<TData>(false, query, variables);
   }
 
   private static execute<TData>(
+    isMutation: bool,
     query: string,
     variables: Map<string, string> = new Map<string, string>(),
-    isMutation: bool,
   ): DQLResponse<TData> {
     const variablesJson = JSON.stringify(variables);
     const response = host.executeDQL(query, variablesJson, isMutation);

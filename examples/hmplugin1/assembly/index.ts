@@ -36,6 +36,30 @@ export function queryPeople1(): string {
   return JSON.stringify(people);
 }
 
+export function queryPersonWithVars(
+  firstName: string,
+  lastName: string,
+): Person {
+  const query = `
+    query personWithVars($firstName: string, $lastName: string) {
+      people(func: eq(Person.firstName, $firstName)) @filter(eq(Person.lastName, $lastName)) {
+        id: uid
+        firstName: Person.firstName
+        lastName: Person.lastName
+      }
+    }
+  `;
+
+  const vars = new Map<string, string>();
+  vars.set("$firstName", firstName);
+  vars.set("$lastName", lastName);
+
+  const response = dql.query<PeopleData>(query, vars);
+  const people = response.data.people;
+  people.forEach((p) => p.updateFullName());
+  return people[0];
+}
+
 export function queryPeople2(): string {
   const statement = `
     query {
