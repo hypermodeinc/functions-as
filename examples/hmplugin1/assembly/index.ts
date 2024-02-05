@@ -1,5 +1,5 @@
 import { JSON } from "json-as";
-import { dql, graphql } from "hypermode-as";
+import { dql, model, graphql } from "hypermode-as";
 
 export function add(a: i32, b: i32): i32 {
   return a + b;
@@ -143,6 +143,10 @@ export function getRandomPerson(): string {
 
   const results = graphql.execute<PeopleData>(statement);
   return JSON.stringify(results.data.people[0]);
+}
+
+export function testClassifier(modelId: string, text: string): string {
+  return JSON.stringify(model.classifyText(modelId, text));
 }
 
 

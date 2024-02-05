@@ -44,9 +44,17 @@ export abstract class graphql {
 }
 
 export abstract class model {
-  public static classify(modelId: string, text: string): ClassificationResult {
-    const response = host.invokeClassifier(modelId, text);
-    return JSON.parse<ClassificationResult>(response);
+  public static classifyText(
+    modelId: string,
+    text: string,
+  ): ClassificationResult {
+    const textMap = new Map<string, string>();
+    textMap.set("text", text);
+    const response = host.invokeClassifier(modelId, JSON.stringify(textMap));
+    const res = JSON.parse<Map<string, string>>(response);
+    const classifierRes = res.get("text");
+    console.log(classifierRes);
+    return JSON.parse<ClassificationResult>(classifierRes);
   }
 }
 
