@@ -112,7 +112,6 @@ export class ClassificationProbability {
 
 
 @json
-class ClassificationResult {
-  // must be defined in the library
+export class ClassificationResult {
   probabilities!: ClassificationProbability[];
 }
