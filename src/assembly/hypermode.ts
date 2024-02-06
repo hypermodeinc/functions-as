@@ -15,3 +15,8 @@ export declare function invokeClassifier(
   modelId: string,
   sentenceMap: string,
 ): string;
+
+export declare function computeEmbedding(
+  modelId: string,
+  sentenceMap: string,
+): string;

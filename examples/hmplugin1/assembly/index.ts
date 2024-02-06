@@ -174,6 +174,35 @@ export function testMultipleClassifier(
   return JSON.stringify(resultObjs);
 }
 
+export function testEmbedding(modelId: string, text: string): string {
+  return JSON.stringify(model.computeTextEmbedding(modelId, text));
+}
+
+export function testEmbeddings(
+  modelId: string,
+  ids: string,
+  texts: string,
+): string {
+  // convert ids to array
+  const idArr = JSON.parse<string[]>(ids);
+  // convert texts to array
+  const textArr = JSON.parse<string[]>(texts);
+  const textMap = new Map<string, string>();
+  for (let i = 0; i < idArr.length; i++) {
+    textMap.set(idArr[i], textArr[i]);
+  }
+  const response = model.computeTextEmbeddings(modelId, textMap);
+  const resultObjs: EmbeddingObject[] = [];
+  for (let i = 0; i < idArr.length; i++) {
+    resultObjs.push({
+      id: idArr[i],
+      text: textArr[i],
+      embedding: response.get(idArr[i]),
+    });
+  }
+  return JSON.stringify(resultObjs);
+}
+
 
 @json
 class Person {
@@ -217,6 +246,14 @@ class ClassificationObject {
   id!: string;
   text!: string;
   result!: ClassificationResult;
+}
+
+
+@json
+class EmbeddingObject {
+  id!: string;
+  text!: string;
+  embedding!: string;
 }
 
 export function testError(): void {
