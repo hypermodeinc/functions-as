@@ -44,9 +44,37 @@ export abstract class graphql {
 }
 
 export abstract class model {
-  public static classify(modelId: string, text: string): ClassificationResult {
-    const response = host.invokeClassifier(modelId, text);
-    return JSON.parse<ClassificationResult>(response);
+  public static classifyText(
+    modelId: string,
+    text: string,
+  ): ClassificationResult {
+    const textMap = new Map<string, string>();
+    textMap.set("text", text);
+    const res = this.classifyTexts(modelId, textMap);
+    return res.get("text");
+  }
+
+  public static classifyTexts(
+    modelId: string,
+    texts: Map<string, string>,
+  ): Map<string, ClassificationResult> {
+    const response = host.invokeClassifier(modelId, JSON.stringify(texts));
+    return JSON.parse<Map<string, ClassificationResult>>(response);
+  }
+
+  public static computeTextEmbedding(modelId: string, text: string): string {
+    const textMap = new Map<string, string>();
+    textMap.set("text", text);
+    const res = this.computeTextEmbeddings(modelId, textMap);
+    return res.get("text");
+  }
+
+  public static computeTextEmbeddings(
+    modelId: string,
+    texts: Map<string, string>,
+  ): Map<string, string> {
+    const response = host.computeEmbedding(modelId, JSON.stringify(texts));
+    return JSON.parse<Map<string, string>>(response);
   }
 }
 

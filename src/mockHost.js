@@ -33,7 +33,33 @@ export default class MockHost {
     const sentence = this.getString(pSentence);
 
     return this.newString(
-      '{"probabilities":[{"label":"A","probability":0.1},{"label":"B","probability":0.2}]}',
+      '{ \
+        "text": \
+          { \
+            "probabilities": \
+            [ \
+              {"label":"A","probability":0.1}, \
+              {"label":"B","probability":0.2} \
+            ] \
+          }, \
+          "text2": \
+          { \
+            "probabilities": \
+            [ \
+              {"label":"A","probability":0.2}, \
+              {"label":"B","probability":0.3} \
+            ] \
+          } \
+      }',
+    );
+  }
+
+  computeEmbedding(pModelId, pSentence) {
+    const modelId = this.getString(pModelId);
+    const sentence = this.getString(pSentence);
+
+    return this.newString(
+      '{"text": "[0.1, 0.2, 0.3]", "text2": "[0.2, 0.3, 0.4]"}',
     );
   }
 
@@ -42,6 +68,7 @@ export default class MockHost {
       executeDQL: this.executeDQL.bind(this),
       executeGQL: this.executeGQL.bind(this),
       invokeClassifier: this.invokeClassifier.bind(this),
+      computeEmbedding: this.computeEmbedding.bind(this),
     };
   }
 
