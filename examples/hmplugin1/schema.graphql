@@ -13,6 +13,7 @@ type Query {
   getRandomPerson: Person! @lambda @hm_function
   testError: Int! @lambda @hm_function
   testClassifier(modelId: String!, text: String!): ClassificationResult! @lambda @hm_function
+  testMultipleClassifier(modelId: String!, ids: String!, texts: String!): [ClassificationObject!]! @lambda @hm_function
 }
 
 type Mutation {
@@ -25,6 +26,12 @@ type Person {
     firstName: String! @search(by: [hash])
     lastName: String! @search(by: [hash])
     fullName: String @lambda @hm_function(name: "getFullName", args: ["firstName", "lastName"])
+}
+
+type ClassificationObject @remote {
+  id: String
+  text: String
+  result: ClassificationResult
 }
 
 type ClassificationResult @remote {

@@ -51,10 +51,18 @@ export abstract class model {
     const textMap = new Map<string, string>();
     textMap.set("text", text);
     const response = host.invokeClassifier(modelId, JSON.stringify(textMap));
-    const res = JSON.parse<Map<string, string>>(response);
-    const classifierRes = res.get("text");
-    console.log(classifierRes);
-    return JSON.parse<ClassificationResult>(classifierRes);
+    console.log(response);
+    const res = JSON.parse<Map<string, ClassificationResult>>(response);
+    console.log(JSON.stringify(res));
+    return res.get("text");
+  }
+
+  public static classifyTexts(
+    modelId: string,
+    texts: Map<string, string>,
+  ): Map<string, ClassificationResult> {
+    const response = host.invokeClassifier(modelId, JSON.stringify(texts));
+    return JSON.parse<Map<string, ClassificationResult>>(response);
   }
 }
 
@@ -116,7 +124,7 @@ export class ClassificationProbability {
 
 
 @json
-class ClassificationResult {
+export class ClassificationResult {
   // must be defined in the library
   probabilities!: ClassificationProbability[];
 }
