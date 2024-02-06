@@ -50,8 +50,7 @@ export abstract class model {
   ): ClassificationResult {
     const textMap = new Map<string, string>();
     textMap.set("text", text);
-    const response = host.invokeClassifier(modelId, JSON.stringify(textMap));
-    const res = JSON.parse<Map<string, ClassificationResult>>(response);
+    const res = this.classifyTexts(modelId, textMap);
     return res.get("text");
   }
 
@@ -66,8 +65,7 @@ export abstract class model {
   public static computeTextEmbedding(modelId: string, text: string): string {
     const textMap = new Map<string, string>();
     textMap.set("text", text);
-    const response = host.computeEmbedding(modelId, JSON.stringify(textMap));
-    const res = JSON.parse<Map<string, string>>(response);
+    const res = this.computeTextEmbeddings(modelId, textMap);
     return res.get("text");
   }
 
