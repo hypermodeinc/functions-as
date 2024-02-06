@@ -101,9 +101,13 @@ export abstract class classifier {
 
 @json
 export class ClassificationProbability {
-  // must be defined in the library
-  label!: string;
-  probability!: f32;
+  label: string;
+  probability: f32;
+
+  constructor(label: string, probability: f32) {
+    this.label = label;
+    this.probability = probability;
+  }
 }
 
 
