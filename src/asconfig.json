@@ -1,7 +1,5 @@
 {
   "options": {
-    "transform": [
-      "json-as/transform"
-    ]
+    "transform": ["json-as/transform"]
   }
 }

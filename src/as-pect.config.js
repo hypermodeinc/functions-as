@@ -7,18 +7,17 @@ export default {
   outputBinary: false,
 
   async instantiate(memory, createImports, instantiate, binary) {
-
     const host = new MockHost();
 
     const imports = {
       env: { memory },
       hypermode: {
-        ...host.getImports()
-      }
+        ...host.getImports(),
+      },
     };
 
     let instance = instantiate(binary, createImports(imports));
     instance.then((result) => host.setInstance(result));
     return instance;
-  }
+  },
 };
