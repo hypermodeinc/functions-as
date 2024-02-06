@@ -6,6 +6,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
+    "test": "asp --verbose",
     "pretty": "prettier --write .",
     "pretty:check": "prettier --check .",
     "lint": "eslint --ext .ts .",
@@ -15,6 +16,7 @@
     "json-as": "^0.7.2"
   },
   "devDependencies": {
+    "@as-pect/cli": "^8.1.0",
     "@typescript-eslint/eslint-plugin": "^6.18.1",
     "@typescript-eslint/parser": "^6.18.1",
     "assemblyscript": "^0.27.23",
