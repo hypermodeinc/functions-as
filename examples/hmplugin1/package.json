@@ -20,12 +20,12 @@
   },
   "devDependencies": {
     "@assemblyscript/wasi-shim": "^0.1.0",
-    "@typescript-eslint/eslint-plugin": "^6.18.1",
-    "@typescript-eslint/parser": "^6.18.1",
-    "assemblyscript": "^0.27.23",
+    "@typescript-eslint/eslint-plugin": "^7.0.1",
+    "@typescript-eslint/parser": "^7.0.1",
+    "assemblyscript": "^0.27.24",
     "assemblyscript-prettier": "^3.0.1",
     "eslint": "^8.56.0",
-    "prettier": "^3.2.4",
+    "prettier": "^3.2.5",
     "visitor-as": "^0.11.4"
   },
   "overrides": {
