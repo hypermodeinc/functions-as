@@ -16,12 +16,12 @@
   },
   "dependencies": {
     "hypermode-as": "file:../../src",
-    "json-as": "^0.7.2"
+    "json-as": "^0.7.3"
   },
   "devDependencies": {
     "@assemblyscript/wasi-shim": "^0.1.0",
-    "@typescript-eslint/eslint-plugin": "^7.0.1",
-    "@typescript-eslint/parser": "^7.0.1",
+    "@typescript-eslint/eslint-plugin": "^7.0.2",
+    "@typescript-eslint/parser": "^7.0.2",
     "assemblyscript": "^0.27.24",
     "assemblyscript-prettier": "^3.0.1",
     "eslint": "^8.56.0",
