@@ -20,3 +20,9 @@ export declare function computeEmbedding(
   modelId: string,
   sentenceMap: string,
 ): string;
+
+export declare function invokeOpenaiChat(
+  modelname: string, 
+  instruction: string, 
+  sentence: string
+): string;

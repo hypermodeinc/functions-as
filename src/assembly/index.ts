@@ -76,6 +76,30 @@ export abstract class model {
     const response = host.computeEmbedding(modelId, JSON.stringify(texts));
     return JSON.parse<Map<string, string>>(response);
   }
+
+  public static invokeOpenaiChat(
+    model:string, 
+    instruction: string, 
+    text: string
+  ): string  {
+
+    const response = host.invokeOpenaiChat(model, instruction, text);
+    //console.log(`response ${response}`)
+
+    const resp = JSON.parse<OpenAIResponse>(response)
+    // console.log(resp.choices[0].message.content)
+    if (resp.error != null) {
+      const err = resp.error as OpenAIError
+      console.log(`error ${err.message}`)
+    }
+    let output = ""
+    if (resp.choices != null) {
+      const choices = resp.choices as OpenAIChoice[]
+      if (choices.length > 0)
+       output = choices[0].message.content;
+    } 
+    return output;
+  }
 }
 
 export abstract class classifier {
@@ -143,3 +167,37 @@ export class ClassificationProbability {
 export class ClassificationResult {
   probabilities!: ClassificationProbability[];
 }
+
+
+@json
+export class OpenAIMessage { // must be defined in the library
+  role!: string;
+  content!: string;
+};
+
+@json
+export class OpenAIChoice { // must be defined in the library
+  message!: OpenAIMessage;
+};
+
+@json
+export class OpenAIError { // must be defined in the library
+  message!: string;
+  type!: string;
+  param: string | null = null;
+  code: string | null = null;
+};
+
+@json
+export class OpenAIResponse { // must be defined in the library
+  choices: OpenAIChoice[] | null = null;
+  error: OpenAIError | null = null;
+};
+/* response can also be error
+"error": {
+  "message": "We could not parse the JSON body of your request. (HINT: This likely means you aren't using your HTTP library correctly. The OpenAI API expects a JSON payload, but what was sent was not valid JSON. If you have trouble figuring out how to fix this, please contact us through our help center at help.openai.com.)",
+  "type": "invalid_request_error",
+  "param": null,
+  "code": null
+}
+*/
