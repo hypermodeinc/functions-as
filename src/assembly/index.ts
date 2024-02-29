@@ -77,24 +77,24 @@ export abstract class model {
     return JSON.parse<Map<string, string>>(response);
   }
 
-  public static invokeOpenaiChat(
-    model:string, 
+  public static invokeChat(
+    modelId:string, 
     instruction: string, 
     text: string
   ): string  {
 
-    const response = host.invokeOpenaiChat(model, instruction, text);
-    //console.log(`response ${response}`)
+    const response = host.invokeChat(modelId, instruction, text);
+    console.log(`response ${response}`)
 
-    const resp = JSON.parse<OpenAIResponse>(response)
+    const resp = JSON.parse<ChatResponse>(response)
     // console.log(resp.choices[0].message.content)
     if (resp.error != null) {
-      const err = resp.error as OpenAIError
+      const err = resp.error as InvokeError
       console.log(`error ${err.message}`)
     }
     let output = ""
     if (resp.choices != null) {
-      const choices = resp.choices as OpenAIChoice[]
+      const choices = resp.choices as MessageChoice[]
       if (choices.length > 0)
        output = choices[0].message.content;
     } 
@@ -170,28 +170,28 @@ export class ClassificationResult {
 
 
 @json
-export class OpenAIMessage { // must be defined in the library
+export class ChatMessage { // must be defined in the library
   role!: string;
   content!: string;
 };
 
 @json
-export class OpenAIChoice { // must be defined in the library
-  message!: OpenAIMessage;
+export class MessageChoice { // must be defined in the library
+  message!: ChatMessage;
 };
 
 @json
-export class OpenAIError { // must be defined in the library
+export class InvokeError { // must be defined in the library
   message!: string;
-  type!: string;
-  param: string | null = null;
-  code: string | null = null;
+  type: string = "";
+  param: string ="";
+  code: string ="";
 };
 
 @json
-export class OpenAIResponse { // must be defined in the library
-  choices: OpenAIChoice[] | null = null;
-  error: OpenAIError | null = null;
+export class ChatResponse { // must be defined in the library
+  choices: MessageChoice[] | null = null;
+  error: InvokeError | null = null;
 };
 /* response can also be error
 "error": {
