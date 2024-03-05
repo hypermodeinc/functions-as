@@ -88,21 +88,16 @@ export abstract class model {
     return JSON.parse<Map<string, string>>(response);
   }
 
-  public static invokeChat(
+  public static invokeTextGenerator(
     modelId:string, 
     instruction: string, 
     text: string
   ): string  {
 
-    const response = host.invokeChat(modelId, instruction, text);
-    console.log(`response ${response}`)
-
+    const response = host.invokeTextGenerator(modelId, instruction, text);
+  
     const resp = JSON.parse<ChatResponse>(response)
-    // console.log(resp.choices[0].message.content)
-    if (resp.error != null) {
-      const err = resp.error as InvokeError
-      console.log(`error ${err.message}`)
-    }
+ 
     let output = ""
     if (resp.choices != null) {
       const choices = resp.choices as MessageChoice[]
@@ -191,18 +186,10 @@ export class MessageChoice { // must be defined in the library
   message!: ChatMessage;
 };
 
-@json
-export class InvokeError { // must be defined in the library
-  message!: string;
-  type: string = "";
-  param: string ="";
-  code: string ="";
-};
 
 @json
 export class ChatResponse { // must be defined in the library
   choices: MessageChoice[] | null = null;
-  error: InvokeError | null = null;
 };
 /* response can also be error
 "error": {
