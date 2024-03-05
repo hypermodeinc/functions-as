@@ -16,6 +16,7 @@ type Query {
   testMultipleClassifier(modelId: String!, ids: String!, texts: String!): [ClassificationObject!]! @lambda @hm_function
   testEmbedding(modelId: String!, text: String!): String! @lambda @hm_function
   testEmbeddings(modelId: String!, ids: String!, texts: String!): [EmbeddingObject!]! @lambda @hm_function
+  testTextGenerator(modelId: String!, instruction: String!, text: String!): String! @lambda @hm_function
 }
 
 type Mutation {
