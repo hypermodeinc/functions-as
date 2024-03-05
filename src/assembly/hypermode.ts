@@ -21,8 +21,8 @@ export declare function computeEmbedding(
   sentenceMap: string,
 ): string;
 
-export declare function invokeOpenaiChat(
-  modelname: string, 
+export declare function invokeChat(
+  modelId: string,
   instruction: string, 
   sentence: string
 ): string;
