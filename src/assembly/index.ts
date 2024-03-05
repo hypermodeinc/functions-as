@@ -176,19 +176,19 @@ export class ClassificationResult {
 
 
 @json
-export class ChatMessage { // must be defined in the library
+export class ChatMessage { 
   role!: string;
   content!: string;
 };
 
 @json
-export class MessageChoice { // must be defined in the library
+export class MessageChoice { 
   message!: ChatMessage;
 };
 
 
 @json
-export class ChatResponse { // must be defined in the library
+export class ChatResponse {
   choices: MessageChoice[] | null = null;
 };
 /* response can also be error
