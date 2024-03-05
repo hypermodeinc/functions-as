@@ -21,7 +21,7 @@ export declare function computeEmbedding(
   sentenceMap: string,
 ): string;
 
-export declare function invokeChat(
+export declare function invokeTextGenerator(
   modelId: string,
   instruction: string, 
   sentence: string
