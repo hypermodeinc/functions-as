@@ -208,9 +208,14 @@ export function testEmbeddings(
   return JSON.stringify(resultObjs);
 }
 
-export function testTextGenerator(modelId: string, instruction: string, text:string): string {
+export function testTextGenerator(
+  modelId: string,
+  instruction: string,
+  text: string,
+): string {
   return JSON.stringify(model.invokeTextGenerator(modelId, instruction, text));
 }
+
 
 @json
 class Person {
