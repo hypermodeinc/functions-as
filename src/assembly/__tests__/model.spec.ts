@@ -47,4 +47,11 @@ describe("Model Host Functions", () => {
 
     expect(result).toStrictEqual(expected);
   });
+  it("can generate text", () => {
+    const input = "sentence";
+    const result = model.invokeTextGenerator("modelId", "instruction",input);
+    const expected = input
+
+    expect(result).toStrictEqual(expected);
+  });
 });
