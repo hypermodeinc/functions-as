@@ -40,9 +40,9 @@ export abstract class graphql {
     const variablesJson = JSON.stringify(variables);
     const response = host.executeGQL(statement, variablesJson);
     if (response.startsWith('{"errors":')) {
-      console.log("Error executing GraphQL: "+statement) 
+      console.log("Error executing GraphQL: " + statement);
       // TODO log vars
-      console.log("Got graphql error: "+response)
+      console.log("Got graphql error: " + response);
     }
     //
     // NOTE: if the json classes are not perfectly aligned to the queries issued
@@ -89,21 +89,19 @@ export abstract class model {
   }
 
   public static invokeTextGenerator(
-    modelId:string, 
-    instruction: string, 
-    text: string
-  ): string  {
-
+    modelId: string,
+    instruction: string,
+    text: string,
+  ): string {
     const response = host.invokeTextGenerator(modelId, instruction, text);
-  
-    const resp = JSON.parse<ChatResponse>(response)
- 
-    let output = ""
+
+    const resp = JSON.parse<ChatResponse>(response);
+
+    let output = "";
     if (resp.choices != null) {
-      const choices = resp.choices as MessageChoice[]
-      if (choices.length > 0)
-       output = choices[0].message.content;
-    } 
+      const choices = resp.choices as MessageChoice[];
+      if (choices.length > 0) output = choices[0].message.content;
+    }
     return output;
   }
 }
@@ -176,21 +174,22 @@ export class ClassificationResult {
 
 
 @json
-export class ChatMessage { 
+export class ChatMessage {
   role!: string;
   content!: string;
-};
+}
+
 
 @json
-export class MessageChoice { 
+export class MessageChoice {
   message!: ChatMessage;
-};
+}
 
 
 @json
 export class ChatResponse {
   choices: MessageChoice[] | null = null;
-};
+}
 /* response can also be error
 "error": {
   "message": "We could not parse the JSON body of your request. (HINT: This likely means you aren't using your HTTP library correctly. The OpenAI API expects a JSON payload, but what was sent was not valid JSON. If you have trouble figuring out how to fix this, please contact us through our help center at help.openai.com.)",

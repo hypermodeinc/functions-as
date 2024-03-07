@@ -23,6 +23,6 @@ export declare function computeEmbedding(
 
 export declare function invokeTextGenerator(
   modelId: string,
-  instruction: string, 
-  sentence: string
+  instruction: string,
+  sentence: string,
 ): string;
