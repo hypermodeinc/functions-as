@@ -39,11 +39,7 @@ export abstract class graphql {
   ): GQLResponse<TData> {
     const variablesJson = JSON.stringify(variables);
     const response = host.executeGQL(statement, variablesJson);
-    if (response.startsWith('{"errors":')) {
-      console.log("Error executing GraphQL: " + statement);
-      // TODO log vars
-      console.log("Got graphql error: " + response);
-    }
+
     //
     // NOTE: if the json classes are not perfectly aligned to the queries issued
     // json-as will error out with cryptic errors stating incorrect line numbers
