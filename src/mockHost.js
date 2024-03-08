@@ -69,9 +69,9 @@ export default class MockHost {
     const sentence = this.getString(pSentence);
 
     return this.newString(
-      '{"choices": [ {"message": {"role": "assistant", "content": "' +
-        sentence +
-        '"}}]}',
+      '{"choices": [ {"message": {"role": "assistant", "content": ' +
+      JSON.stringify(sentence) +
+      '}}]}',
     );
   }
 

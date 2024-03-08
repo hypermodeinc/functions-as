@@ -213,7 +213,8 @@ export function testTextGenerator(
   instruction: string,
   text: string,
 ): string {
-  return JSON.stringify(model.invokeTextGenerator(modelId, instruction, text));
+  const results = model.invokeTextGenerator(modelId, instruction, text);
+  return JSON.stringify(results);
 }
 
 

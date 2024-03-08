@@ -39,13 +39,6 @@ export abstract class graphql {
   ): GQLResponse<TData> {
     const variablesJson = JSON.stringify(variables);
     const response = host.executeGQL(statement, variablesJson);
-
-    //
-    // NOTE: if the json classes are not perfectly aligned to the queries issued
-    // json-as will error out with cryptic errors stating incorrect line numbers
-    // TO DEBUG uncomment this line and carefully match the JSON response to the classes
-    //      console.log("GQL resp "+response)
-    //
     return JSON.parse<GQLResponse<TData>>(response);
   }
 }
