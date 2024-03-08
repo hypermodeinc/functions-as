@@ -76,6 +76,23 @@ export abstract class model {
     const response = host.computeEmbedding(modelId, JSON.stringify(texts));
     return JSON.parse<Map<string, string>>(response);
   }
+
+  public static invokeTextGenerator(
+    modelId: string,
+    instruction: string,
+    text: string,
+  ): string {
+    const response = host.invokeTextGenerator(modelId, instruction, text);
+
+    const resp = JSON.parse<ChatResponse>(response);
+
+    let output = "";
+    if (resp.choices != null) {
+      const choices = resp.choices as MessageChoice[];
+      if (choices.length > 0) output = choices[0].message.content;
+    }
+    return output;
+  }
 }
 
 export abstract class classifier {
@@ -143,3 +160,30 @@ export class ClassificationProbability {
 export class ClassificationResult {
   probabilities!: ClassificationProbability[];
 }
+
+
+@json
+export class ChatMessage {
+  role!: string;
+  content!: string;
+}
+
+
+@json
+export class MessageChoice {
+  message!: ChatMessage;
+}
+
+
+@json
+export class ChatResponse {
+  choices: MessageChoice[] | null = null;
+}
+/* response can also be error
+"error": {
+  "message": "We could not parse the JSON body of your request. (HINT: This likely means you aren't using your HTTP library correctly. The OpenAI API expects a JSON payload, but what was sent was not valid JSON. If you have trouble figuring out how to fix this, please contact us through our help center at help.openai.com.)",
+  "type": "invalid_request_error",
+  "param": null,
+  "code": null
+}
+*/
