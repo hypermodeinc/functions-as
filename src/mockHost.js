@@ -70,8 +70,8 @@ export default class MockHost {
 
     return this.newString(
       '{"choices": [ {"message": {"role": "assistant", "content": ' +
-      JSON.stringify(sentence) +
-      '}}]}',
+        JSON.stringify(sentence) +
+        "}}]}",
     );
   }
 
