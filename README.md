@@ -1,3 +1,6 @@
+![NPM Version](https://img.shields.io/npm/v/%40hypermode%2Ffunctions-as) ![NPM Downloads](https://img.shields.io/npm/dw/%40hypermode%2Ffunctions-as)
+
+
 # Hypermode AssemblyScript Library
 
 This repository contains the shared library used by Hypermode functions written in AssemblyScript.
