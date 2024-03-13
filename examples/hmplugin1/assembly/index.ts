@@ -266,7 +266,7 @@ class ClassificationObject {
 class EmbeddingObject {
   id!: string;
   text!: string;
-  embedding!: string;
+  embedding!: f64[];
 }
 
 export function testError(): void {

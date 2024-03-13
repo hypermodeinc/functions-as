@@ -62,7 +62,7 @@ export abstract class model {
     return JSON.parse<Map<string, ClassificationResult>>(response);
   }
 
-  public static computeTextEmbedding(modelId: string, text: string): string {
+  public static computeTextEmbedding(modelId: string, text: string): f64[] {
     const textMap = new Map<string, string>();
     textMap.set("text", text);
     const res = this.computeTextEmbeddings(modelId, textMap);
@@ -72,9 +72,9 @@ export abstract class model {
   public static computeTextEmbeddings(
     modelId: string,
     texts: Map<string, string>,
-  ): Map<string, string> {
+  ): Map<string, f64[]> {
     const response = host.computeEmbedding(modelId, JSON.stringify(texts));
-    return JSON.parse<Map<string, string>>(response);
+    return JSON.parse<Map<string, f64[]>>(response);
   }
 
   public static invokeTextGenerator(
