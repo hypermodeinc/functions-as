@@ -59,7 +59,7 @@ export default class MockHost {
     const sentence = this.getString(pSentence);
 
     return this.newString(
-      '{"text": "[0.1, 0.2, 0.3]", "text2": "[0.2, 0.3, 0.4]"}',
+      '{"text": [0.1, 0.2, 0.3], "text2": [0.2, 0.3, 0.4]}',
     );
   }
 

@@ -34,16 +34,16 @@ describe("Model Host Functions", () => {
 
   it("can compute embeddings", () => {
     const result = model.computeTextEmbedding("modelId", "text");
-    const expected = "[0.1, 0.2, 0.3]";
+    const expected = [0.1, 0.2, 0.3];
     expect(result).toStrictEqual(expected);
   });
 
   it("can compute multiple embeddings", () => {
     const texts = new Map<string, string>();
     const result = model.computeTextEmbeddings("modelId", texts);
-    const expected = new Map<string, string>();
-    expected.set("text", "[0.1, 0.2, 0.3]");
-    expected.set("text2", "[0.2, 0.3, 0.4]");
+    const expected = new Map<string, f64[]>();
+    expected.set("text", [0.1, 0.2, 0.3]);
+    expected.set("text2", [0.2, 0.3, 0.4]);
 
     expect(result).toStrictEqual(expected);
   });
