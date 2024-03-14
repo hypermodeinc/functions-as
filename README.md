@@ -1,5 +1,7 @@
-![NPM Version](https://img.shields.io/npm/v/%40hypermode%2Ffunctions-as) ![NPM Downloads](https://img.shields.io/npm/dw/%40hypermode%2Ffunctions-as)
+<!-- This readme will display with the repository on GitHub. -->
 
+![NPM Version](https://img.shields.io/npm/v/%40hypermode%2Ffunctions-as)
+![NPM Downloads](https://img.shields.io/npm/dw/%40hypermode%2Ffunctions-as)
 
 # Hypermode AssemblyScript Library
 
