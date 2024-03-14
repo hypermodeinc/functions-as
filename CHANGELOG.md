@@ -1,8 +1,10 @@
 # Change Log
 
-# 2024-03-13 - Version 0.2.1
+# 2024-03-13 - Version 0.2.2
 
 - **(BREAKING)** Host functions that previously returned vector embeddings as strings now return `f64[]` instead. [#25](https://github.com/gohypermode/functions-as/pull/25)
+
+_note: 0.2.1 was published prematurely and has been unpublished. Use 0.2.2._
 
 # 2024-03-07 - Version 0.2.0
 
