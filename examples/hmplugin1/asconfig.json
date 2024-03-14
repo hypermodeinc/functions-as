@@ -18,10 +18,7 @@
     }
   },
   "options": {
-    "transform": [
-      "@hypermode/functions-as/transform",
-      "json-as/transform"
-    ],
+    "transform": ["@hypermode/functions-as/transform", "json-as/transform"],
     "exportRuntime": true
   }
 }
