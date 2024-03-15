@@ -1,5 +1,21 @@
 # Change Log
 
+# 2024-03-14 - Version 0.3.0
+
+- Metadata is now included during build. [#27](https://github.com/gohypermode/functions-as/pull/27)
+
+  - You must also add `@hypermode/functions-as/transform` to the transforms in the `asconfig.json` file. For example:
+
+    ```json
+    "options": {
+        "transform": [
+            "@hypermode/functions-as/transform",
+            "json-as/transform"
+        ],
+        "exportRuntime": true
+    }
+    ```
+
 # 2024-03-13 - Version 0.2.2
 
 - **(BREAKING)** Host functions that previously returned vector embeddings as strings now return `f64[]` instead. [#25](https://github.com/gohypermode/functions-as/pull/25)
