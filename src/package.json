@@ -6,6 +6,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
+    "pretest": "$npm_execpath list @as-pect/cli || $npm_execpath install --no-save --no-audit @as-pect/cli",
     "test": "asp --verbose",
     "pretty": "prettier --write .",
     "pretty:check": "prettier --check .",
