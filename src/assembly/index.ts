@@ -76,16 +76,8 @@ export abstract class model {
     const response = host.computeEmbedding(modelId, JSON.stringify(texts));
     return JSON.parse<Map<string, f64[]>>(response);
   }
-
-  public static generateText(
-    modelId: string,
-    instruction: string,
-    text: string,
-  ): string {
-    const response = host.invokeTextGenerator(modelId, instruction, text);
-
+  static extractChatFirstMessageContent(response: string): string {
     const resp = JSON.parse<ChatResponse>(response);
-
     let output = "";
     if (resp.choices != null) {
       const choices = resp.choices as MessageChoice[];
@@ -93,6 +85,17 @@ export abstract class model {
     }
     return output;
   }
+
+  public static invokeTextGenerator(
+    modelId: string,
+    instruction: string,
+    text: string,
+  ): string {
+    const response = host.invokeTextGenerator(modelId, instruction, text);
+
+    return this.extractChatFirstMessageContent(response);
+  }
+
   public static generateJson(
     modelId: string,
     instruction: string,
@@ -100,14 +103,7 @@ export abstract class model {
   ): string {
     const response = host.generateJson(modelId, instruction, text);
 
-    const resp = JSON.parse<ChatResponse>(response);
-
-    let output = "";
-    if (resp.choices != null) {
-      const choices = resp.choices as MessageChoice[];
-      if (choices.length > 0) output = choices[0].message.content;
-    }
-    return output;
+    return this.extractChatFirstMessageContent(response);
   }
 }
 
