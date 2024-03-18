@@ -55,4 +55,12 @@ describe("Model Host Functions", () => {
 
     expect(result).toBe(expected);
   });
+
+  it("can generate json", () => {
+    const input = "sentence";
+    const result = model.generateJson("modelId", "instruction", input);
+    const expected = '{"input":"sentence"}';
+
+    expect(result).toBe(expected);
+  });
 });
