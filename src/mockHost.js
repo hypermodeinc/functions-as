@@ -74,6 +74,17 @@ export default class MockHost {
         "}}]}",
     );
   }
+  generateJson(pModelId, pInstruction, pSentence) {
+    const modelId = this.getString(pModelId);
+    const instruction = this.getString(pInstruction);
+    const sentence = this.getString(pSentence);
+    const json = JSON.stringify({ input: sentence });
+    return this.newString(
+      '{"choices": [ {"message": {"role": "assistant", "content": ' +
+        json +
+        "}}]}",
+    );
+  }
 
   getImports() {
     return {
@@ -82,6 +93,7 @@ export default class MockHost {
       invokeClassifier: this.invokeClassifier.bind(this),
       computeEmbedding: this.computeEmbedding.bind(this),
       invokeTextGenerator: this.invokeTextGenerator.bind(this),
+      generateJson: this.generateJson.bind(this),
     };
   }
 
