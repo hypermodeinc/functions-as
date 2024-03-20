@@ -21,15 +21,9 @@ export declare function computeEmbedding(
   sentenceMap: string,
 ): string;
 
-export declare function invokeTextGenerator(
+export declare function invokeTextGenerator_v2(
   modelId: string,
   instruction: string,
   sentence: string,
   format: string,
-): string;
-
-export declare function generateJson(
-  modelId: string,
-  instruction: string,
-  sentence: string,
 ): string;
