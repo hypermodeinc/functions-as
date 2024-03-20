@@ -25,6 +25,7 @@ export declare function invokeTextGenerator(
   modelId: string,
   instruction: string,
   sentence: string,
+  format: string,
 ): string;
 
 export declare function generateJson(
