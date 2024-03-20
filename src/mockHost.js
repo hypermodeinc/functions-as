@@ -63,7 +63,7 @@ export default class MockHost {
     );
   }
 
-  invokeTextGenerator(pModelId, pInstruction, pSentence, pFormat) {
+  invokeTextGenerator_v2(pModelId, pInstruction, pSentence, pFormat) {
     const modelId = this.getString(pModelId);
     const instruction = this.getString(pInstruction);
     const sentence = this.getString(pSentence);
@@ -84,7 +84,7 @@ export default class MockHost {
       executeGQL: this.executeGQL.bind(this),
       invokeClassifier: this.invokeClassifier.bind(this),
       computeEmbedding: this.computeEmbedding.bind(this),
-      invokeTextGenerator: this.invokeTextGenerator.bind(this),
+      invokeTextGenerator_v2: this.invokeTextGenerator_v2.bind(this),
     };
   }
 

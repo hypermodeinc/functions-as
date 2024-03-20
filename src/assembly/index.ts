@@ -96,7 +96,7 @@ export abstract class model {
     instruction: string,
     text: string,
   ): string {
-    const response = host.invokeTextGenerator(modelId, instruction, text, "text");
+    const response = host.invokeTextGenerator_v2(modelId, instruction, text, "text");
 
     return this.extractChatFirstMessageContent(response);
   }
@@ -123,7 +123,7 @@ export abstract class model {
     console.log(modifiedInstruction);
     const format = "json_object";
 
-    const generated = host.invokeTextGenerator(modelId, modifiedInstruction, text, format);
+    const generated = host.invokeTextGenerator_v2(modelId, modifiedInstruction, text, format);
 
     const response =  this.extractChatFirstMessageContent(generated);
     console.log(`response: ${response}`);
