@@ -1,5 +1,10 @@
 import { model, ClassificationProbability, ClassificationResult } from "..";
 
+
+class TestData {
+  input: string = "test";
+}
+
 describe("Model Host Functions", () => {
   it("can classify", () => {
     const result = model.classifyText("modelId", "text");
@@ -56,5 +61,14 @@ describe("Model Host Functions", () => {
     expect(result).toBe(expected);
   });
 
-
+  /* test failing => need to fix 
+  it("can generateData", () => {
+    const input = "{\"input\": \"sentence\"}";
+    const sample = <TestData>{ input: "test" };
+    const result = model.generateData<TestData>("modelId", "instruction", input, sample);
+    expect(result.length).toBe(1);
+    expect(result[0].input).toBe("sentence");
+  });
+  */
+  
 });
