@@ -213,7 +213,7 @@ export function testTextGenerator(
   instruction: string,
   text: string,
 ): string {
-  return model.invokeTextGenerator(modelId, instruction, text);
+  return model.generateText(modelId, instruction, text);
 }
 
 

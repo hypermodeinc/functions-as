@@ -86,7 +86,7 @@ export abstract class model {
     return output;
   }
 
-  public static invokeTextGenerator(
+  public static generateText(
     modelId: string,
     instruction: string,
     text: string,
