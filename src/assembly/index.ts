@@ -125,7 +125,6 @@ export abstract class model {
     }  
     `;
     modifiedInstruction += instruction;
-    console.log(modifiedInstruction);
     const format = "json_object";
 
     const generated = host.invokeTextGenerator(
@@ -136,7 +135,6 @@ export abstract class model {
     );
 
     const response = this.extractChatFirstMessageContent(generated);
-    console.log(`response: ${response}`);
     const jsonList = JSON.parse<JsonList<TData>>(response, true);
     return jsonList.list;
   }
