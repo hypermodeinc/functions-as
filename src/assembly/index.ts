@@ -97,7 +97,7 @@ export abstract class model {
     instruction: string,
     text: string,
   ): string {
-    const response = host.invokeTextGenerator_v2(
+    const response = host.invokeTextGenerator(
       modelId,
       instruction,
       text,
@@ -128,7 +128,7 @@ export abstract class model {
     console.log(modifiedInstruction);
     const format = "json_object";
 
-    const generated = host.invokeTextGenerator_v2(
+    const generated = host.invokeTextGenerator(
       modelId,
       modifiedInstruction,
       text,
