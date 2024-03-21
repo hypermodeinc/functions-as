@@ -6,12 +6,6 @@ import { JSON } from "json-as";
 const UNCERTAIN_LABEL = "UNCERTAIN";
 const UNCERTAIN_PROBABILITY = f32(1.0);
 
-
-@json
-class JsonList<T> {
-  list!: T[];
-}
-
 export abstract class dql {
   public static mutate(
     query: string,
@@ -107,36 +101,55 @@ export abstract class model {
     return this.extractChatFirstMessageContent(response);
   }
 
-  public static generateData<TData>(
+  public static generate<TData>(
+    modelId: string,
+    instruction: string,
+    text: string,
+    sample: TData,
+  ): TData {
+    // Prompt trick: ask for a simple JSON object.
+    const modifiedInstruction =
+      "Only respond with valid JSON object in this format:\n" +
+      JSON.stringify(sample) +
+      "\n" +
+      instruction;
+
+    const generated = host.invokeTextGenerator(
+      modelId,
+      modifiedInstruction,
+      text,
+      "json_object",
+    );
+
+    const response = this.extractChatFirstMessageContent(generated);
+    return JSON.parse<TData>(response, true);
+  }
+
+  public static generateList<TData>(
     modelId: string,
     instruction: string,
     text: string,
     sample: TData,
   ): TData[] {
     // Prompt trick: ask for a simple JSON object containing a list.
-    // openai does not generate an array  of objects directly
-    let modifiedInstruction =
-      "Only respond with valid JSON document containing a valid jsonlist named 'list'.";
-
-    modifiedInstruction += `
-    Here is sample output: 
-    {
-      "list": [ ${JSON.stringify(sample)} ]
-    }  
-    `;
-    modifiedInstruction += instruction;
-    const format = "json_object";
+    // Note, OpenAI will not generate an array of objects directly.
+    const modifiedInstruction =
+      "Only respond with valid JSON object containing a valid JSON array named 'list', in this format:\n" +
+      '{"list":[' +
+      JSON.stringify(sample) +
+      "]}\n" +
+      instruction;
 
     const generated = host.invokeTextGenerator(
       modelId,
       modifiedInstruction,
       text,
-      format,
+      "json_object",
     );
 
     const response = this.extractChatFirstMessageContent(generated);
-    const jsonList = JSON.parse<JsonList<TData>>(response, true);
-    return jsonList.list;
+    const jsonList = JSON.parse<Map<string, TData[]>>(response, true);
+    return jsonList.get("list");
   }
 }
 
