@@ -1,8 +1,6 @@
 import { model, ClassificationProbability, ClassificationResult } from "..";
 
-class TestData {
-  input: string = "test";
-}
+
 
 describe("Model Host Functions", () => {
   it("can classify", () => {
@@ -61,6 +59,10 @@ describe("Model Host Functions", () => {
   });
 
   /* test failing => need to fix 
+
+  class TestData {
+    input: string = "test";
+  }
   it("can generateData", () => {
     const input = "{\"input\": \"sentence\"}";
     const sample = <TestData>{ input: "test" };
