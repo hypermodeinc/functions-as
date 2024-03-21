@@ -9,5 +9,11 @@
     "sourceType": "module"
   },
   "plugins": ["@typescript-eslint"],
-  "rules": {}
+  "ignorePatterns": ["*.cjs"],
+  "overrides": [
+    {
+      "files": ["./assembly/**/*.ts"],
+      "parser": "./eslintParser.cjs"
+    }
+  ]
 }
