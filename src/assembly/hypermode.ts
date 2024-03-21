@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck: decorators are allowed on function exports in AssemblyScript
+
 // This file should only export functions from the "hypermode" host module.
 
 export declare function executeDQL(
