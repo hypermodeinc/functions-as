@@ -6,6 +6,7 @@ import { JSON } from "json-as";
 const UNCERTAIN_LABEL = "UNCERTAIN";
 const UNCERTAIN_PROBABILITY = f32(1.0);
 
+
 @json
 class JsonList<T> {
   list!: T[];
@@ -96,11 +97,15 @@ export abstract class model {
     instruction: string,
     text: string,
   ): string {
-    const response = host.invokeTextGenerator_v2(modelId, instruction, text, "text");
+    const response = host.invokeTextGenerator_v2(
+      modelId,
+      instruction,
+      text,
+      "text",
+    );
 
     return this.extractChatFirstMessageContent(response);
   }
-  
 
   public static generateData<TData>(
     modelId: string,
@@ -108,10 +113,10 @@ export abstract class model {
     text: string,
     sample: TData,
   ): TData[] {
-
     // Prompt trick: ask for a simple JSON object containing a list.
     // openai does not generate an array  of objects directly
-    let modifiedInstruction =  "Only respond with valid JSON document containing a valid jsonlist named 'list'.";
+    let modifiedInstruction =
+      "Only respond with valid JSON document containing a valid jsonlist named 'list'.";
 
     modifiedInstruction += `
     Here is sample output: 
@@ -123,13 +128,17 @@ export abstract class model {
     console.log(modifiedInstruction);
     const format = "json_object";
 
-    const generated = host.invokeTextGenerator_v2(modelId, modifiedInstruction, text, format);
+    const generated = host.invokeTextGenerator_v2(
+      modelId,
+      modifiedInstruction,
+      text,
+      format,
+    );
 
-    const response =  this.extractChatFirstMessageContent(generated);
+    const response = this.extractChatFirstMessageContent(generated);
     console.log(`response: ${response}`);
-    const jsonList = JSON.parse<JsonList<TData>>(response,true)
+    const jsonList = JSON.parse<JsonList<TData>>(response, true);
     return jsonList.list;
-
   }
 }
 

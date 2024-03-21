@@ -1,6 +1,5 @@
 import { model, ClassificationProbability, ClassificationResult } from "..";
 
-
 class TestData {
   input: string = "test";
 }
@@ -70,5 +69,4 @@ describe("Model Host Functions", () => {
     expect(result[0].input).toBe("sentence");
   });
   */
-  
 });

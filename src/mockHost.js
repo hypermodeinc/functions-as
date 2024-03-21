@@ -76,8 +76,6 @@ export default class MockHost {
     );
   }
 
-
-
   getImports() {
     return {
       executeDQL: this.executeDQL.bind(this),
