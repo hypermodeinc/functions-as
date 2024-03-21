@@ -1,7 +1,5 @@
 import { model, ClassificationProbability, ClassificationResult } from "..";
 
-
-
 describe("Model Host Functions", () => {
   it("can classify", () => {
     const result = model.classifyText("modelId", "text");
