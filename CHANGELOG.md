@@ -1,5 +1,10 @@
 # Change Log
 
+# 2024-03-22 - Version 0.4.0
+
+- Adds `model.generate<TData>` and `model.generateList<TData>` [#30](https://github.com/gohypermode/functions-as/pull/30)
+- **(BREAKING)** `model.invokeTextGenerator` has been renamed to `model.generateText`
+
 # 2024-03-14 - Version 0.3.0
 
 - Metadata is now included during build. [#27](https://github.com/gohypermode/functions-as/pull/27)
