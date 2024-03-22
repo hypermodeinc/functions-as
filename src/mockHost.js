@@ -69,9 +69,28 @@ export default class MockHost {
     const sentence = this.getString(pSentence);
     const format = this.getString(pFormat);
 
+    let response;
+
+    switch (format) {
+      case "text":
+        response = sentence;
+        break;
+
+      case "json_object":
+        if (instruction.includes("JSON array")) {
+          response = `{"list":[${sentence},${sentence}]}`;
+        } else {
+          response = sentence;
+        }
+        break;
+
+      default:
+        throw new Error(`Unknown format: ${format}`);
+    }
+
     return this.newString(
-      '{"choices": [ {"message": {"role": "assistant", "content": ' +
-        JSON.stringify(sentence) +
+      '{"choices":[{"message":{"role":"assistant","content":' +
+        JSON.stringify(response) +
         "}}]}",
     );
   }

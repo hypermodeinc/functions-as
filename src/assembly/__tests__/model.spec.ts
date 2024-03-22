@@ -15,7 +15,6 @@ describe("Model Host Functions", () => {
   it("can classify multiple", () => {
     const texts = new Map<string, string>();
     const result = model.classifyTexts("modelId", texts);
-    log(result);
     const expectedProbs1 = new ClassificationResult();
     expectedProbs1.probabilities = [
       new ClassificationProbability("A", 0.1),
@@ -56,17 +55,29 @@ describe("Model Host Functions", () => {
     expect(result).toBe(expected);
   });
 
-  /* test failing => need to fix 
-
-  class TestData {
-    input: string = "test";
-  }
-  it("can generateData", () => {
-    const input = "{\"input\": \"sentence\"}";
-    const sample = <TestData>{ input: "test" };
-    const result = model.generateData<TestData>("modelId", "instruction", input, sample);
-    expect(result.length).toBe(1);
-    expect(result[0].input).toBe("sentence");
+  it("can generate an object", () => {
+    const input = '{"input": "sentence"}';
+    const sample = new Map<string, string>();
+    const result = model.generate<Map<string, string>>(
+      "modelId",
+      "instruction",
+      input,
+      sample,
+    );
+    expect(result.get("input")).toBe("sentence");
   });
-  */
+
+  it("can generate a list of objects", () => {
+    const input = '{"input": "sentence"}';
+    const sample = new Map<string, string>();
+    const result = model.generateList<Map<string, string>>(
+      "modelId",
+      "instruction",
+      input,
+      sample,
+    );
+    expect(result.length).toBe(2);
+    expect(result[0].get("input")).toBe("sentence");
+    expect(result[1].get("input")).toBe("sentence");
+  });
 });
