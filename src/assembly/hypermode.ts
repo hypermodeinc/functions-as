@@ -24,8 +24,11 @@ export declare function computeEmbedding(
   sentenceMap: string,
 ): string;
 
+
+@external("invokeTextGenerator_v2")
 export declare function invokeTextGenerator(
   modelId: string,
   instruction: string,
   sentence: string,
+  format: string,
 ): string;

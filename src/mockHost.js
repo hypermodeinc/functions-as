@@ -63,14 +63,34 @@ export default class MockHost {
     );
   }
 
-  invokeTextGenerator(pModelId, pInstruction, pSentence) {
+  invokeTextGenerator_v2(pModelId, pInstruction, pSentence, pFormat) {
     const modelId = this.getString(pModelId);
     const instruction = this.getString(pInstruction);
     const sentence = this.getString(pSentence);
+    const format = this.getString(pFormat);
+
+    let response;
+
+    switch (format) {
+      case "text":
+        response = sentence;
+        break;
+
+      case "json_object":
+        if (instruction.includes("JSON array")) {
+          response = `{"list":[${sentence},${sentence}]}`;
+        } else {
+          response = sentence;
+        }
+        break;
+
+      default:
+        throw new Error(`Unknown format: ${format}`);
+    }
 
     return this.newString(
-      '{"choices": [ {"message": {"role": "assistant", "content": ' +
-        JSON.stringify(sentence) +
+      '{"choices":[{"message":{"role":"assistant","content":' +
+        JSON.stringify(response) +
         "}}]}",
     );
   }
@@ -81,7 +101,7 @@ export default class MockHost {
       executeGQL: this.executeGQL.bind(this),
       invokeClassifier: this.invokeClassifier.bind(this),
       computeEmbedding: this.computeEmbedding.bind(this),
-      invokeTextGenerator: this.invokeTextGenerator.bind(this),
+      invokeTextGenerator_v2: this.invokeTextGenerator_v2.bind(this),
     };
   }
 

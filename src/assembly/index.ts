@@ -76,22 +76,80 @@ export abstract class model {
     const response = host.computeEmbedding(modelId, JSON.stringify(texts));
     return JSON.parse<Map<string, f64[]>>(response);
   }
-
-  public static invokeTextGenerator(
-    modelId: string,
-    instruction: string,
-    text: string,
-  ): string {
-    const response = host.invokeTextGenerator(modelId, instruction, text);
-
+  static extractChatFirstMessageContent(response: string): string {
     const resp = JSON.parse<ChatResponse>(response);
-
     let output = "";
     if (resp.choices != null) {
       const choices = resp.choices as MessageChoice[];
       if (choices.length > 0) output = choices[0].message.content;
     }
     return output;
+  }
+
+  public static generateText(
+    modelId: string,
+    instruction: string,
+    text: string,
+  ): string {
+    const response = host.invokeTextGenerator(
+      modelId,
+      instruction,
+      text,
+      "text",
+    );
+
+    return this.extractChatFirstMessageContent(response);
+  }
+
+  public static generate<TData>(
+    modelId: string,
+    instruction: string,
+    text: string,
+    sample: TData,
+  ): TData {
+    // Prompt trick: ask for a simple JSON object.
+    const modifiedInstruction =
+      "Only respond with valid JSON object in this format:\n" +
+      JSON.stringify(sample) +
+      "\n" +
+      instruction;
+
+    const generated = host.invokeTextGenerator(
+      modelId,
+      modifiedInstruction,
+      text,
+      "json_object",
+    );
+
+    const response = this.extractChatFirstMessageContent(generated);
+    return JSON.parse<TData>(response, true);
+  }
+
+  public static generateList<TData>(
+    modelId: string,
+    instruction: string,
+    text: string,
+    sample: TData,
+  ): TData[] {
+    // Prompt trick: ask for a simple JSON object containing a list.
+    // Note, OpenAI will not generate an array of objects directly.
+    const modifiedInstruction =
+      "Only respond with valid JSON object containing a valid JSON array named 'list', in this format:\n" +
+      '{"list":[' +
+      JSON.stringify(sample) +
+      "]}\n" +
+      instruction;
+
+    const generated = host.invokeTextGenerator(
+      modelId,
+      modifiedInstruction,
+      text,
+      "json_object",
+    );
+
+    const response = this.extractChatFirstMessageContent(generated);
+    const jsonList = JSON.parse<Map<string, TData[]>>(response, true);
+    return jsonList.get("list");
   }
 }
 
