@@ -1,17 +1,26 @@
 version: 2
 updates:
   - package-ecosystem: "npm"
-    directory: "/"
+    directory: "/src"
     schedule:
-      interval: "daily"
-    allow:
-      - dependency-type: "production"
+      interval: "weekly"
     groups:
       minor-and-patch:
         applies-to: version-updates
         update-types:
-        - "minor"
-        - "patch"
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "npm"
+    directory: "/examples/hmplugin1"
+    schedule:
+      interval: "weekly"
+    groups:
+      minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: "github-actions"
     # Workflow files stored in the default location of `.github/workflows`. (You don't need to specify `/.github/workflows` for `directory`. You can use `directory: "/"`.)
