@@ -1,5 +1,6 @@
 import { HypermodeMetadata } from "./metadata.js";
 import { Extractor } from "./extractor.js";
+import writeLogo from "./logo.js";
 
 import { Transform } from "assemblyscript/dist/transform.js";
 import binaryen from "assemblyscript/lib/binaryen.js";
@@ -12,6 +13,8 @@ export default class HypermodeTransform extends Transform {
     const m = HypermodeMetadata.generate();
     m.addFunctions(functions);
     m.writeToModule(module);
-    m.logOutput();
+
+    writeLogo(process.stdout);
+    m.logToStream(process.stdout);
   }
 }

@@ -4,7 +4,9 @@ import { execSync } from "child_process";
 import * as path from "path";
 import { Xid } from "xid-ts";
 import binaryen from "assemblyscript/lib/binaryen.js";
+import { Colors } from "assemblyscript/util/terminal.js";
 import { FunctionSignature } from "./types.js";
+import { WriteStream } from "tty";
 
 export class HypermodeMetadata {
   buildId: string;
@@ -41,28 +43,25 @@ export class HypermodeMetadata {
     module.addCustomSection("hypermode_meta", encoder.encode(json));
   }
 
-  logOutput() {
-    logColor("Hypermode Plugin Metadata:");
-    logColor(`  Plugin: ${this.plugin}`);
-    logColor(`  Library: ${this.library}`);
-    logColor(`  Build ID: ${this.buildId}`);
-    logColor(`  Build Timestamp: ${this.buildTs}`);
+  logToStream(stream: WriteStream) {
+    const colors = new Colors(stream);
+    const write = (text: string) => stream.write(colors.cyan(text) + "\n");
 
+    write("Plugin Metadata:");
+    write(`  Plugin Name: ${this.plugin}`);
+    write(`  Library: ${this.library}`);
+    write(`  Build ID: ${this.buildId}`);
+    write(`  Build Timestamp: ${this.buildTs}`);
     if (this.gitRepo) {
-      logColor(`  Git Repo: ${this.gitRepo}`);
-      logColor(`  Git Commit: ${this.gitCommit}`);
+      write(`  Git Repo: ${this.gitRepo}`);
+      write(`  Git Commit: ${this.gitCommit}`);
     }
+    write("");
 
-    console.log();
-
-    logColor("Hypermode Functions:");
-    this.functions.forEach((f) => logColor(`  ${f.toString()}`));
-    console.log();
+    write("Hypermode Functions:");
+    this.functions.forEach((f) => write(`  ${f.toString()}`));
+    write("");
   }
-}
-
-function logColor(message: string) {
-  console.log("\x1b[36m%s\x1b[0m", message);
 }
 
 function getHypermodeInfo(): string {
