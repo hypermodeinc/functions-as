@@ -6,16 +6,18 @@ import { FunctionSignature } from "./types.js";
 
 export class Extractor {
   binaryen: typeof binaryen;
+  module: binaryen.Module;
   program: Program;
 
-  constructor(transform: Transform) {
-    this.binaryen = transform.binaryen;
+  constructor(transform: Transform, module: binaryen.Module) {
     this.program = transform.program;
+    this.binaryen = transform.binaryen;
+    this.module = module;
   }
 
-  getExportedFunctions(module: binaryen.Module): FunctionSignature[] {
+  getExportedFunctions(): FunctionSignature[] {
     const functions = this.getAllFunctions();
-    const paths = this.getExportedFunctionPaths(module);
+    const paths = this.getExportedFunctionPaths();
 
     const results = paths
       .map((path) => functions.get(path))
@@ -31,12 +33,18 @@ export class Extractor {
     return visitor.functions;
   }
 
-  private getExportedFunctionPaths(module: binaryen.Module): string[] {
+  private getExportedFunctionPaths(): string[] {
     const paths = [];
-    const n = module.getNumExports();
 
-    for (let i = 0; i < n; ++i) {
-      const ref = module.getExportByIndex(i);
+    const funcs = new Map<string, binaryen.FunctionInfo>();
+    for (let i = 0; i < this.module.getNumFunctions(); ++i) {
+      const ref = this.module.getFunctionByIndex(i);
+      const info = this.binaryen.getFunctionInfo(ref);
+      funcs.set(info.name, info);
+    }
+
+    for (let i = 0; i < this.module.getNumExports(); ++i) {
+      const ref = this.module.getExportByIndex(i);
       const info = this.binaryen.getExportInfo(ref);
 
       if (info.kind !== binaryen.ExternalFunction) {
@@ -44,6 +52,11 @@ export class Extractor {
       }
 
       if (info.name.startsWith("_")) {
+        continue;
+      }
+
+      const f = funcs.get(info.value);
+      if (f === undefined) {
         continue;
       }
 

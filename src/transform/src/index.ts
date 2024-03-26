@@ -1,14 +1,12 @@
+import { Transform } from "assemblyscript/dist/transform.js";
 import { HypermodeMetadata } from "./metadata.js";
 import { Extractor } from "./extractor.js";
 import writeLogo from "./logo.js";
 
-import { Transform } from "assemblyscript/dist/transform.js";
-import binaryen from "assemblyscript/lib/binaryen.js";
-
 export default class HypermodeTransform extends Transform {
-  afterCompile(module: binaryen.Module) {
-    const extractor = new Extractor(this);
-    const functions = extractor.getExportedFunctions(module);
+  afterCompile(module) {
+    const extractor = new Extractor(this, module);
+    const functions = extractor.getExportedFunctions();
 
     const m = HypermodeMetadata.generate();
     m.addFunctions(functions);
