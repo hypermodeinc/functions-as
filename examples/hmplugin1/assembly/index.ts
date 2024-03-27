@@ -59,7 +59,6 @@ export function queryPeopleWithVars(
   const parameters = new QueryParameters();
   parameters.set("$firstName", firstName);
   parameters.set("$lastName", lastName);
-  parameters.set("test", 123);
 
   const response = dql.query<PeopleData>(query, parameters);
   const people = response.data.people;
