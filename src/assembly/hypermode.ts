@@ -5,13 +5,13 @@
 
 export declare function executeDQL(
   statement: string,
-  variables: string,
+  parameters: string,
   isMutation: bool,
 ): string;
 
 export declare function executeGQL(
   statement: string,
-  variables: string,
+  parameters: string,
 ): string;
 
 export declare function invokeClassifier(
