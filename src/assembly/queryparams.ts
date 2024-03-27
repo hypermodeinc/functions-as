@@ -26,54 +26,87 @@ export class QueryParameters {
       const key = JSON.stringify(keys[i]);
       const value = values[i];
 
-      if (value.is<string>()) {
-        segments.push(`${key}:${JSON.stringify(value.get<string>())}`);
-      } else if (value.is<bool>()) {
-        segments.push(`${key}:${JSON.stringify(value.get<bool>())}`);
-      } else if (value.is<i32>()) {
-        segments.push(`${key}:${JSON.stringify(value.get<i32>())}`);
-      } else if (value.is<u32>()) {
-        segments.push(`${key}:${JSON.stringify(value.get<u32>())}`);
-      } else if (value.is<i64>()) {
-        segments.push(`${key}:${JSON.stringify(value.get<i64>())}`);
-      } else if (value.is<f32>()) {
-        segments.push(`${key}:${JSON.stringify(value.get<f32>())}`);
-      } else if (value.is<f64>()) {
-        segments.push(`${key}:${JSON.stringify(value.get<f64>())}`);
-      } else if (value.is<i8>()) {
-        segments.push(`${key}:${JSON.stringify(value.get<i8>())}`);
-      } else if (value.is<u8>()) {
-        segments.push(`${key}:${JSON.stringify(value.get<u8>())}`);
-      } else if (value.is<i16>()) {
-        segments.push(`${key}:${JSON.stringify(value.get<i16>())}`);
-      } else if (value.is<u16>()) {
-        segments.push(`${key}:${JSON.stringify(value.get<u16>())}`);
-      } else if (value.is<string[]>()) {
-        segments.push(`${key}:${JSON.stringify(value.get<string[]>())}`);
-      } else if (value.is<bool[]>()) {
-        segments.push(`${key}:${JSON.stringify(value.get<bool[]>())}`);
-      } else if (value.is<i32[]>()) {
-        segments.push(`${key}:${JSON.stringify(value.get<i32[]>())}`);
-      } else if (value.is<u32[]>()) {
-        segments.push(`${key}:${JSON.stringify(value.get<u32[]>())}`);
-      } else if (value.is<i64[]>()) {
-        segments.push(`${key}:${JSON.stringify(value.get<i64[]>())}`);
-      } else if (value.is<f32[]>()) {
-        segments.push(`${key}:${JSON.stringify(value.get<f32[]>())}`);
-      } else if (value.is<f64[]>()) {
-        segments.push(`${key}:${JSON.stringify(value.get<f64[]>())}`);
-      } else if (value.is<i8[]>()) {
-        segments.push(`${key}:${JSON.stringify(value.get<i8[]>())}`);
-      } else if (value.is<u8[]>()) {
-        segments.push(`${key}:${JSON.stringify(value.get<u8[]>())}`);
-      } else if (value.is<i16[]>()) {
-        segments.push(`${key}:${JSON.stringify(value.get<i16[]>())}`);
-      } else if (value.is<u16[]>()) {
-        segments.push(`${key}:${JSON.stringify(value.get<u16[]>())}`);
-      } else {
-        throw new Error(
-          "Query parameters must be simple types, or arrays of simple types.",
-        );
+      switch (value.id) {
+        // Simple types
+        case Variant.idof<string>():
+          segments.push(`${key}:${JSON.stringify(value.get<string>())}`);
+          break;
+        case Variant.idof<bool>():
+          segments.push(`${key}:${JSON.stringify(value.get<bool>())}`);
+          break;
+        case Variant.idof<f64>():
+          segments.push(`${key}:${JSON.stringify(value.get<f64>())}`);
+          break;
+        case Variant.idof<f32>():
+          segments.push(`${key}:${JSON.stringify(value.get<f32>())}`);
+          break;
+        case Variant.idof<i64>():
+          segments.push(`${key}:${JSON.stringify(value.get<i64>())}`);
+          break;
+        case Variant.idof<i32>():
+          segments.push(`${key}:${JSON.stringify(value.get<i32>())}`);
+          break;
+        case Variant.idof<i16>():
+          segments.push(`${key}:${JSON.stringify(value.get<i16>())}`);
+          break;
+        case Variant.idof<i8>():
+          segments.push(`${key}:${JSON.stringify(value.get<i8>())}`);
+          break;
+        case Variant.idof<u64>():
+          segments.push(`${key}:${JSON.stringify(value.get<u64>())}`);
+          break;
+        case Variant.idof<u32>():
+          segments.push(`${key}:${JSON.stringify(value.get<u32>())}`);
+          break;
+        case Variant.idof<u16>():
+          segments.push(`${key}:${JSON.stringify(value.get<u16>())}`);
+          break;
+        case Variant.idof<u8>():
+          segments.push(`${key}:${JSON.stringify(value.get<u8>())}`);
+          break;
+
+        // Arrays of simple types
+        case Variant.idof<string[]>():
+          segments.push(`${key}:${JSON.stringify(value.get<string[]>())}`);
+          break;
+        case Variant.idof<bool[]>():
+          segments.push(`${key}:${JSON.stringify(value.get<bool[]>())}`);
+          break;
+        case Variant.idof<f64[]>():
+          segments.push(`${key}:${JSON.stringify(value.get<f64[]>())}`);
+          break;
+        case Variant.idof<f32[]>():
+          segments.push(`${key}:${JSON.stringify(value.get<f32[]>())}`);
+          break;
+        case Variant.idof<i64[]>():
+          segments.push(`${key}:${JSON.stringify(value.get<i64[]>())}`);
+          break;
+        case Variant.idof<i32[]>():
+          segments.push(`${key}:${JSON.stringify(value.get<i32[]>())}`);
+          break;
+        case Variant.idof<i16[]>():
+          segments.push(`${key}:${JSON.stringify(value.get<i16[]>())}`);
+          break;
+        case Variant.idof<i8[]>():
+          segments.push(`${key}:${JSON.stringify(value.get<i8[]>())}`);
+          break;
+        case Variant.idof<u64[]>():
+          segments.push(`${key}:${JSON.stringify(value.get<u64[]>())}`);
+          break;
+        case Variant.idof<u32[]>():
+          segments.push(`${key}:${JSON.stringify(value.get<u32[]>())}`);
+          break;
+        case Variant.idof<u16[]>():
+          segments.push(`${key}:${JSON.stringify(value.get<u16[]>())}`);
+          break;
+        case Variant.idof<u8[]>():
+          segments.push(`${key}:${JSON.stringify(value.get<u8[]>())}`);
+          break;
+
+        default:
+          throw new Error(
+            "Query parameters must be simple types, or arrays of simple types.",
+          );
       }
     }
 
