@@ -48,7 +48,7 @@ export class QueryParameters {
         segments.push(`${key}:${JSON.stringify(value.get<i16>())}`);
       } else if (value.is<u16>()) {
         segments.push(`${key}:${JSON.stringify(value.get<u16>())}`);
-      } else if (value.is<string>()) {
+      } else if (value.is<string[]>()) {
         segments.push(`${key}:${JSON.stringify(value.get<string[]>())}`);
       } else if (value.is<bool[]>()) {
         segments.push(`${key}:${JSON.stringify(value.get<bool[]>())}`);
