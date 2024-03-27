@@ -4,6 +4,7 @@ import {
   graphql,
   model,
   ClassificationResult,
+  QueryParameters,
 } from "@hypermode/functions-as";
 
 export function add(a: i32, b: i32): i32 {
@@ -55,11 +56,12 @@ export function queryPeopleWithVars(
     }
   `;
 
-  const vars = new Map<string, string>();
-  vars.set("$firstName", firstName);
-  vars.set("$lastName", lastName);
+  const parameters = new QueryParameters();
+  parameters.set("$firstName", firstName);
+  parameters.set("$lastName", lastName);
+  parameters.set("test", 123);
 
-  const response = dql.query<PeopleData>(query, vars);
+  const response = dql.query<PeopleData>(query, parameters);
   const people = response.data.people;
   people.forEach((p) => p.updateFullName());
   return JSON.stringify(people);
