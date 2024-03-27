@@ -1,5 +1,9 @@
 # Change Log
 
+# UNRELEASED
+
+- **(BREAKING)** Support query parameters of different types. [#40](https://github.com/gohypermode/functions-as/pull/40)
+
 # 2024-03-22 - Version 0.4.0
 
 - Adds `model.generate<TData>` and `model.generateList<TData>` [#30](https://github.com/gohypermode/functions-as/pull/30)
