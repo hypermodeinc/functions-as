@@ -17,7 +17,16 @@
             "sourceModel": "gpt-3.5-turbo",
             "authHeader": "Authorization",
             "host": "openai"
-        }
+        },
+        {
+            "name": "my_llm_b",
+            "task": "generator",
+            "endpoint": "",
+            "provider": "mistral",
+            "sourceModel": "mistral-small-latest",
+            "authHeader": "Authorization",
+            "host": "mistral"
+          }
     ]
    
 }
