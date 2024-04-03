@@ -23,7 +23,12 @@ function writeAsciiLogo(stream: FSWriteStream | TTYWriteStream) {
 }
 
 function writeMarkdownLogo(stream: FSWriteStream | TTYWriteStream) {
-  const url =
-    "https://raw.githubusercontent.com/gohypermode/.github/main/hypermode.svg";
-  stream.write(`![Hypermode](${url})\n\n`);
+  const logo = String.raw`
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/gohypermode/.github/main/images/hypermode-white.svg">
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/gohypermode/.github/main/images/hypermode-black.svg">
+  <img alt="Hypermode" src="https://raw.githubusercontent.com/gohypermode/.github/main/images/hypermode-black.svg">
+</picture>
+`;
+  stream.write(logo + "\n");
 }
