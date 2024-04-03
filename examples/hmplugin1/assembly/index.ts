@@ -4,6 +4,7 @@ import {
   graphql,
   model,
   ClassificationResult,
+  EntityDefinition,
   QueryParameters,
 } from "@hypermode/functions-as";
 
@@ -216,7 +217,15 @@ export function testTextGenerator(
 ): string {
   return model.generateText(modelId, instruction, text);
 }
-
+export function testExtractEntities(
+  modelId: string,
+  text: string,
+): string {
+  var def:EntityDefinition[] = [];
+  def.push(<EntityDefinition>{"entity":"product", "examples": ["nuts","berry"]})
+  
+  return model.extractEntities(modelId, def, text);
+}
 
 @json
 class Person {

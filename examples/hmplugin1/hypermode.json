@@ -1,0 +1,23 @@
+{
+    "gqlschema":"./schema.graphql",
+    "models" : [
+        {
+            "name":"embedding_spec_1",
+            "task":"embedding",
+            "sourceModel":"all-MiniLM-L6-v2",
+            "endpoint":"https://2f050wcjqd.execute-api.us-east-1.amazonaws.com/dev/embedding",
+            "authHeader": "x-api-key",
+            "provider":"hypermode"
+        },
+        {
+            "name":"openai",
+            "task":"generator",
+            "endpoint":"",
+            "provider":"openai",
+            "sourceModel": "gpt-3.5-turbo",
+            "authHeader": "Authorization",
+            "host": "openai"
+        }
+    ]
+   
+}
