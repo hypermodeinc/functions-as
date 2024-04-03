@@ -89,6 +89,15 @@ export abstract class model {
     return output;
   }
 
+  public static extractEntities(
+    modelId: string,
+    entityDefinitions: EntityDefinition[],
+    sentence: string
+  ): string {
+    const response = host.extractEntities(modelId, JSON.stringify(entityDefinitions), sentence);
+    return response;
+  }
+
   public static generateText(
     modelId: string,
     instruction: string,
@@ -248,3 +257,10 @@ export class ChatResponse {
   "code": null
 }
 */
+
+
+@json
+export class EntityDefinition {
+  entity!: string;
+  examples!: string[];
+}

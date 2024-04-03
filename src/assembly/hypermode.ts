@@ -32,3 +32,10 @@ export declare function invokeTextGenerator(
   sentence: string,
   format: string,
 ): string;
+
+
+export declare function extractEntities(
+  modelId: string,
+  entityDefinitions: string,
+  sentence: string,
+): string;
