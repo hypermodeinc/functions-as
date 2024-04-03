@@ -5,8 +5,10 @@ import * as path from "path";
 import { Xid } from "xid-ts";
 import binaryen from "assemblyscript/lib/binaryen.js";
 import { Colors } from "assemblyscript/util/terminal.js";
+import { WriteStream as FSWriteStream } from "fs";
+import { WriteStream as TTYWriteStream } from "tty";
 import { FunctionSignature } from "./types.js";
-import { WriteStream } from "tty";
+import writeLogo from "./logo.js";
 
 export class HypermodeMetadata {
   buildId: string;
@@ -43,24 +45,72 @@ export class HypermodeMetadata {
     module.addCustomSection("hypermode_meta", encoder.encode(json));
   }
 
-  logToStream(stream: WriteStream) {
-    const colors = new Colors(stream);
-    const write = (text: string) => stream.write(colors.cyan(text) + "\n");
+  logToStream(stream: FSWriteStream | TTYWriteStream, markdown = false) {
+    writeLogo(stream, markdown);
 
-    write("Plugin Metadata:");
-    write(`  Plugin Name: ${this.plugin}`);
-    write(`  Library: ${this.library}`);
-    write(`  Build ID: ${this.buildId}`);
-    write(`  Build Timestamp: ${this.buildTs}`);
-    if (this.gitRepo) {
-      write(`  Git Repo: ${this.gitRepo}`);
-      write(`  Git Commit: ${this.gitCommit}`);
-    }
-    write("");
+    const isTTY = stream instanceof TTYWriteStream;
+    const boldOn = isTTY ? "\u001b[1m" : "";
+    const boldOff = isTTY ? "\u001b[0m" : "";
 
-    write("Hypermode Functions:");
-    this.functions.forEach((f) => write(`  ${f.toString()}`));
-    write("");
+    const colors = new Colors(stream as { isTTY: boolean });
+    const writeHeader = (text: string) => {
+      if (markdown) {
+        stream.write(`### ${text}\n`);
+      } else {
+        stream.write(boldOn + colors.blue(text) + boldOff + "\n");
+      }
+    };
+
+    const writeItem = (text: string) => {
+      if (markdown) {
+        stream.write(`  - ${text}\n`);
+      } else {
+        stream.write(`  ${colors.cyan(text)}\n`);
+      }
+    };
+
+    const writeTable = (rows: string[][]) => {
+      const pad = rows.reduce(
+        (max, row) => [
+          Math.max(max[0], row[0].length),
+          Math.max(max[1], row[1].length),
+        ],
+        [0, 0],
+      );
+
+      if (markdown) {
+        stream.write(`| ${" ".repeat(pad[0])} | ${" ".repeat(pad[1])} |\n`);
+        stream.write(`| ${"-".repeat(pad[0])} | ${"-".repeat(pad[1])} |\n`);
+      }
+      rows.forEach((row) => {
+        if (row) {
+          const padding0 = " ".repeat(pad[0] - row[0].length);
+          const padding1 = " ".repeat(pad[1] - row[1].length);
+          if (markdown) {
+            stream.write(`| ${row[0]}${padding0} | ${row[1]}${padding1} |\n`);
+          } else {
+            const key = colors.cyan(row[0] + ":");
+            const value = colors.blue(row[1]);
+            stream.write(`  ${key}${padding0} ${value}\n`);
+          }
+        }
+      });
+    };
+
+    writeHeader("Plugin Metadata:");
+    writeTable([
+      ["Plugin Name", this.plugin],
+      ["Library", this.library],
+      ["Build ID", this.buildId],
+      ["Build Timestamp", this.buildTs],
+      this.gitRepo ? ["Git Repo", this.gitRepo] : undefined,
+      this.gitCommit ? ["Git Commit", this.gitCommit] : undefined,
+    ]);
+    stream.write("\n");
+
+    writeHeader("Hypermode Functions:");
+    this.functions.forEach((f) => writeItem(f.toString()));
+    stream.write("\n");
   }
 }
 
