@@ -44,7 +44,8 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Establish link to source
-        if: ${{ matrix.dir == 'src/' }}
+        if: ${{ matrix.dir != 'src/' }}
+        working-directory: src/
         run: npm link
       - name: Use linked source
         if: ${{ matrix.dir != 'src/' }}
