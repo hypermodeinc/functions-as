@@ -43,6 +43,12 @@ jobs:
           npm --version
       - name: Install dependencies
         run: npm install
+      - name: Establish link to source
+        if: ${{ matrix.dir == 'src/' }}
+        run: npm link
+      - name: Use linked source
+        if: ${{ matrix.dir != 'src/' }}
+        run: npm link @hypermode/functions-as
       - name: Validate code is formatted
         run: npm run pretty:check
       - name: Valid code is linted
