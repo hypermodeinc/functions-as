@@ -93,9 +93,9 @@ export abstract class model {
     modelId: string,
     entityDefinitions: EntityDefinition[],
     sentence: string
-  ): string {
+  ): ExtractedEntity[] {
     const response = host.extractEntities(modelId, JSON.stringify(entityDefinitions), sentence);
-    return response;
+    return JSON.parse<ExtractedEntity[]>(response);;
   }
 
   public static generateText(
@@ -263,4 +263,12 @@ export class ChatResponse {
 export class EntityDefinition {
   entity!: string;
   examples!: string[];
+}
+
+@json
+export class ExtractedEntity {
+  type!: string;
+  value!: string;
+  start: number = 0 ;
+  end: number = 0;
 }

@@ -223,8 +223,10 @@ export function testExtractEntities(
 ): string {
   var def:EntityDefinition[] = [];
   def.push(<EntityDefinition>{"entity":"product", "examples": ["nuts","berry"]})
+  def.push(<EntityDefinition>{"entity":"service", "examples": ["manufacturing","painting"]})
+  def.push(<EntityDefinition>{"entity":"location", "examples": ["California"]})
   
-  return model.extractEntities(modelId, def, text);
+  return JSON.stringify(model.extractEntities(modelId, def, text));
 }
 
 @json

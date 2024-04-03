@@ -2,7 +2,13 @@
 
 # this directive will eventually be built-in, and will replace @lambda
 directive @hm_function(name: String, args: [String!]) on FIELD_DEFINITION
+type ExtractedEntity @remote {
+   type: String
+   value: String
+   start: Int
+   end: Int
 
+}
 type Query {
   add(a: Int!, b: Int!): Int! @lambda @hm_function
   getFullName(firstName: String!, lastName: String!): String! @lambda @hm_function
@@ -17,7 +23,7 @@ type Query {
   testEmbedding(modelId: String!, text: String!): String! @lambda @hm_function
   testEmbeddings(modelId: String!, ids: String!, texts: String!): [EmbeddingObject!]! @lambda @hm_function
   testTextGenerator(modelId: String!, instruction: String!, text: String!): String! @lambda @hm_function
-  testExtractEntities(modelId: String!,  text: String!): String! @lambda @hm_function
+  testExtractEntities(modelId: String!,  text: String!): [ExtractedEntity]! @lambda @hm_function
 }
 
 type Mutation {
