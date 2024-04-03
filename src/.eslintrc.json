@@ -14,12 +14,6 @@
     {
       "files": ["./assembly/**/*.ts"],
       "parser": "./eslintParser.cjs"
-    },
-    {
-      "files": ["./transform/**"],
-      "env": {
-        "node": true
-      }
     }
   ]
 }

@@ -20,6 +20,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ">=20"
+      - name: Check Node and NPM versions
+        run: |
+          node --version
+          npm --version
       - name: Install dependencies
         run: npm install
       - name: Run Unit Tests
