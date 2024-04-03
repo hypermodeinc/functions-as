@@ -4,9 +4,9 @@ import { Extractor } from "./extractor.js";
 import writeLogo from "./logo.js";
 
 export default class HypermodeTransform extends Transform {
-  afterCompile(module) {
+  async afterCompile(module) {
     const extractor = new Extractor(this, module);
-    const functions = extractor.getExportedFunctions();
+    const functions = await extractor.getExportedFunctions();
 
     const m = HypermodeMetadata.generate();
     m.addFunctions(functions);

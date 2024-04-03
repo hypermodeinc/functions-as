@@ -1,7 +1,6 @@
 import { Program } from "assemblyscript/dist/assemblyscript.js";
 import { Transform } from "assemblyscript/dist/transform.js";
 import binaryen from "assemblyscript/lib/binaryen.js";
-import { HypermodeVisitor } from "./visitor.js";
 import { FunctionSignature } from "./types.js";
 
 export class Extractor {
@@ -15,8 +14,8 @@ export class Extractor {
     this.module = module;
   }
 
-  getExportedFunctions(): FunctionSignature[] {
-    const functions = this.getAllFunctions();
+  async getExportedFunctions(): Promise<FunctionSignature[]> {
+    const functions = await this.getAllFunctions();
     const paths = this.getExportedFunctionPaths();
 
     const results = paths
@@ -27,7 +26,9 @@ export class Extractor {
     return results;
   }
 
-  private getAllFunctions(): Map<string, FunctionSignature> {
+  private async getAllFunctions(): Promise<Map<string, FunctionSignature>> {
+    ignoreCompilerMismatchWarning();
+    const { HypermodeVisitor } = await import("./visitor.js");
     const visitor = new HypermodeVisitor();
     this.program.parser.sources.forEach((source) => visitor.visit(source));
     return visitor.functions;
@@ -65,4 +66,14 @@ export class Extractor {
 
     return paths;
   }
+}
+
+const cw = console.warn;
+function ignoreCompilerMismatchWarning() {
+  console.warn = (message?: unknown, ...optionalParams: unknown[]): void => {
+    if (message === "compiler mismatch: std/portable included twice") {
+      return;
+    }
+    cw(message, ...optionalParams);
+  };
 }
