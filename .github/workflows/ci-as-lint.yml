@@ -32,21 +32,22 @@ jobs:
       run:
         working-directory: ${{ matrix.dir }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Source
+        uses: actions/checkout@v4
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: ">=20"
-      - name: Check Node and NPM versions
-        run: |
-          node --version
-          npm --version
       - name: Install dependencies
+        working-directory: src/
         run: npm install
-      - name: Establish link to source
+      - name: Establish link
         if: ${{ matrix.dir != 'src/' }}
         working-directory: src/
         run: npm link
+      - name: Install additional dependencies
+        if: ${{ matrix.dir != 'src/' }}
+        run: npm install
       - name: Use linked source
         if: ${{ matrix.dir != 'src/' }}
         run: npm link @hypermode/functions-as
