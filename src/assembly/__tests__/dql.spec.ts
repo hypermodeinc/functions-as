@@ -1,5 +1,5 @@
 import { dql } from "..";
-import { DQLResponse } from "../dqltypes";
+import { DQLResponse } from "../types/dqltypes";
 
 describe("DQL Host Functions", () => {
   it("can query DQL", () => {

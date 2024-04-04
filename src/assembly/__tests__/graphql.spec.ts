@@ -1,5 +1,5 @@
 import { graphql } from "..";
-import { GQLResponse } from "../gqltypes";
+import { GQLResponse } from "../types/gqltypes";
 
 describe("GraphQL Host Functions", () => {
   it("can execute GraphQL", () => {
