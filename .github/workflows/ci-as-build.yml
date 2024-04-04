@@ -39,14 +39,6 @@ jobs:
         with:
           node-version: ">=20"
       - name: Install dependencies
-        working-directory: src/
         run: npm install
-      - name: Establish link
-        working-directory: src/
-        run: npm link
-      - name: Install additional dependencies
-        run: npm install
-      - name: Use linked source
-        run: npm link @hypermode/functions-as
       - name: Build project
         run: npm run build

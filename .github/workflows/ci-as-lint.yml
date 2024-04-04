@@ -39,18 +39,7 @@ jobs:
         with:
           node-version: ">=20"
       - name: Install dependencies
-        working-directory: src/
         run: npm install
-      - name: Establish link
-        if: ${{ matrix.dir != 'src/' }}
-        working-directory: src/
-        run: npm link
-      - name: Install additional dependencies
-        if: ${{ matrix.dir != 'src/' }}
-        run: npm install
-      - name: Use linked source
-        if: ${{ matrix.dir != 'src/' }}
-        run: npm link @hypermode/functions-as
       - name: Validate code is formatted
         run: npm run pretty:check
       - name: Valid code is linted
