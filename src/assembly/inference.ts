@@ -58,26 +58,7 @@ export abstract class inference {
     texts: Map<string, string>,
   ): Map<string, Map<string, f32>> {
     const response = host.invokeClassifier(modelName, JSON.stringify(texts));
-    const classificationResult =
-      JSON.parse<Map<string, ClassificationResult>>(response);
-
-    const result = new Map<string, Map<string, f32>>();
-
-    const keys = classificationResult.keys();
-    for (let i = 0; i < keys.length; i++) {
-      let key = keys[i];
-      let value = classificationResult.get(key);
-      const valueMap = new Map<string, f32>();
-      for (let j = 0; j < value.probabilities.length; j++) {
-        valueMap.set(
-          value.probabilities[j].label,
-          value.probabilities[j].probability,
-        );
-      }
-      result.set(key, valueMap);
-    }
-
-    return result;
+    return JSON.parse<Map<string, Map<string, f32>>>(response);
   }
 
   public static embedText(modelName: string, text: string): f64[] {
@@ -109,14 +90,7 @@ export abstract class inference {
     instruction: string,
     prompt: string,
   ): string {
-    const response = host.invokeTextGenerator(
-      modelName,
-      instruction,
-      prompt,
-      "text",
-    );
-
-    return this.extractChatFirstMessageContent(response);
+    return host.invokeTextGenerator(modelName, instruction, prompt, "text");
   }
 
   public static generate<TData>(
@@ -139,8 +113,7 @@ export abstract class inference {
       "json_object",
     );
 
-    const response = this.extractChatFirstMessageContent(generated);
-    return JSON.parse<TData>(response, true);
+    return JSON.parse<TData>(generated, true);
   }
 
   public static generateList<TData>(
@@ -165,28 +138,9 @@ export abstract class inference {
       "json_object",
     );
 
-    const response = this.extractChatFirstMessageContent(generated);
-    const jsonList = JSON.parse<Map<string, TData[]>>(response, true);
+    const jsonList = JSON.parse<Map<string, TData[]>>(generated, true);
     return jsonList.get("list");
   }
-}
-
-
-@json
-export class ClassificationProbability {
-  label: string;
-  probability: f32;
-
-  constructor(label: string, probability: f32) {
-    this.label = label;
-    this.probability = probability;
-  }
-}
-
-
-@json
-export class ClassificationResult {
-  probabilities!: ClassificationProbability[];
 }
 
 
