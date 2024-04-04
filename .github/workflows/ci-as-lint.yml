@@ -39,6 +39,10 @@ jobs:
         with:
           node-version: ">=20"
       - name: Install dependencies
+        working-directory: src/
+        run: npm install
+      - name: Install additional dependencies
+        if: ${{ matrix.dir != 'src/' }}
         run: npm install
       - name: Validate code is formatted
         run: npm run pretty:check
