@@ -15,12 +15,12 @@ export declare function executeGQL(
 ): string;
 
 export declare function invokeClassifier(
-  modelId: string,
+  modelName: string,
   sentenceMap: string,
 ): string;
 
 export declare function computeEmbedding(
-  modelId: string,
+  modelName: string,
   sentenceMap: string,
 ): string;
 

@@ -9,6 +9,8 @@ export { QueryParameters };
 const UNCERTAIN_LABEL = "UNCERTAIN";
 const UNCERTAIN_PROBABILITY = f32(1.0);
 
+export abstract class connection {}
+
 export abstract class dql {
   public static mutate(
     query: string,
@@ -46,37 +48,97 @@ export abstract class graphql {
   }
 }
 
-export abstract class model {
-  public static classifyText(
-    modelId: string,
+export abstract class inference {
+  public static computeClassificationProbablity(
+    modelName: string,
     text: string,
-  ): ClassificationResult {
+    label: string,
+  ): f32 {
+    const labels = this.computeClassificationLabelsForText(modelName, text);
+    const keys = labels.keys();
+    for (let i = 0; i < keys.length; i++) {
+      let key = keys[i];
+      if (key === label) {
+        return labels.get(key);
+      }
+    }
+    return 0.0;
+  }
+
+  public static classifyText(
+    modelName: string,
+    text: string,
+    threshold: f32,
+  ): string {
+    const labels = this.computeClassificationLabelsForText(modelName, text);
+
+    const keys = labels.keys();
+    let max = labels.get(keys[0]);
+    let result = "";
+    for (let i = 1; i < keys.length; i++) {
+      let key = keys[i];
+      let value = labels.get(key);
+      if (value >= max) {
+        max = value;
+        result = key;
+      }
+    }
+
+    if (max < threshold) {
+      return "";
+    }
+    return result;
+  }
+
+  public static computeClassificationLabelsForText(
+    modelName: string,
+    text: string,
+  ): Map<string, f32> {
     const textMap = new Map<string, string>();
     textMap.set("text", text);
-    const res = this.classifyTexts(modelId, textMap);
+    const res = this.computeClassificationLabelsForTexts(modelName, textMap);
     return res.get("text");
   }
 
-  public static classifyTexts(
-    modelId: string,
+  public static computeClassificationLabelsForTexts(
+    modelName: string,
     texts: Map<string, string>,
-  ): Map<string, ClassificationResult> {
-    const response = host.invokeClassifier(modelId, JSON.stringify(texts));
-    return JSON.parse<Map<string, ClassificationResult>>(response);
+  ): Map<string, Map<string, f32>> {
+    const response = host.invokeClassifier(modelName, JSON.stringify(texts));
+    const classificationResult =
+      JSON.parse<Map<string, ClassificationResult>>(response);
+
+    const result = new Map<string, Map<string, f32>>();
+
+    const keys = classificationResult.keys();
+    for (let i = 0; i < keys.length; i++) {
+      let key = keys[i];
+      let value = classificationResult.get(key);
+      const valueMap = new Map<string, f32>();
+      for (let j = 0; j < value.probabilities.length; j++) {
+        valueMap.set(
+          value.probabilities[j].label,
+          value.probabilities[j].probability,
+        );
+      }
+      result.set(key, valueMap);
+    }
+
+    return result;
   }
 
-  public static computeTextEmbedding(modelId: string, text: string): f64[] {
+  public static embedText(modelName: string, text: string): f64[] {
     const textMap = new Map<string, string>();
     textMap.set("text", text);
-    const res = this.computeTextEmbeddings(modelId, textMap);
+    const res = this.embedTexts(modelName, textMap);
     return res.get("text");
   }
 
-  public static computeTextEmbeddings(
-    modelId: string,
+  public static embedTexts(
+    modelName: string,
     texts: Map<string, string>,
   ): Map<string, f64[]> {
-    const response = host.computeEmbedding(modelId, JSON.stringify(texts));
+    const response = host.computeEmbedding(modelName, JSON.stringify(texts));
     return JSON.parse<Map<string, f64[]>>(response);
   }
   static extractChatFirstMessageContent(response: string): string {
@@ -90,14 +152,14 @@ export abstract class model {
   }
 
   public static generateText(
-    modelId: string,
+    modelName: string,
     instruction: string,
-    text: string,
+    prompt: string,
   ): string {
     const response = host.invokeTextGenerator(
-      modelId,
+      modelName,
       instruction,
-      text,
+      prompt,
       "text",
     );
 
@@ -105,7 +167,7 @@ export abstract class model {
   }
 
   public static generate<TData>(
-    modelId: string,
+    modelName: string,
     instruction: string,
     text: string,
     sample: TData,
@@ -118,7 +180,7 @@ export abstract class model {
       instruction;
 
     const generated = host.invokeTextGenerator(
-      modelId,
+      modelName,
       modifiedInstruction,
       text,
       "json_object",
@@ -129,7 +191,7 @@ export abstract class model {
   }
 
   public static generateList<TData>(
-    modelId: string,
+    modelName: string,
     instruction: string,
     text: string,
     sample: TData,
@@ -144,7 +206,7 @@ export abstract class model {
       instruction;
 
     const generated = host.invokeTextGenerator(
-      modelId,
+      modelName,
       modifiedInstruction,
       text,
       "json_object",
@@ -153,54 +215,6 @@ export abstract class model {
     const response = this.extractChatFirstMessageContent(generated);
     const jsonList = JSON.parse<Map<string, TData[]>>(response, true);
     return jsonList.get("list");
-  }
-}
-
-export abstract class classifier {
-  public static getMaxProbability(
-    res: ClassificationResult,
-    threshold: f32 = 0.0,
-  ): ClassificationProbability | null {
-    const probabilities = res.probabilities;
-    if (probabilities.length === 0) {
-      return null;
-    }
-    let max = probabilities[0];
-    for (let i = 1; i < probabilities.length; i++) {
-      if (probabilities[i].probability > max.probability) {
-        max = probabilities[i];
-      }
-    }
-    if (max.probability < threshold) {
-      return <ClassificationProbability>{
-        label: UNCERTAIN_LABEL,
-        probability: UNCERTAIN_PROBABILITY,
-      };
-    }
-    return max;
-  }
-
-  public static getMinProbability(
-    res: ClassificationResult,
-    threshold: f32 = 1.0,
-  ): ClassificationProbability | null {
-    const probabilities = res.probabilities;
-    if (probabilities.length === 0) {
-      return null;
-    }
-    let min = probabilities[0];
-    for (let i = 1; i < probabilities.length; i++) {
-      if (probabilities[i].probability < min.probability) {
-        min = probabilities[i];
-      }
-    }
-    if (min.probability > threshold) {
-      return <ClassificationProbability>{
-        label: UNCERTAIN_LABEL,
-        probability: UNCERTAIN_PROBABILITY,
-      };
-    }
-    return min;
   }
 }
 

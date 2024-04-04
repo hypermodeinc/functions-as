@@ -2,8 +2,7 @@ import { JSON } from "json-as";
 import {
   dql,
   graphql,
-  model,
-  ClassificationResult,
+  inference,
   QueryParameters,
 } from "@hypermode/functions-as";
 
@@ -151,15 +150,18 @@ export function getRandomPerson(): string {
   return JSON.stringify(results.data.people[0]);
 }
 
-export function testClassifier(modelId: string, text: string): string {
-  return JSON.stringify(model.classifyText(modelId, text));
+export function testClassifier(
+  modelId: string,
+  text: string,
+): Map<string, f32> {
+  return inference.computeClassificationLabelsForText(modelId, text);
 }
 
 export function testMultipleClassifier(
   modelId: string,
   ids: string,
   texts: string,
-): string {
+): Map<string, Map<string, f32>> {
   // convert ids to array
   const idArr = JSON.parse<string[]>(ids);
   // convert texts to array
@@ -168,20 +170,11 @@ export function testMultipleClassifier(
   for (let i = 0; i < idArr.length; i++) {
     textMap.set(idArr[i], textArr[i]);
   }
-  const response = model.classifyTexts(modelId, textMap);
-  const resultObjs: ClassificationObject[] = [];
-  for (let i = 0; i < idArr.length; i++) {
-    resultObjs.push({
-      id: idArr[i],
-      text: textArr[i],
-      result: response.get(idArr[i]),
-    });
-  }
-  return JSON.stringify(resultObjs);
+  return inference.computeClassificationLabelsForTexts(modelId, textMap);
 }
 
 export function testEmbedding(modelId: string, text: string): string {
-  return JSON.stringify(model.computeTextEmbedding(modelId, text));
+  return JSON.stringify(inference.embedText(modelId, text));
 }
 
 export function testEmbeddings(
@@ -197,7 +190,7 @@ export function testEmbeddings(
   for (let i = 0; i < idArr.length; i++) {
     textMap.set(idArr[i], textArr[i]);
   }
-  const response = model.computeTextEmbeddings(modelId, textMap);
+  const response = inference.embedTexts(modelId, textMap);
   const resultObjs: EmbeddingObject[] = [];
   for (let i = 0; i < idArr.length; i++) {
     resultObjs.push({
@@ -214,7 +207,7 @@ export function testTextGenerator(
   instruction: string,
   text: string,
 ): string {
-  return model.generateText(modelId, instruction, text);
+  return inference.generateText(modelId, instruction, text);
 }
 
 
@@ -252,14 +245,6 @@ class AggregatePersonResult {
 @json
 class GQLAggregateValues {
   count: u32 = 0;
-}
-
-
-@json
-class ClassificationObject {
-  id!: string;
-  text!: string;
-  result!: ClassificationResult;
 }
 
 
