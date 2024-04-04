@@ -75,15 +75,6 @@ export abstract class inference {
     const response = host.computeEmbedding(modelName, JSON.stringify(texts));
     return JSON.parse<Map<string, f64[]>>(response);
   }
-  static extractChatFirstMessageContent(response: string): string {
-    const resp = JSON.parse<ChatResponse>(response);
-    let output = "";
-    if (resp.choices != null) {
-      const choices = resp.choices as MessageChoice[];
-      if (choices.length > 0) output = choices[0].message.content;
-    }
-    return output;
-  }
 
   public static generateText(
     modelName: string,
@@ -141,23 +132,4 @@ export abstract class inference {
     const jsonList = JSON.parse<Map<string, TData[]>>(generated, true);
     return jsonList.get("list");
   }
-}
-
-
-@json
-export class ChatMessage {
-  role!: string;
-  content!: string;
-}
-
-
-@json
-export class MessageChoice {
-  message!: ChatMessage;
-}
-
-
-@json
-export class ChatResponse {
-  choices: MessageChoice[] | null = null;
 }
