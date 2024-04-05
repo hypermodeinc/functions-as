@@ -2,14 +2,16 @@ import { Transform } from "assemblyscript/dist/transform.js";
 import { createWriteStream } from "fs";
 import { HypermodeMetadata } from "./metadata.js";
 import { Extractor } from "./extractor.js";
+import binaryen from "assemblyscript/lib/binaryen.js";
 
 export default class HypermodeTransform extends Transform {
-  async afterCompile(module) {
+  async afterCompile(module: binaryen.Module) {
     const extractor = new Extractor(this, module);
-    const functions = await extractor.getExportedFunctions();
+    const info = await extractor.getProgramInfo();
 
     const m = HypermodeMetadata.generate();
-    m.addFunctions(functions);
+    m.addFunctions(info.functions);
+    m.addTypes(info.types);
     m.writeToModule(module);
 
     // Write to stdout

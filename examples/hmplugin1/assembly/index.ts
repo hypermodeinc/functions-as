@@ -15,14 +15,14 @@ export function getFullName(firstName: string, lastName: string): string {
   return `${firstName} ${lastName}`;
 }
 
-export function getPeople(): string {
+export function getPeople(): Person[] {
   const people = [
     <Person>{ firstName: "Bob", lastName: "Smith" },
     <Person>{ firstName: "Alice", lastName: "Jones" },
   ];
 
   people.forEach((p) => p.updateFullName());
-  return JSON.stringify(people);
+  return people;
 }
 
 export function queryPeople1(): string {
@@ -133,7 +133,7 @@ function getPersonCount(): i32 {
   return response.data.aggregatePerson.count;
 }
 
-export function getRandomPerson(): string {
+export function getRandomPerson(): Person {
   const count = getPersonCount();
   const offset = <u32>Math.floor(Math.random() * count);
   const statement = `
@@ -148,7 +148,7 @@ export function getRandomPerson(): string {
   `;
 
   const results = graphql.execute<PeopleData>(statement);
-  return JSON.stringify(results.data.people[0]);
+  return results.data.people[0];
 }
 
 export function testClassifier(modelId: string, text: string): string {
