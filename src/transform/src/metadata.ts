@@ -7,7 +7,7 @@ import binaryen from "assemblyscript/lib/binaryen.js";
 import { Colors } from "assemblyscript/util/terminal.js";
 import { WriteStream as FSWriteStream } from "fs";
 import { WriteStream as TTYWriteStream } from "tty";
-import { FunctionSignature } from "./types.js";
+import { FunctionSignature, TypeDefinition } from "./types.js";
 import writeLogo from "./logo.js";
 
 export class HypermodeMetadata {
@@ -18,6 +18,7 @@ export class HypermodeMetadata {
   gitRepo?: string;
   gitCommit?: string;
   functions: FunctionSignature[] = [];
+  types: TypeDefinition[] = [];
 
   static generate(): HypermodeMetadata {
     const m = new HypermodeMetadata();
@@ -37,6 +38,10 @@ export class HypermodeMetadata {
 
   addFunctions(functions: FunctionSignature[]) {
     this.functions.push(...functions);
+  }
+
+  addTypes(types: TypeDefinition[]) {
+    this.types.push(...types);
   }
 
   writeToModule(module: binaryen.Module) {
@@ -111,6 +116,12 @@ export class HypermodeMetadata {
     writeHeader("Hypermode Functions:");
     this.functions.forEach((f) => writeItem(f.toString()));
     stream.write("\n");
+
+    if (this.types.length > 0) {
+      writeHeader("Custom Data Types:");
+      this.types.forEach((t) => writeItem(t.toString()));
+      stream.write("\n");
+    }
   }
 }
 

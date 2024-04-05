@@ -1,7 +1,18 @@
 import { Program } from "assemblyscript/dist/assemblyscript.js";
 import { Transform } from "assemblyscript/dist/transform.js";
 import binaryen from "assemblyscript/lib/binaryen.js";
-import { FunctionSignature } from "./types.js";
+import { FunctionSignature, TypeDefinition } from "./types.js";
+
+class ProgramInfo {
+  functions: FunctionSignature[];
+  types: TypeDefinition[];
+}
+
+class RawProgramInfo {
+  functions: Map<string, FunctionSignature>;
+  classes: Map<string, TypeDefinition>;
+  typesUsed: Map<string, string[]>;
+}
 
 export class Extractor {
   binaryen: typeof binaryen;
@@ -14,24 +25,68 @@ export class Extractor {
     this.module = module;
   }
 
-  async getExportedFunctions(): Promise<FunctionSignature[]> {
-    const functions = await this.getAllFunctions();
+  async getProgramInfo(): Promise<ProgramInfo> {
+    const info = await this.getRawProgramInfo();
     const paths = this.getExportedFunctionPaths();
 
-    const results = paths
-      .map((path) => functions.get(path))
+    const exportedFunctions = paths
+      .map((path) => info.functions.get(path))
       .filter((f) => f !== undefined)
       .sort((a, b) => a.name.localeCompare(b.name));
 
-    return results;
+    const typesUsedByExportedFunctions = Array.from(
+      new Set(
+        exportedFunctions
+          .flatMap((f) => f.parameters.map((p) => p.type).concat(f.returnType))
+          .flatMap((t) => info.typesUsed.get(t)),
+      ),
+    );
+
+    const classes = Array.from(info.classes.values());
+    const dependentTypes = Array.from(
+      classes
+        .filter((t) => typesUsedByExportedFunctions.includes(t.name))
+        .flatMap((t) => this.expandDependentTypes(t, classes, info.typesUsed))
+        .reduce((acc, t) => {
+          acc.set(t.name, t);
+          return acc;
+        }, new Map<string, TypeDefinition>())
+        .values(),
+    ).sort((a, b) => a.name.localeCompare(b.name));
+
+    return { functions: exportedFunctions, types: dependentTypes };
   }
 
-  private async getAllFunctions(): Promise<Map<string, FunctionSignature>> {
+  private expandDependentTypes(
+    type: TypeDefinition,
+    allTypes: TypeDefinition[],
+    typeMap: Map<string, string[]>,
+  ): TypeDefinition[] {
+    if (!type.fields || type.fields.length === 0) {
+      return [type];
+    }
+
+    const typeNames = Array.from(
+      new Set(type.fields.flatMap((f) => typeMap.get(f.type))),
+    );
+
+    return typeNames
+      .map((tn) => allTypes.find((t) => t.name === tn))
+      .filter((t) => t !== undefined)
+      .flatMap((t) => this.expandDependentTypes(t, allTypes, typeMap))
+      .concat(type);
+  }
+
+  private async getRawProgramInfo(): Promise<RawProgramInfo> {
     ignoreCompilerMismatchWarning();
     const { HypermodeVisitor } = await import("./visitor.js");
     const visitor = new HypermodeVisitor();
     this.program.parser.sources.forEach((source) => visitor.visit(source));
-    return visitor.functions;
+    return {
+      functions: visitor.functions,
+      classes: visitor.classes,
+      typesUsed: visitor.typesUsed,
+    };
   }
 
   private getExportedFunctionPaths(): string[] {
