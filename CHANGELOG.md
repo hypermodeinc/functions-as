@@ -8,6 +8,7 @@
 - **(BREAKING)** Support query parameters of different types. [#40](https://github.com/gohypermode/functions-as/pull/40)
 - Further improvements to compiler output. [#41](https://github.com/gohypermode/functions-as/pull/41)
 - Example project now uses a local path to the source library. [#42](https://github.com/gohypermode/functions-as/pull/42)
+- Capture custom data type definitions in the metadata. [#42](https://github.com/gohypermode/functions-as/pull/44)
 
 # 2024-03-22 - Version 0.4.0
 
