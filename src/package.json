@@ -7,8 +7,8 @@
   "type": "module",
   "scripts": {
     "build:transform": "tsc -p ./transform",
-    "prepare": "$npm_execpath run build:transform",
-    "pretest": "$npm_execpath list @as-pect/cli || $npm_execpath install --no-save --no-audit @as-pect/cli",
+    "prepare": "npm run build:transform",
+    "pretest": "node ./bin/pretest.js",
     "test": "asp --verbose",
     "pretty": "prettier --write .",
     "pretty:check": "prettier --check .",
