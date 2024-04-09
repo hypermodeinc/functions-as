@@ -4,6 +4,8 @@ updates:
     directory: "/src"
     schedule:
       interval: "weekly"
+      day: "wednesday"
+      time: "16:00"
     groups:
       minor-and-patch:
         applies-to: version-updates
@@ -15,6 +17,8 @@ updates:
     directory: "/examples/hmplugin1"
     schedule:
       interval: "weekly"
+      day: "wednesday"
+      time: "16:00"
     groups:
       minor-and-patch:
         applies-to: version-updates
@@ -27,3 +31,5 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "wednesday"
+      time: "16:00"
