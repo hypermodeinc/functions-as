@@ -30,7 +30,12 @@ await validateAsJson();
 
 console.log(`Building ${pkg}@${ver} in ${target} mode...`);
 const cmd = `node ${npm} exec -- asc assembly/index.ts -o build/${pkg}.wasm --target ${target}`;
-execSync(cmd, { stdio: "inherit" });
+try {
+  execSync(cmd, { stdio: "inherit" });
+} catch {
+  console.error("Build failed.\n");
+  process.exit(1);
+}
 
 async function loadPackageJson() {
   const file = process.env.npm_package_json;
