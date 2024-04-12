@@ -3,6 +3,7 @@ import { readFile } from "fs/promises";
 import { existsSync } from "fs";
 import process from "process";
 import console from "console";
+import semver from "semver";
 
 const npm = process.env.npm_execpath;
 const pkg = process.env.npm_package_name;
@@ -36,19 +37,30 @@ async function loadPackageJson() {
   return JSON.parse(await readFile(file));
 }
 
-function verifyPackageInstalled(pkgJson, name, dev) {
-  if (!pkgJson.dependencies?.[name] && !pkgJson.devDependencies?.[name]) {
+function verifyPackageInstalled(pkgJson, name, minVersion, dev) {
+  const dep = pkgJson.dependencies?.[name] || pkgJson.devDependencies?.[name];
+  if (!dep) {
     console.error(`Package ${name} not found in package.json.`);
     console.error(`Please run: npm install ${name}${dev ? " --save-dev" : ""}`);
+    process.exit(1);
+  }
+
+  const depVersion = semver.minVersion(dep);
+  if (semver.lt(depVersion, minVersion)) {
+    console.error(`Package ${name} must be at least version ${minVersion}.`);
     process.exit(1);
   }
 }
 
 async function validatePackageJson() {
   const pkgJson = await loadPackageJson();
-  verifyPackageInstalled(pkgJson, "assemblyscript", true);
-  verifyPackageInstalled(pkgJson, "@assemblyscript/wasi-shim", true);
-  verifyPackageInstalled(pkgJson, "visitor-as", true);
+
+  // Verify dependencies for the plugin.
+  // Note: This is a minimal set of dependencies required for the plugin to build correctly.
+  // The versions may be lower than the latest available, or the ones used by our library.
+  verifyPackageInstalled(pkgJson, "assemblyscript", "0.27.26", true);
+  verifyPackageInstalled(pkgJson, "@assemblyscript/wasi-shim", "0.1.0", true);
+  verifyPackageInstalled(pkgJson, "visitor-as", "0.11.4", true);
 
   const overrides = pkgJson.overrides;
   if (!overrides || overrides["assemblyscript"] !== "$assemblyscript") {
