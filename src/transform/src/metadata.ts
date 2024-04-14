@@ -117,9 +117,10 @@ export class HypermodeMetadata {
     this.functions.forEach((f) => writeItem(f.toString()));
     stream.write("\n");
 
-    if (this.types.length > 0) {
+    const types = this.types.filter((t) => !t.isHidden());
+    if (types.length > 0) {
       writeHeader("Custom Data Types:");
-      this.types.forEach((t) => writeItem(t.toString()));
+      types.forEach((t) => writeItem(t.toString()));
       stream.write("\n");
     }
   }

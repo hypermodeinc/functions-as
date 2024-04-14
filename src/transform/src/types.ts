@@ -1,36 +1,67 @@
+export class ProgramInfo {
+  functions: FunctionSignature[];
+  types: TypeDefinition[];
+}
+
 export class FunctionSignature {
   constructor(
     public name: string,
     public parameters: NameTypePair[],
-    public returnType: string,
+    public returnType: TypeInfo,
   ) {}
 
   toString() {
     const params = this.parameters
-      .map((p) => `${p.name}: ${p.type}`)
+      .map((p) => `${p.name}: ${p.type.name}`)
       .join(", ");
-    return `${this.name}(${params}): ${this.returnType}`;
+    return `${this.name}(${params}): ${this.returnType.name}`;
   }
 }
 
-export class TypeDefinition {
+export class TypeDefinition implements TypeInfo {
   constructor(
+    public id: number,
+    public size: number,
+    public path: string,
     public name: string,
     public fields?: NameTypePair[],
   ) {}
 
   toString() {
-    // If there are no fields, just return the name. It will be interpreted as a scalar type.
+    const s = this.name;
     if (!this.fields || this.fields.length === 0) {
-      return this.name;
+      return s;
     }
 
-    const fields = this.fields.map((f) => `${f.name}: ${f.type}`).join(", ");
-    return `${this.name} { ${fields} }`;
+    const fields = this.fields
+      .map((f) => `${f.name}: ${f.type.name}`)
+      .join(", ");
+    return `${s} { ${fields} }`;
+  }
+
+  isHidden() {
+    if (typeMap.has(this.path)) return true;
+    if (this.path.startsWith("~lib/array/Array<")) return true;
+    if (this.path.startsWith("~lib/map/Map<")) return true;
+
+    return false;
   }
 }
 
-interface NameTypePair {
+export interface TypeInfo {
   name: string;
-  type: string;
+  path: string;
 }
+
+export interface NameTypePair {
+  name: string;
+  type: TypeInfo;
+}
+
+export const typeMap = new Map<string, string>([
+  ["~lib/string/String", "string"],
+  ["~lib/array/Array", "Array"],
+  ["~lib/map/Map", "Map"],
+  ["~lib/date/Date", "Date"],
+  ["~lib/wasi_date/wasi_Date", "Date"],
+]);
