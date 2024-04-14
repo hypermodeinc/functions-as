@@ -5,9 +5,9 @@ import { Extractor } from "./extractor.js";
 import binaryen from "assemblyscript/lib/binaryen.js";
 
 export default class HypermodeTransform extends Transform {
-  async afterCompile(module: binaryen.Module) {
+  afterCompile(module: binaryen.Module) {
     const extractor = new Extractor(this, module);
-    const info = await extractor.getProgramInfo();
+    const info = extractor.getProgramInfo();
 
     const m = HypermodeMetadata.generate();
     m.addFunctions(info.functions);

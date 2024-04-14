@@ -1,18 +1,20 @@
-import { Program } from "assemblyscript/dist/assemblyscript.js";
 import { Transform } from "assemblyscript/dist/transform.js";
 import binaryen from "assemblyscript/lib/binaryen.js";
-import { FunctionSignature, TypeDefinition } from "./types.js";
-
-class ProgramInfo {
-  functions: FunctionSignature[];
-  types: TypeDefinition[];
-}
-
-class RawProgramInfo {
-  functions: Map<string, FunctionSignature>;
-  classes: Map<string, TypeDefinition>;
-  typesUsed: Map<string, string[]>;
-}
+import {
+  Class,
+  ElementKind,
+  Function as Func,
+  Program,
+  Property,
+  Type,
+} from "assemblyscript/dist/assemblyscript.js";
+import {
+  FunctionSignature,
+  ProgramInfo,
+  TypeDefinition,
+  TypeInfo,
+  typeMap,
+} from "./types.js";
 
 export class Extractor {
   binaryen: typeof binaryen;
@@ -25,79 +27,126 @@ export class Extractor {
     this.module = module;
   }
 
-  async getProgramInfo(): Promise<ProgramInfo> {
-    const info = await this.getRawProgramInfo();
-    const paths = this.getExportedFunctionPaths();
-
-    const exportedFunctions = paths
-      .map((path) => info.functions.get(path))
-      .filter((f) => f !== undefined)
+  getProgramInfo(): ProgramInfo {
+    const functions = this.getExportedFunctions()
+      .map((e) => {
+        const f = this.program.instancesByName.get(e.functionName) as Func;
+        return new FunctionSignature(
+          e.exportName,
+          f.signature.parameterTypes.map((t, i) => ({
+            name: f.localsByIndex[i].name,
+            type: getTypeInfo(t),
+          })),
+          getTypeInfo(f.signature.returnType),
+        );
+      })
       .sort((a, b) => a.name.localeCompare(b.name));
 
-    const typesUsedByExportedFunctions = Array.from(
-      new Set(
-        exportedFunctions
-          .flatMap((f) => f.parameters.map((p) => p.type).concat(f.returnType))
-          .flatMap((t) => info.typesUsed.get(t)),
+    const allTypes = new Map<string, TypeDefinition>(
+      Array.from(this.program.managedClasses.values())
+        .filter((c) => c.id > 2) // skip built-in classes
+        .map((c) => {
+          const info = getTypeInfo(c.type);
+          return new TypeDefinition(
+            c.id,
+            c.nextMemoryOffset, // size
+            info.path,
+            info.name,
+            this.getClassFields(c),
+          );
+        })
+        .map((t) => [t.path, t]),
+    );
+
+    const typePathsUsed = new Set(
+      functions.flatMap((f) =>
+        f.parameters.map((p) => p.type.path).concat(f.returnType.path),
       ),
     );
 
-    const classes = Array.from(info.classes.values());
-    const dependentTypes = Array.from(
-      classes
-        .filter((t) => typesUsedByExportedFunctions.includes(t.name))
-        .flatMap((t) => this.expandDependentTypes(t, classes, info.typesUsed))
-        .reduce((acc, t) => {
-          acc.set(t.name, t);
-          return acc;
-        }, new Map<string, TypeDefinition>())
-        .values(),
-    ).sort((a, b) => a.name.localeCompare(b.name));
+    const typesUsed = new Map<string, TypeDefinition>();
+    allTypes.forEach((t) => {
+      if (typePathsUsed.has(t.path)) {
+        typesUsed.set(t.path, t);
+      }
+    });
 
-    return { functions: exportedFunctions, types: dependentTypes };
+    typesUsed.forEach((t) => {
+      this.expandDependentTypes(t, allTypes, typesUsed);
+    });
+
+    const types = Array.from(typesUsed.values()).sort((a, b) =>
+      (a.name + a.path).localeCompare(b.name + b.path),
+    );
+
+    return { functions, types };
   }
 
   private expandDependentTypes(
     type: TypeDefinition,
-    allTypes: TypeDefinition[],
-    typeMap: Map<string, string[]>,
-  ): TypeDefinition[] {
-    if (!type.fields || type.fields.length === 0) {
-      return [type];
+    allTypes: Map<string, TypeDefinition>,
+    typesUsed: Map<string, TypeDefinition>,
+  ) {
+    // collect dependent types into this set
+    const dependentTypes = new Set<TypeDefinition>();
+
+    // include fields
+    if (type.fields) {
+      type.fields.forEach((f) => {
+        const typeDef = allTypes.get(f.type.path);
+        if (typeDef) {
+          dependentTypes.add(typeDef);
+        }
+      });
     }
 
-    const typeNames = Array.from(
-      new Set(type.fields.flatMap((f) => typeMap.get(f.type))),
-    );
-
-    return typeNames
-      .map((tn) => allTypes.find((t) => t.name === tn))
-      .filter((t) => t !== undefined)
-      .flatMap((t) => this.expandDependentTypes(t, allTypes, typeMap))
-      .concat(type);
-  }
-
-  private async getRawProgramInfo(): Promise<RawProgramInfo> {
-    ignoreCompilerMismatchWarning();
-    const { HypermodeVisitor } = await import("./visitor.js");
-    const visitor = new HypermodeVisitor();
-    this.program.parser.sources.forEach((source) => visitor.visit(source));
-    return {
-      functions: visitor.functions,
-      classes: visitor.classes,
-      typesUsed: visitor.typesUsed,
-    };
-  }
-
-  private getExportedFunctionPaths(): string[] {
-    const paths = [];
-
-    const funcs = new Map<string, binaryen.FunctionInfo>();
-    for (let i = 0; i < this.module.getNumFunctions(); ++i) {
-      const ref = this.module.getFunctionByIndex(i);
-      const info = this.binaryen.getFunctionInfo(ref);
-      funcs.set(info.name, info);
+    // include generic type arguments
+    const cls = this.program.managedClasses.get(type.id);
+    if (cls.typeArguments) {
+      cls.typeArguments.forEach((t) => {
+        const typeDef = allTypes.get(t.toString());
+        if (typeDef) {
+          dependentTypes.add(typeDef);
+        }
+      });
     }
+
+    // recursively expand dependencies of dependent types
+    dependentTypes.forEach((t) => {
+      if (!typesUsed.has(t.path)) {
+        typesUsed.set(t.path, t);
+        this.expandDependentTypes(t, allTypes, typesUsed);
+      }
+    });
+  }
+
+  private getClassFields(c: Class) {
+    if (
+      c.isArrayLike ||
+      typeMap.has(c.type.toString()) ||
+      typeMap.has(c.prototype.internalName)
+    ) {
+      return undefined;
+    }
+
+    return Array.from(c.members.values())
+      .filter((m) => m.kind === ElementKind.PropertyPrototype)
+      .map((m) => {
+        const instance = this.program.instancesByName.get(m.internalName);
+        return instance as Property;
+      })
+      .filter((p) => p && p.isField)
+      .map((f) => ({
+        name: f.name,
+        type: getTypeInfo(f.type),
+      }));
+  }
+
+  private getExportedFunctions(): {
+    exportName: string;
+    functionName: string;
+  }[] {
+    const results = [];
 
     for (let i = 0; i < this.module.getNumExports(); ++i) {
       const ref = this.module.getExportByIndex(i);
@@ -107,28 +156,44 @@ export class Extractor {
         continue;
       }
 
-      if (info.name.startsWith("_")) {
+      const exportName = info.name;
+      if (exportName.startsWith("_")) {
         continue;
       }
 
-      const f = funcs.get(info.value);
-      if (f === undefined) {
-        continue;
-      }
-
-      paths.push(info.value.replace(/^export:/, ""));
+      const functionName = info.value.replace(/^export:/, "");
+      results.push({ exportName, functionName });
     }
 
-    return paths;
+    return results;
   }
 }
 
-const cw = console.warn;
-function ignoreCompilerMismatchWarning() {
-  console.warn = (message?: unknown, ...optionalParams: unknown[]): void => {
-    if (message === "compiler mismatch: std/portable included twice") {
-      return;
+export function getTypeInfo(t: Type): TypeInfo {
+  const path = t.toString();
+
+  let name = typeMap.get(path);
+  if (name) {
+    return { name, path };
+  }
+
+  const c = t.classReference;
+  if (!c) {
+    return { name: path, path };
+  }
+
+  switch (c.prototype?.internalName) {
+    case "~lib/array/Array": {
+      name = `${getTypeInfo(c.typeArguments[0]).name}[]`;
+      break;
     }
-    cw(message, ...optionalParams);
-  };
+    case "~lib/map/Map": {
+      name = `Map<${getTypeInfo(c.typeArguments[0]).name},${getTypeInfo(c.typeArguments[1]).name}>`;
+      break;
+    }
+    default:
+      name = c.name;
+  }
+
+  return { name, path };
 }
