@@ -6,7 +6,7 @@ export class ProgramInfo {
 export class FunctionSignature {
   constructor(
     public name: string,
-    public parameters: NameTypePair[],
+    public parameters: Parameter[],
     public returnType: TypeInfo,
   ) {}
 
@@ -24,7 +24,7 @@ export class TypeDefinition implements TypeInfo {
     public size: number,
     public path: string,
     public name: string,
-    public fields?: NameTypePair[],
+    public fields?: Field[],
   ) {}
 
   toString() {
@@ -53,9 +53,15 @@ export interface TypeInfo {
   path: string;
 }
 
-export interface NameTypePair {
+interface Parameter {
   name: string;
   type: TypeInfo;
+}
+
+interface Field {
+  name: string;
+  type: TypeInfo;
+  offset: number;
 }
 
 export const typeMap = new Map<string, string>([
