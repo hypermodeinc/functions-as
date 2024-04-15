@@ -139,6 +139,7 @@ export class Extractor {
       .map((f) => ({
         name: f.name,
         type: getTypeInfo(f.type),
+        offset: f.memoryOffset,
       }));
   }
 
