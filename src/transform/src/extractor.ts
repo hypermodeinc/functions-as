@@ -137,9 +137,9 @@ export class Extractor {
       })
       .filter((p) => p && p.isField)
       .map((f) => ({
+        offset: f.memoryOffset,
         name: f.name,
         type: getTypeInfo(f.type),
-        offset: f.memoryOffset,
       }));
   }
 
