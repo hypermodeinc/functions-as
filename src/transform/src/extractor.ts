@@ -173,6 +173,11 @@ export class Extractor {
 export function getTypeInfo(t: Type): TypeInfo {
   const path = t.toString();
 
+  if (t.isNullableReference) {
+    const ti = getTypeInfo(t.nonNullableType);
+    return { name: `${ti.name} | null`, path: path.replace(/ /g, "") };
+  }
+
   let name = typeMap.get(path);
   if (name) {
     return { name, path };
@@ -185,11 +190,14 @@ export function getTypeInfo(t: Type): TypeInfo {
 
   switch (c.prototype?.internalName) {
     case "~lib/array/Array": {
-      name = `${getTypeInfo(c.typeArguments[0]).name}[]`;
+      const wrap = c.typeArguments[0].isNullableReference;
+      const open = wrap ? "(" : "";
+      const close = wrap ? ")" : "";
+      name = `${open}${getTypeInfo(c.typeArguments[0]).name}${close}[]`;
       break;
     }
     case "~lib/map/Map": {
-      name = `Map<${getTypeInfo(c.typeArguments[0]).name},${getTypeInfo(c.typeArguments[1]).name}>`;
+      name = `Map<${getTypeInfo(c.typeArguments[0]).name}, ${getTypeInfo(c.typeArguments[1]).name}>`;
       break;
     }
     default:
