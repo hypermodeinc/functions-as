@@ -197,7 +197,7 @@ export function getTypeInfo(t: Type): TypeInfo {
       break;
     }
     case "~lib/map/Map": {
-      name = `Map<${getTypeInfo(c.typeArguments[0]).name},${getTypeInfo(c.typeArguments[1]).name}>`;
+      name = `Map<${getTypeInfo(c.typeArguments[0]).name}, ${getTypeInfo(c.typeArguments[1]).name}>`;
       break;
     }
     default:
