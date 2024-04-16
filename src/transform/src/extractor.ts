@@ -93,7 +93,11 @@ export class Extractor {
     // include fields
     if (type.fields) {
       type.fields.forEach((f) => {
-        const typeDef = allTypes.get(f.type.path);
+        let path = f.type.path;
+        if (path.endsWith("|null")) {
+          path = path.slice(0, -5);
+        }
+        const typeDef = allTypes.get(path);
         if (typeDef) {
           dependentTypes.add(typeDef);
         }
