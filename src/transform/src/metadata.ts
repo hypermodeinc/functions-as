@@ -123,6 +123,12 @@ export class HypermodeMetadata {
       types.forEach((t) => writeItem(t.toString()));
       stream.write("\n");
     }
+
+    if (process.env.HYPERMODE_DEBUG) {
+      writeHeader("Metadata JSON:");
+      stream.write(JSON.stringify(this, undefined, 2));
+      stream.write("\n\n");
+    }
   }
 }
 
