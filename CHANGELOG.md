@@ -10,6 +10,7 @@
 - Example project now uses a local path to the source library. [#42](https://github.com/gohypermode/functions-as/pull/42)
 - Capture custom data type definitions in the metadata. [#44](https://github.com/gohypermode/functions-as/pull/44) [#52](https://github.com/gohypermode/functions-as/pull/52) [#53](https://github.com/gohypermode/functions-as/pull/53)
 - Improve build scripts [#46](https://github.com/gohypermode/functions-as/pull/46) [#51](https://github.com/gohypermode/functions-as/pull/51)
+- Add environment variable to debug metadata [#54](https://github.com/gohypermode/functions-as/pull/54)
 
 # 2024-03-22 - Version 0.4.0
 
