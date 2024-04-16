@@ -59,9 +59,9 @@ interface Parameter {
 }
 
 interface Field {
+  offset: number;
   name: string;
   type: TypeInfo;
-  offset: number;
 }
 
 export const typeMap = new Map<string, string>([
