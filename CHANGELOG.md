@@ -1,6 +1,8 @@
 # Change Log
 
-# UNRELEASED
+# 2024-04-18 - Version 0.5.0
+
+_Note: Requires Hypermode Runtime v0.5.0 or newer_
 
 - Internal metadata format has changed. [#39](https://github.com/gohypermode/functions-as/pull/39)
   - Metadata includes function signatures for improved Runtime support.
