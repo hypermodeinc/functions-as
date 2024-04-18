@@ -1,0 +1,9 @@
+# This sample schema is used for the examples that work with Dgraph.
+# It can be applied to Dgraph with some sample data using the
+# ./loaddata.sh script.
+
+type Person {
+    id: ID!
+    firstName: String! @search(by: [hash])
+    lastName: String! @search(by: [hash])
+}
