@@ -1,49 +1,49 @@
 {
-    "models" : [
-        {
-            "name":"hmplugin1_embedding_custom",
-            "task":"embedding",
-            "sourceModel":"all-MiniLM-L6-v2",
-            "host":"aws_embedding",
-            "provider":"custom",
-            "endpoint":"https://2f050wcjqd.execute-api.us-east-1.amazonaws.com/dev/embedding",
-            "authHeader": "x-api-key"
-        },
-        {
-            "name":"hmplugin1_embedding",
-            "task":"embedding",
-            "sourceModel":"sentence-transformers/all-MiniLM-L6-v2",
-            "host":"hypermode",
-            "provider":"hugging-face"
-        },
-        {
-            "name":"hmplugin1_classifier_custom",
-            "task":"classification",
-            "sourceModel":"distilbert-base-uncased",
-            "host":"aws_classifier",
-            "provider":"custom",
-            "endpoint":"https://nerpndlnl6.execute-api.us-east-1.amazonaws.com/dev/classifier",
-            "authHeader": "x-api-key"
-        },
-        {
-            "name": "hmplugin1_openai",
-            "task": "generator",
-            "provider": "openai",
-            "sourceModel": "gpt-3.5-turbo",
-            "authHeader": "Authorization",
-            "host": "openai"
-          }
-    ],
-    "hosts" : [
-        {
-            "name":"aws_embedding",
-            "endpoint":"https://2f050wcjqd.execute-api.us-east-1.amazonaws.com/dev/embedding",
-            "authHeader": "x-api-key"
-        },
-        {
-            "name":"aws_classifier",
-            "endpoint":"https://nerpndlnl6.execute-api.us-east-1.amazonaws.com/dev/classifier",
-            "authHeader": "x-api-key"
-        }
-    ]
+  "models": [
+    {
+      "name": "hmplugin1_embedding_custom",
+      "task": "embedding",
+      "sourceModel": "all-MiniLM-L6-v2",
+      "host": "aws_embedding",
+      "provider": "custom",
+      "endpoint": "https://2f050wcjqd.execute-api.us-east-1.amazonaws.com/dev/embedding",
+      "authHeader": "x-api-key"
+    },
+    {
+      "name": "hmplugin1_embedding",
+      "task": "embedding",
+      "sourceModel": "sentence-transformers/all-MiniLM-L6-v2",
+      "host": "hypermode",
+      "provider": "hugging-face"
+    },
+    {
+      "name": "hmplugin1_classifier_custom",
+      "task": "classification",
+      "sourceModel": "distilbert-base-uncased",
+      "host": "aws_classifier",
+      "provider": "custom",
+      "endpoint": "https://nerpndlnl6.execute-api.us-east-1.amazonaws.com/dev/classifier",
+      "authHeader": "x-api-key"
+    },
+    {
+      "name": "hmplugin1_openai",
+      "task": "generator",
+      "provider": "openai",
+      "sourceModel": "gpt-3.5-turbo",
+      "authHeader": "Authorization",
+      "host": "openai"
+    }
+  ],
+  "hosts": [
+    {
+      "name": "aws_embedding",
+      "endpoint": "https://2f050wcjqd.execute-api.us-east-1.amazonaws.com/dev/embedding",
+      "authHeader": "x-api-key"
+    },
+    {
+      "name": "aws_classifier",
+      "endpoint": "https://nerpndlnl6.execute-api.us-east-1.amazonaws.com/dev/classifier",
+      "authHeader": "x-api-key"
+    }
+  ]
 }
