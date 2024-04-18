@@ -1,14 +1,14 @@
 {
   "name": "@hypermode/functions-as",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Hypermode library for AssemblyScript functions",
   "author": "Hypermode, Inc.",
   "license": "MIT",
   "type": "module",
   "scripts": {
     "build:transform": "tsc -p ./transform",
-    "prepare": "$npm_execpath run build:transform",
-    "pretest": "$npm_execpath list @as-pect/cli || $npm_execpath install --no-save --no-audit @as-pect/cli",
+    "prepare": "npm run build:transform",
+    "pretest": "node ./bin/pretest.js",
     "test": "asp --verbose",
     "pretty": "prettier --write .",
     "pretty:check": "prettier --check .",
@@ -17,17 +17,18 @@
   },
   "dependencies": {
     "as-variant": "^0.4.1",
-    "json-as": "^0.8.1",
+    "json-as": "^0.8.2",
     "xid-ts": "^1.1.0"
   },
   "devDependencies": {
-    "@types/node": "^20.12.3",
-    "@typescript-eslint/eslint-plugin": "^7.5.0",
-    "@typescript-eslint/parser": "^7.5.0",
-    "assemblyscript": "^0.27.26",
+    "@types/node": "^20.12.7",
+    "@typescript-eslint/eslint-plugin": "^7.7.0",
+    "@typescript-eslint/parser": "^7.7.0",
+    "assemblyscript": "^0.27.27",
     "assemblyscript-prettier": "^3.0.1",
     "eslint": "^8.57.0",
     "prettier": "^3.2.5",
+    "semver": "^7.6.0",
     "visitor-as": "^0.11.4"
   },
   "overrides": {
@@ -35,5 +36,12 @@
   },
   "exports": {
     "./transform": "./transform/lib/index.js"
-  }
+  },
+  "files": [
+    "index.ts",
+    "assembly/**/*.ts",
+    "!assembly/**/__tests__",
+    "bin/build-plugin.js",
+    "transform/lib/*.js"
+  ]
 }

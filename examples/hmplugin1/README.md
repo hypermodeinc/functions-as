@@ -21,22 +21,33 @@ To build the plugin:
 npm run build
 ```
 
-This will create both a `debug` and `release` build of the app.
 Output files are located in the `build` folder.
 
-The `debug.wasm` file is recommended for debugging only.
-Generally, the `release.wasm` version of your app is what should be published to Hypermode.
+- `hmplugin1.wasm` - This is the compiled program that will be executed via the Hypermode Runtime.
+- `hmplugin1.wasm.map` - This is a file that will support an improved debug experience in the future. It is currently unused.
 
-In the future, the other files in the `build` folder will help support testing and debugging.
+Note, the name of the file will be generated from the `"name"` field specified in `package.json`.
+You can also provide a `"version"` if you like, though it is not mandatory.
 
 ## Schema and Sample Data
 
-The `loaddata.sh` script can be used to populate schema and sample data.
-It connects to Dgraph on `localhost:8080`, and applies the `schema.graphql` and `sampledata.graphql` files.
+The Hypermode Runtime will auto-generate the schema for your plugin, based on the signatures of your exported functions.
+
+However, this example also includes some functions that query data from Dgraph. If you would like to try that out,
+you will need to a schema and sample data for Dgraph.
+
+In the `./extras` folder, you will find the following:
+
+- `schema.graphql` - A Dgraph schema that is used by some of the example functions.
+- `sampledata.graphql` - Some mutations that apply sample data based on that schema.
+- `loaddata.sh` - A convenient script for applying the schema and sample data.
+
+Note, the script presumes Dgraph is located at `http://localhost:8080`.
+If it is elsewhere, you will need to update the script accordingly.
 
 ### Run the example
 
-Try some graphql queries on the Dgraph endpoint:
+Try some graphql queries on the Hypermode Runtime endpoint:
 
 ```graphql
 {
@@ -52,41 +63,4 @@ Try some graphql queries on the Dgraph endpoint:
 
 These will invoke the respective Hypermode functions within `hmplugin1`.
 
-Next, try adding some data:
-
-```graphql
-mutation {
-  addPerson(
-    input: [
-      { firstName: "Harry", lastName: "Potter" }
-      { firstName: "Tom", lastName: "Riddle" }
-      { firstName: "Albus", lastName: "Dumbledore" }
-    ]
-  ) {
-    person {
-      id
-      firstName
-      lastName
-      fullName
-    }
-  }
-}
-```
-
-In the response, notice how the `fullName` field is returned,
-which is the output from calling the `getFullName` function in `hmplugin1`.
-
-You can now also query for data:
-
-```graphql
-{
-  queryPerson {
-    id
-    firstName
-    lastName
-    fullName
-  }
-}
-```
-
-Again, the `fullName` field is populated by calling `getFullName` in `hmplugin1`.
+There are other example functions to try. See the source code in [`./assembly/index.ts`](./assembly/index.ts).

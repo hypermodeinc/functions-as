@@ -14,17 +14,17 @@ export function getFullName(firstName: string, lastName: string): string {
   return `${firstName} ${lastName}`;
 }
 
-export function getPeople(): string {
+export function getPeople(): Person[] {
   const people = [
     <Person>{ firstName: "Bob", lastName: "Smith" },
     <Person>{ firstName: "Alice", lastName: "Jones" },
   ];
 
   people.forEach((p) => p.updateFullName());
-  return JSON.stringify(people);
+  return people;
 }
 
-export function queryPeople1(): string {
+export function queryPeople1(): Person[] {
   const query = `
     {
       people(func: type(Person)) {
@@ -38,13 +38,13 @@ export function queryPeople1(): string {
   const response = dql.query<PeopleData>(query);
   const people = response.data.people;
   people.forEach((p) => p.updateFullName());
-  return JSON.stringify(people);
+  return people;
 }
 
 export function queryPeopleWithVars(
   firstName: string,
   lastName: string,
-): string {
+): Person[] {
   const query = `
     query peopleWithVars($firstName: string, $lastName: string) {
       people(func: eq(Person.firstName, $firstName)) @filter(eq(Person.lastName, $lastName)) {
@@ -62,31 +62,22 @@ export function queryPeopleWithVars(
   const response = dql.query<PeopleData>(query, parameters);
   const people = response.data.people;
   people.forEach((p) => p.updateFullName());
-  return JSON.stringify(people);
+  return people;
 }
 
-export function queryPeople2(): string {
+export function queryPeople2(): Person[] {
   const statement = `
     query {
       people: queryPerson {
         id
         firstName
         lastName
-        fullName
       }
     }
   `;
 
   const results = graphql.execute<PeopleData>(statement);
-
-  // completely optional, but let's log some tracing info
-  const tracing = results.extensions!.tracing;
-  const duration = tracing.duration / 1000000.0;
-  console.log(`Start: ${tracing.startTime.toISOString()}`);
-  console.log(`End: ${tracing.endTime.toISOString()}`);
-  console.log(`Duration: ${duration}ms`);
-
-  return JSON.stringify(results.data.people);
+  return results.data.people;
 }
 
 export function newPerson1(firstName: string, lastName: string): string {
@@ -104,19 +95,23 @@ export function newPerson1(firstName: string, lastName: string): string {
   return response.data.uids.get("x");
 }
 
-export function newPerson2(firstName: string, lastName: string): string {
+export function newPerson2(firstName: string, lastName: string): Person {
   const statement = `
     mutation {
       addPerson(input: [{firstName: "${firstName}", lastName: "${lastName}" }]) {
         people: person {
           id
+          firstName
+          lastName
         }
       }
     }
   `;
 
   const response = graphql.execute<AddPersonPayload>(statement);
-  return response.data.addPerson.people[0].id!;
+  const person = response.data.addPerson.people[0];
+  person.updateFullName();
+  return person;
 }
 
 function getPersonCount(): i32 {
@@ -132,7 +127,7 @@ function getPersonCount(): i32 {
   return response.data.aggregatePerson.count;
 }
 
-export function getRandomPerson(): string {
+export function getRandomPerson(): Person {
   const count = getPersonCount();
   const offset = <u32>Math.floor(Math.random() * count);
   const statement = `
@@ -141,13 +136,14 @@ export function getRandomPerson(): string {
         id
         firstName
         lastName
-        fullName
       }
     }
   `;
 
   const results = graphql.execute<PeopleData>(statement);
-  return JSON.stringify(results.data.people[0]);
+  const person = results.data.people[0];
+  person.updateFullName();
+  return person;
 }
 
 export function testClassifier(
@@ -181,7 +177,7 @@ export function testEmbeddings(
   modelId: string,
   ids: string,
   texts: string,
-): string {
+): EmbeddingObject[] {
   // convert ids to array
   const idArr = JSON.parse<string[]>(ids);
   // convert texts to array
@@ -199,7 +195,7 @@ export function testEmbeddings(
       embedding: response.get(idArr[i]),
     });
   }
-  return JSON.stringify(resultObjs);
+  return resultObjs;
 }
 
 export function testTextGenerator(

@@ -1,6 +1,8 @@
 # Change Log
 
-# UNRELEASED
+# 2024-04-18 - Version 0.5.0
+
+_Note: Requires Hypermode Runtime v0.5.0 or newer_
 
 - Internal metadata format has changed. [#39](https://github.com/gohypermode/functions-as/pull/39)
   - Metadata includes function signatures for improved Runtime support.
@@ -8,6 +10,9 @@
 - **(BREAKING)** Support query parameters of different types. [#40](https://github.com/gohypermode/functions-as/pull/40)
 - Further improvements to compiler output. [#41](https://github.com/gohypermode/functions-as/pull/41)
 - Example project now uses a local path to the source library. [#42](https://github.com/gohypermode/functions-as/pull/42)
+- Capture custom data type definitions in the metadata. [#44](https://github.com/gohypermode/functions-as/pull/44) [#52](https://github.com/gohypermode/functions-as/pull/52) [#53](https://github.com/gohypermode/functions-as/pull/53) [#55](https://github.com/gohypermode/functions-as/pull/55) [#56](https://github.com/gohypermode/functions-as/pull/56)
+- Improve build scripts [#46](https://github.com/gohypermode/functions-as/pull/46) [#51](https://github.com/gohypermode/functions-as/pull/51)
+- Add environment variable to debug metadata [#54](https://github.com/gohypermode/functions-as/pull/54)
 
 # 2024-03-22 - Version 0.4.0
 
