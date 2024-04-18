@@ -10,7 +10,7 @@ export abstract class inference {
     const labels = this.computeClassificationLabelsForText(modelName, text);
     const keys = labels.keys();
     for (let i = 0; i < keys.length; i++) {
-      let key = keys[i];
+      const key = keys[i];
       if (key === label) {
         return labels.get(key);
       }
@@ -29,8 +29,8 @@ export abstract class inference {
     let max = labels.get(keys[0]);
     let result = "";
     for (let i = 1; i < keys.length; i++) {
-      let key = keys[i];
-      let value = labels.get(key);
+      const key = keys[i];
+      const value = labels.get(key);
       if (value >= max) {
         max = value;
         result = key;
