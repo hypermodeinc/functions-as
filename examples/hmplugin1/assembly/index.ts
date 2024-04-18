@@ -73,20 +73,11 @@ export function queryPeople2(): Person[] {
         id
         firstName
         lastName
-        fullName
       }
     }
   `;
 
   const results = graphql.execute<PeopleData>(statement);
-
-  // completely optional, but let's log some tracing info
-  const tracing = results.extensions!.tracing;
-  const duration = tracing.duration / 1000000.0;
-  console.log(`Start: ${tracing.startTime.toISOString()}`);
-  console.log(`End: ${tracing.endTime.toISOString()}`);
-  console.log(`Duration: ${duration}ms`);
-
   return results.data.people;
 }
 
@@ -105,19 +96,23 @@ export function newPerson1(firstName: string, lastName: string): string {
   return response.data.uids.get("x");
 }
 
-export function newPerson2(firstName: string, lastName: string): string {
+export function newPerson2(firstName: string, lastName: string): Person {
   const statement = `
     mutation {
       addPerson(input: [{firstName: "${firstName}", lastName: "${lastName}" }]) {
         people: person {
           id
+          firstName
+          lastName
         }
       }
     }
   `;
 
   const response = graphql.execute<AddPersonPayload>(statement);
-  return response.data.addPerson.people[0].id!;
+  const person = response.data.addPerson.people[0];
+  person.updateFullName();
+  return person;
 }
 
 function getPersonCount(): i32 {
@@ -142,13 +137,14 @@ export function getRandomPerson(): Person {
         id
         firstName
         lastName
-        fullName
       }
     }
   `;
 
   const results = graphql.execute<PeopleData>(statement);
-  return results.data.people[0];
+  const person = results.data.people[0];
+  person.updateFullName();
+  return person;
 }
 
 export function testClassifier(
