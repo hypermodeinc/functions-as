@@ -36,5 +36,12 @@
   },
   "exports": {
     "./transform": "./transform/lib/index.js"
-  }
+  },
+  "files": [
+    "index.ts",
+    "assembly/**/*.ts",
+    "!assembly/**/__tests__",
+    "bin/build-plugin.js",
+    "transform/lib/*.js"
+  ]
 }
