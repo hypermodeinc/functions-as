@@ -1,7 +1,7 @@
 import { JSON } from "json-as";
 import {
   dql,
-  graphql,
+  connection,
   inference,
   QueryParameters,
 } from "@hypermode/functions-as";
@@ -65,7 +65,7 @@ export function queryPeopleWithVars(
   return people;
 }
 
-export function queryPeople2(): Person[] {
+export function queryPeople2(hostName: string): Person[] {
   const statement = `
     query {
       people: queryPerson {
@@ -76,7 +76,7 @@ export function queryPeople2(): Person[] {
     }
   `;
 
-  const results = graphql.execute<PeopleData>(statement);
+  const results = connection.invokeGraphqlApi<PeopleData>(hostName, statement);
   return results.data.people;
 }
 
@@ -95,7 +95,11 @@ export function newPerson1(firstName: string, lastName: string): string {
   return response.data.uids.get("x");
 }
 
-export function newPerson2(firstName: string, lastName: string): Person {
+export function newPerson2(
+  hostName: string,
+  firstName: string,
+  lastName: string,
+): Person {
   const statement = `
     mutation {
       addPerson(input: [{firstName: "${firstName}", lastName: "${lastName}" }]) {
@@ -108,13 +112,16 @@ export function newPerson2(firstName: string, lastName: string): Person {
     }
   `;
 
-  const response = graphql.execute<AddPersonPayload>(statement);
+  const response = connection.invokeGraphqlApi<AddPersonPayload>(
+    hostName,
+    statement,
+  );
   const person = response.data.addPerson.people[0];
   person.updateFullName();
   return person;
 }
 
-function getPersonCount(): i32 {
+function getPersonCount(hostName: string): i32 {
   const statement = `
     query {
       aggregatePerson {
@@ -123,12 +130,15 @@ function getPersonCount(): i32 {
     }
   `;
 
-  const response = graphql.execute<AggregatePersonResult>(statement);
+  const response = connection.invokeGraphqlApi<AggregatePersonResult>(
+    hostName,
+    statement,
+  );
   return response.data.aggregatePerson.count;
 }
 
-export function getRandomPerson(): Person {
-  const count = getPersonCount();
+export function getRandomPerson(hostName: string): Person {
+  const count = getPersonCount(hostName);
   const offset = <u32>Math.floor(Math.random() * count);
   const statement = `
     query {
@@ -140,7 +150,7 @@ export function getRandomPerson(): Person {
     }
   `;
 
-  const results = graphql.execute<PeopleData>(statement);
+  const results = connection.invokeGraphqlApi<PeopleData>(hostName, statement);
   const person = results.data.people[0];
   person.updateFullName();
   return person;

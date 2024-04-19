@@ -10,6 +10,12 @@ export declare function executeDQL(
 ): string;
 
 export declare function executeGQL(
+  hostName: string,
+  statement: string,
+  parameters: string,
+): string;
+
+export declare function executeDgraphGQL(
   statement: string,
   parameters: string,
 ): string;
@@ -24,8 +30,6 @@ export declare function computeEmbedding(
   sentenceMap: string,
 ): string;
 
-
-@external("invokeTextGenerator_v2")
 export declare function invokeTextGenerator(
   modelId: string,
   instruction: string,

@@ -1,4 +1,4 @@
 export * from "./queryparams";
 export * from "./inference";
 export * from "./dql";
-export * from "./graphql";
+export * from "./connection";
