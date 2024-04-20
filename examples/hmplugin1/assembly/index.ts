@@ -9,6 +9,12 @@ export function add(a: i32, b: i32): i32 {
   return a + b;
 }
 
+const dgraph_gql_host: string = "dgraph-gql";
+const dgraph_dql_host: string = "dgraph-dql";
+const classifier_model: string = "hmplugin1_classifier_custom";
+const hmplugin1_embedding_custom: string = "hmplugin1_embedding_custom";
+const openai_generator_model: string = "hmplugin1_openai";
+
 export function getFullName(firstName: string, lastName: string): string {
   return `${firstName} ${lastName}`;
 }
@@ -23,7 +29,7 @@ export function getPeople(): Person[] {
   return people;
 }
 
-export function queryPeople1(hostName: string): Person[] {
+export function queryPeople1(): Person[] {
   const query = `
     {
       people(func: type(Person)) {
@@ -34,14 +40,16 @@ export function queryPeople1(hostName: string): Person[] {
     }
   `;
 
-  const response = connection.invokeDQLQuery<PeopleData>(hostName, query);
+  const response = connection.invokeDQLQuery<PeopleData>(
+    dgraph_dql_host,
+    query,
+  );
   const people = response.data.people;
   people.forEach((p) => p.updateFullName());
   return people;
 }
 
 export function queryPeopleWithVars(
-  hostName: string,
   firstName: string,
   lastName: string,
 ): Person[] {
@@ -60,7 +68,7 @@ export function queryPeopleWithVars(
   parameters.set("$lastName", lastName);
 
   const response = connection.invokeDQLQuery<PeopleData>(
-    hostName,
+    dgraph_gql_host,
     query,
     parameters,
   );
@@ -69,7 +77,7 @@ export function queryPeopleWithVars(
   return people;
 }
 
-export function queryPeople2(hostName: string): Person[] {
+export function queryPeople2(): Person[] {
   const statement = `
     query {
       people: queryPerson {
@@ -80,15 +88,14 @@ export function queryPeople2(hostName: string): Person[] {
     }
   `;
 
-  const results = connection.invokeGraphqlApi<PeopleData>(hostName, statement);
+  const results = connection.invokeGraphqlApi<PeopleData>(
+    dgraph_gql_host,
+    statement,
+  );
   return results.data.people;
 }
 
-export function newPerson1(
-  hostName: string,
-  firstName: string,
-  lastName: string,
-): string {
+export function newPerson1(firstName: string, lastName: string): string {
   const statement = `
     {
       set {
@@ -99,7 +106,7 @@ export function newPerson1(
     }
   `;
 
-  const response = connection.invokeDQLMutation(hostName, statement);
+  const response = connection.invokeDQLMutation(dgraph_dql_host, statement);
   return response.data.uids.get("x");
 }
 
@@ -129,7 +136,7 @@ export function newPerson2(
   return person;
 }
 
-function getPersonCount(hostName: string): i32 {
+function getPersonCount(): i32 {
   const statement = `
     query {
       aggregatePerson {
@@ -139,14 +146,14 @@ function getPersonCount(hostName: string): i32 {
   `;
 
   const response = connection.invokeGraphqlApi<AggregatePersonResult>(
-    hostName,
+    dgraph_gql_host,
     statement,
   );
   return response.data.aggregatePerson.count;
 }
 
-export function getRandomPerson(hostName: string): Person {
-  const count = getPersonCount(hostName);
+export function getRandomPerson(): Person {
+  const count = getPersonCount();
   const offset = <u32>Math.floor(Math.random() * count);
   const statement = `
     query {
@@ -158,21 +165,20 @@ export function getRandomPerson(hostName: string): Person {
     }
   `;
 
-  const results = connection.invokeGraphqlApi<PeopleData>(hostName, statement);
+  const results = connection.invokeGraphqlApi<PeopleData>(
+    dgraph_gql_host,
+    statement,
+  );
   const person = results.data.people[0];
   person.updateFullName();
   return person;
 }
 
-export function testClassifier(
-  modelId: string,
-  text: string,
-): Map<string, f32> {
-  return inference.computeClassificationLabelsForText(modelId, text);
+export function testClassifier(text: string): Map<string, f32> {
+  return inference.computeClassificationLabelsForText(classifier_model, text);
 }
 
 export function testMultipleClassifier(
-  modelId: string,
   ids: string,
   texts: string,
 ): Map<string, Map<string, f32>> {
@@ -184,18 +190,17 @@ export function testMultipleClassifier(
   for (let i = 0; i < idArr.length; i++) {
     textMap.set(idArr[i], textArr[i]);
   }
-  return inference.computeClassificationLabelsForTexts(modelId, textMap);
+  return inference.computeClassificationLabelsForTexts(
+    classifier_model,
+    textMap,
+  );
 }
 
-export function testEmbedding(modelId: string, text: string): string {
-  return JSON.stringify(inference.embedText(modelId, text));
+export function testEmbedding(text: string): string {
+  return JSON.stringify(inference.embedText(hmplugin1_embedding_custom, text));
 }
 
-export function testEmbeddings(
-  modelId: string,
-  ids: string,
-  texts: string,
-): EmbeddingObject[] {
+export function testEmbeddings(ids: string, texts: string): EmbeddingObject[] {
   // convert ids to array
   const idArr = JSON.parse<string[]>(ids);
   // convert texts to array
@@ -204,7 +209,7 @@ export function testEmbeddings(
   for (let i = 0; i < idArr.length; i++) {
     textMap.set(idArr[i], textArr[i]);
   }
-  const response = inference.embedTexts(modelId, textMap);
+  const response = inference.embedTexts(hmplugin1_embedding_custom, textMap);
   const resultObjs: EmbeddingObject[] = [];
   for (let i = 0; i < idArr.length; i++) {
     resultObjs.push({
@@ -216,12 +221,8 @@ export function testEmbeddings(
   return resultObjs;
 }
 
-export function testTextGenerator(
-  modelId: string,
-  instruction: string,
-  text: string,
-): string {
-  return inference.generateText(modelId, instruction, text);
+export function testTextGenerator(instruction: string, text: string): string {
+  return inference.generateText(openai_generator_model, instruction, text);
 }
 
 
