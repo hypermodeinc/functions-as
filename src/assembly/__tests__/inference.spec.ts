@@ -2,7 +2,7 @@ import { inference } from "..";
 
 describe("Model Host Functions", () => {
   it("can compute probability", () => {
-    const result = inference.computeClassificationProbablity(
+    const result = inference.getClassificationProbablity(
       "modelId",
       "text",
       "A",
@@ -21,10 +21,7 @@ describe("Model Host Functions", () => {
 
   it("can compute classification labels for text", () => {
     const text = "text";
-    const result = inference.computeClassificationLabelsForText(
-      "modelId",
-      text,
-    );
+    const result = inference.getClassificationLabelsForText("modelId", text);
     const expected = new Map<string, f32>();
     expected.set("A", 0.1);
     expected.set("B", 0.2);
@@ -34,10 +31,7 @@ describe("Model Host Functions", () => {
 
   it("can compute classification labels for texts", () => {
     const texts = new Map<string, string>();
-    const result = inference.computeClassificationLabelsForTexts(
-      "modelId",
-      texts,
-    );
+    const result = inference.getClassificationLabelsForTexts("modelId", texts);
     const expected = new Map<string, Map<string, f32>>();
     expected.set("text", new Map<string, f32>());
     expected.get("text").set("A", 0.1);

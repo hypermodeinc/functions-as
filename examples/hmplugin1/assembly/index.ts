@@ -178,7 +178,7 @@ export function getRandomPerson(): Person {
 }
 
 export function testClassifier(text: string): Map<string, f32> {
-  return inference.computeClassificationLabelsForText(classifier_model, text);
+  return inference.getClassificationLabelsForText(classifier_model, text);
 }
 
 export function testMultipleClassifier(
@@ -193,10 +193,7 @@ export function testMultipleClassifier(
   for (let i = 0; i < idArr.length; i++) {
     textMap.set(idArr[i], textArr[i]);
   }
-  return inference.computeClassificationLabelsForTexts(
-    classifier_model,
-    textMap,
-  );
+  return inference.getClassificationLabelsForTexts(classifier_model, textMap);
 }
 
 export function testEmbedding(text: string): string {

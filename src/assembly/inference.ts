@@ -2,12 +2,12 @@ import * as host from "./hypermode";
 import { JSON } from "json-as";
 
 export abstract class inference {
-  public static computeClassificationProbablity(
+  public static getClassificationProbablity(
     modelName: string,
     text: string,
     label: string,
   ): f32 {
-    const labels = this.computeClassificationLabelsForText(modelName, text);
+    const labels = this.getClassificationLabelsForText(modelName, text);
     const keys = labels.keys();
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
@@ -23,7 +23,7 @@ export abstract class inference {
     text: string,
     threshold: f32,
   ): string {
-    const labels = this.computeClassificationLabelsForText(modelName, text);
+    const labels = this.getClassificationLabelsForText(modelName, text);
 
     const keys = labels.keys();
     let max = labels.get(keys[0]);
@@ -43,17 +43,17 @@ export abstract class inference {
     return result;
   }
 
-  public static computeClassificationLabelsForText(
+  public static getClassificationLabelsForText(
     modelName: string,
     text: string,
   ): Map<string, f32> {
     const textMap = new Map<string, string>();
     textMap.set("text", text);
-    const res = this.computeClassificationLabelsForTexts(modelName, textMap);
+    const res = this.getClassificationLabelsForTexts(modelName, textMap);
     return res.get("text");
   }
 
-  public static computeClassificationLabelsForTexts(
+  public static getClassificationLabelsForTexts(
     modelName: string,
     texts: Map<string, string>,
   ): Map<string, Map<string, f32>> {
