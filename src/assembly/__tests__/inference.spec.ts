@@ -2,7 +2,7 @@ import { inference } from "..";
 
 describe("Model Host Functions", () => {
   it("can compute probability", () => {
-    const result = inference.getClassificationProbablity(
+    const result = inference.getClassificationProbability(
       "modelId",
       "text",
       "A",
