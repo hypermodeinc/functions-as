@@ -84,11 +84,7 @@ export default class MockHost {
         throw new Error(`Unknown format: ${format}`);
     }
 
-    return this.newString(
-      '{"choices":[{"message":{"role":"assistant","content":' +
-        JSON.stringify(response) +
-        "}}]}",
-    );
+    return this.newString(response);
   }
 
   getImports() {
@@ -97,7 +93,7 @@ export default class MockHost {
       executeGQL: this.executeGQL.bind(this),
       invokeClassifier: this.invokeClassifier.bind(this),
       computeEmbedding: this.computeEmbedding.bind(this),
-      invokeTextGenerator_v2: this.invokeTextGenerator_v2.bind(this),
+      invokeTextGenerator: this.invokeTextGenerator.bind(this),
     };
   }
 

@@ -1,6 +1,5 @@
 import { JSON } from "json-as";
 import {
-  dql,
   connection,
   inference,
   QueryParameters,
@@ -35,7 +34,7 @@ export function queryPeople1(hostName: string): Person[] {
     }
   `;
 
-  const response = dql.query<PeopleData>(hostName, query);
+  const response = connection.invokeDQLQuery<PeopleData>(hostName, query);
   const people = response.data.people;
   people.forEach((p) => p.updateFullName());
   return people;
@@ -60,7 +59,11 @@ export function queryPeopleWithVars(
   parameters.set("$firstName", firstName);
   parameters.set("$lastName", lastName);
 
-  const response = dql.query<PeopleData>(hostName, query, parameters);
+  const response = connection.invokeDQLQuery<PeopleData>(
+    hostName,
+    query,
+    parameters,
+  );
   const people = response.data.people;
   people.forEach((p) => p.updateFullName());
   return people;
@@ -96,7 +99,7 @@ export function newPerson1(
     }
   `;
 
-  const response = dql.mutate(hostName, statement);
+  const response = connection.invokeDQLMutation(hostName, statement);
   return response.data.uids.get("x");
 }
 
