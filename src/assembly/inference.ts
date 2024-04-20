@@ -2,7 +2,7 @@ import * as host from "./hypermode";
 import { JSON } from "json-as";
 
 export abstract class inference {
-  public static getClassificationProbablity(
+  public static getClassificationProbability(
     modelName: string,
     text: string,
     label: string,
