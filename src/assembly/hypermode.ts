@@ -4,6 +4,7 @@
 // This file should only export functions from the "hypermode" host module.
 
 export declare function executeDQL(
+  hostName: string,
   statement: string,
   parameters: string,
   isMutation: bool,
@@ -11,11 +12,6 @@ export declare function executeDQL(
 
 export declare function executeGQL(
   hostName: string,
-  statement: string,
-  parameters: string,
-): string;
-
-export declare function executeDgraphGQL(
   statement: string,
   parameters: string,
 ): string;

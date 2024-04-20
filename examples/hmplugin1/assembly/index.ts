@@ -24,7 +24,7 @@ export function getPeople(): Person[] {
   return people;
 }
 
-export function queryPeople1(): Person[] {
+export function queryPeople1(hostName: string): Person[] {
   const query = `
     {
       people(func: type(Person)) {
@@ -35,13 +35,14 @@ export function queryPeople1(): Person[] {
     }
   `;
 
-  const response = dql.query<PeopleData>(query);
+  const response = dql.query<PeopleData>(hostName, query);
   const people = response.data.people;
   people.forEach((p) => p.updateFullName());
   return people;
 }
 
 export function queryPeopleWithVars(
+  hostName: string,
   firstName: string,
   lastName: string,
 ): Person[] {
@@ -59,7 +60,7 @@ export function queryPeopleWithVars(
   parameters.set("$firstName", firstName);
   parameters.set("$lastName", lastName);
 
-  const response = dql.query<PeopleData>(query, parameters);
+  const response = dql.query<PeopleData>(hostName, query, parameters);
   const people = response.data.people;
   people.forEach((p) => p.updateFullName());
   return people;
@@ -80,7 +81,11 @@ export function queryPeople2(hostName: string): Person[] {
   return results.data.people;
 }
 
-export function newPerson1(firstName: string, lastName: string): string {
+export function newPerson1(
+  hostName: string,
+  firstName: string,
+  lastName: string,
+): string {
   const statement = `
     {
       set {
@@ -91,7 +96,7 @@ export function newPerson1(firstName: string, lastName: string): string {
     }
   `;
 
-  const response = dql.mutate(statement);
+  const response = dql.mutate(hostName, statement);
   return response.data.uids.get("x");
 }
 
