@@ -61,14 +61,14 @@ export abstract class inference {
     return JSON.parse<Map<string, Map<string, f32>>>(response);
   }
 
-  public static embedText(modelName: string, text: string): f64[] {
+  public static getTextEmbedding(modelName: string, text: string): f64[] {
     const textMap = new Map<string, string>();
     textMap.set("text", text);
-    const res = this.embedTexts(modelName, textMap);
+    const res = this.getTextEmbeddings(modelName, textMap);
     return res.get("text");
   }
 
-  public static embedTexts(
+  public static getTextEmbeddings(
     modelName: string,
     texts: Map<string, string>,
   ): Map<string, f64[]> {

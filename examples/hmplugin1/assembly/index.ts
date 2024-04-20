@@ -200,7 +200,9 @@ export function testMultipleClassifier(
 }
 
 export function testEmbedding(text: string): string {
-  return JSON.stringify(inference.embedText(hmplugin1_embedding_custom, text));
+  return JSON.stringify(
+    inference.getTextEmbedding(hmplugin1_embedding_custom, text),
+  );
 }
 
 export function testEmbeddings(ids: string, texts: string): EmbeddingObject[] {
@@ -212,7 +214,10 @@ export function testEmbeddings(ids: string, texts: string): EmbeddingObject[] {
   for (let i = 0; i < idArr.length; i++) {
     textMap.set(idArr[i], textArr[i]);
   }
-  const response = inference.embedTexts(hmplugin1_embedding_custom, textMap);
+  const response = inference.getTextEmbeddings(
+    hmplugin1_embedding_custom,
+    textMap,
+  );
   const resultObjs: EmbeddingObject[] = [];
   for (let i = 0; i < idArr.length; i++) {
     resultObjs.push({

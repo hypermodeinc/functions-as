@@ -50,14 +50,14 @@ describe("Model Host Functions", () => {
   });
 
   it("can compute embeddings", () => {
-    const result = inference.embedText("modelId", "text");
+    const result = inference.getTextEmbedding("modelId", "text");
     const expected = [0.1, 0.2, 0.3];
     expect(result).toStrictEqual(expected);
   });
 
   it("can compute multiple embeddings", () => {
     const texts = new Map<string, string>();
-    const result = inference.embedTexts("modelId", texts);
+    const result = inference.getTextEmbeddings("modelId", texts);
     const expected = new Map<string, f64[]>();
     expected.set("text", [0.1, 0.2, 0.3]);
     expected.set("text2", [0.2, 0.3, 0.4]);
