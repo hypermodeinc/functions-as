@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export default class MockHost {
-  executeDQL(pStatement, pVariables, isMutation) {
+  executeDQL(pHostName, pStatement, pVariables, isMutation) {
+    const hostName = this.getString(pHostName);
     const statement = this.getString(pStatement);
     const variables = this.getString(pVariables);
 
@@ -16,7 +17,8 @@ export default class MockHost {
     }
   }
 
-  executeGQL(pStatement, pVariables) {
+  executeGQL(pHostName, pStatement, pVariables) {
+    const hostName = this.getString(pHostName);
     const statement = this.getString(pStatement);
     const variables = this.getString(pVariables);
 
@@ -36,19 +38,13 @@ export default class MockHost {
       '{ \
         "text": \
           { \
-            "probabilities": \
-            [ \
-              {"label":"A","probability":0.1}, \
-              {"label":"B","probability":0.2} \
-            ] \
+            "A": 0.1, \
+            "B": 0.2 \
           }, \
-          "text2": \
+        "text2": \
           { \
-            "probabilities": \
-            [ \
-              {"label":"A","probability":0.2}, \
-              {"label":"B","probability":0.3} \
-            ] \
+            "A": 0.2, \
+            "B": 0.3 \
           } \
       }',
     );
@@ -63,7 +59,7 @@ export default class MockHost {
     );
   }
 
-  invokeTextGenerator_v2(pModelId, pInstruction, pSentence, pFormat) {
+  invokeTextGenerator(pModelId, pInstruction, pSentence, pFormat) {
     const modelId = this.getString(pModelId);
     const instruction = this.getString(pInstruction);
     const sentence = this.getString(pSentence);
@@ -88,11 +84,7 @@ export default class MockHost {
         throw new Error(`Unknown format: ${format}`);
     }
 
-    return this.newString(
-      '{"choices":[{"message":{"role":"assistant","content":' +
-        JSON.stringify(response) +
-        "}}]}",
-    );
+    return this.newString(response);
   }
 
   getImports() {
@@ -101,7 +93,7 @@ export default class MockHost {
       executeGQL: this.executeGQL.bind(this),
       invokeClassifier: this.invokeClassifier.bind(this),
       computeEmbedding: this.computeEmbedding.bind(this),
-      invokeTextGenerator_v2: this.invokeTextGenerator_v2.bind(this),
+      invokeTextGenerator: this.invokeTextGenerator.bind(this),
     };
   }
 

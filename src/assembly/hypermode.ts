@@ -4,28 +4,28 @@
 // This file should only export functions from the "hypermode" host module.
 
 export declare function executeDQL(
+  hostName: string,
   statement: string,
   parameters: string,
   isMutation: bool,
 ): string;
 
 export declare function executeGQL(
+  hostName: string,
   statement: string,
   parameters: string,
 ): string;
 
 export declare function invokeClassifier(
-  modelId: string,
+  modelName: string,
   sentenceMap: string,
 ): string;
 
 export declare function computeEmbedding(
-  modelId: string,
+  modelName: string,
   sentenceMap: string,
 ): string;
 
-
-@external("invokeTextGenerator_v2")
 export declare function invokeTextGenerator(
   modelId: string,
   instruction: string,
