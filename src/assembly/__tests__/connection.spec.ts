@@ -13,7 +13,7 @@ describe("GraphQL Host Functions", () => {
 
 describe("DQL Host Functions", () => {
   it("can query DQL", () => {
-    const response = connection.invokeDQLQuery<string>("host", "ping");
+    const response = connection.invokeDgraphDqlQuery<string>("host", "ping");
     const expected = new DQLResponse<string>();
     expected.data = "pong";
     expect(response).toStrictEqual(expected);

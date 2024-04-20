@@ -76,7 +76,7 @@ describe("Model Host Functions", () => {
   it("can generate an object", () => {
     const input = '{"input": "sentence"}';
     const sample = new Map<string, string>();
-    const result = inference.generate<Map<string, string>>(
+    const result = inference.generateData<Map<string, string>>(
       "modelId",
       "instruction",
       input,

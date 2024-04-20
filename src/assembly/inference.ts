@@ -84,7 +84,7 @@ export abstract class inference {
     return host.invokeTextGenerator(modelName, instruction, prompt, "text");
   }
 
-  public static generate<TData>(
+  public static generateData<TData>(
     modelName: string,
     instruction: string,
     text: string,

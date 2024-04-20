@@ -40,7 +40,7 @@ export function queryPeople1(): Person[] {
     }
   `;
 
-  const response = connection.invokeDQLQuery<PeopleData>(
+  const response = connection.invokeDgraphDqlQuery<PeopleData>(
     dgraph_dql_host,
     query,
   );
@@ -67,7 +67,7 @@ export function queryPeopleWithVars(
   parameters.set("$firstName", firstName);
   parameters.set("$lastName", lastName);
 
-  const response = connection.invokeDQLQuery<PeopleData>(
+  const response = connection.invokeDgraphDqlQuery<PeopleData>(
     dgraph_gql_host,
     query,
     parameters,
@@ -106,7 +106,10 @@ export function newPerson1(firstName: string, lastName: string): string {
     }
   `;
 
-  const response = connection.invokeDQLMutation(dgraph_dql_host, statement);
+  const response = connection.invokeDgraphDqlMutation(
+    dgraph_dql_host,
+    statement,
+  );
   return response.data.uids.get("x");
 }
 

@@ -15,7 +15,7 @@ export abstract class connection {
     return JSON.parse<GQLResponse<TData>>(response);
   }
 
-  public static invokeDQLMutation(
+  public static invokeDgraphDqlMutation(
     hostName: string,
     query: string,
     parameters: QueryParameters = new QueryParameters(),
@@ -28,7 +28,7 @@ export abstract class connection {
     );
   }
 
-  public static invokeDQLQuery<TData>(
+  public static invokeDgraphDqlQuery<TData>(
     hostName: string,
     query: string,
     parameters: QueryParameters = new QueryParameters(),
