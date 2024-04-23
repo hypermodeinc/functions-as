@@ -32,3 +32,8 @@ export declare function invokeTextGenerator(
   sentence: string,
   format: string,
 ): string;
+
+export declare function fetchGet(
+  hostName: string,
+  statement: string,
+): string;

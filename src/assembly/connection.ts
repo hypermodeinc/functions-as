@@ -35,6 +35,17 @@ export abstract class connection {
   ): DQLResponse<TData> {
     return this.invokeDQL<TData>(hostName, false, query, parameters);
   }
+  public static fetchGet<TData>(
+    hostName: string,
+    query: string,
+  ): TData {
+    const response = host.fetchGet(hostName, query);
+    return JSON.parse<TData>(response);
+
+  }
+
+
+
 
   private static invokeDQL<TData>(
     hostName: string,
