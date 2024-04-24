@@ -32,23 +32,25 @@ export function queryPeopleWithVars(
   firstName: string,
   lastName: string,
 ): Person[] {
-  const query = `
-    query peopleWithVars($firstName: string, $lastName: string) {
-      people(func: eq(Person.firstName, $firstName)) @filter(eq(Person.lastName, $lastName)) {
-        id: uid
-        firstName: Person.firstName
-        lastName: Person.lastName
+  const statement = `
+    query queryPeople($firstName: String!, $lastName: String!) {
+      people: queryPerson(
+          filter: { firstName: { eq: $firstName }, lastName: { eq: $lastName } }
+      ) {
+          id
+          firstName
+          lastName
       }
     }
   `;
 
   const parameters = new QueryParameters();
-  parameters.set("$firstName", firstName);
-  parameters.set("$lastName", lastName);
+  parameters.set("firstName", firstName);
+  parameters.set("lastName", lastName);
 
-    query,
   const response = connection.invokeGraphqlApi<PeopleData>(
     dgraph_host,
+    statement,
     parameters,
   );
   const people = response.data.people;
