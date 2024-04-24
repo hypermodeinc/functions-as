@@ -4,6 +4,7 @@
 
 - **(BREAKING)** Most APIs for host functions have been renamed. [#44](https://github.com/gohypermode/functions-as/pull/44)
 - Types used by host functions are captured in the metadata. [#65](https://github.com/gohypermode/functions-as/pull/65)
+- **(BREAKING)** DQL-based host functions and examples have been removed. [#66](https://github.com/gohypermode/functions-as/pull/66)
 
 # 2024-04-18 - Version 0.5.0
 
