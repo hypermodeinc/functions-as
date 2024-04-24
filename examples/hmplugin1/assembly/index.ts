@@ -9,8 +9,7 @@ export function add(a: i32, b: i32): i32 {
   return a + b;
 }
 
-const dgraph_gql_host: string = "dgraph-gql";
-const dgraph_dql_host: string = "dgraph-dql";
+const dgraph_host: string = "dgraph";
 const classifier_model: string = "hmplugin1_classifier_custom";
 const hmplugin1_embedding_custom: string = "hmplugin1_embedding_custom";
 const openai_generator_model: string = "hmplugin1_openai";
@@ -25,26 +24,6 @@ export function getPeople(): Person[] {
     <Person>{ firstName: "Alice", lastName: "Jones" },
   ];
 
-  people.forEach((p) => p.updateFullName());
-  return people;
-}
-
-export function queryPeople1(): Person[] {
-  const query = `
-    {
-      people(func: type(Person)) {
-        id: uid
-        firstName: Person.firstName
-        lastName: Person.lastName
-      }
-    }
-  `;
-
-  const response = connection.invokeDgraphDqlQuery<PeopleData>(
-    dgraph_dql_host,
-    query,
-  );
-  const people = response.data.people;
   people.forEach((p) => p.updateFullName());
   return people;
 }
@@ -67,9 +46,9 @@ export function queryPeopleWithVars(
   parameters.set("$firstName", firstName);
   parameters.set("$lastName", lastName);
 
-  const response = connection.invokeDgraphDqlQuery<PeopleData>(
-    dgraph_gql_host,
     query,
+  const response = connection.invokeGraphqlApi<PeopleData>(
+    dgraph_host,
     parameters,
   );
   const people = response.data.people;
@@ -77,7 +56,7 @@ export function queryPeopleWithVars(
   return people;
 }
 
-export function queryPeople2(): Person[] {
+export function queryPeople(): Person[] {
   const statement = `
     query {
       people: queryPerson {
@@ -89,31 +68,13 @@ export function queryPeople2(): Person[] {
   `;
 
   const results = connection.invokeGraphqlApi<PeopleData>(
-    dgraph_gql_host,
+    dgraph_host,
     statement,
   );
   return results.data.people;
 }
 
-export function newPerson1(firstName: string, lastName: string): string {
-  const statement = `
-    {
-      set {
-        _:x <Person.firstName> "${firstName}" .
-        _:x <Person.lastName> "${lastName}" .
-        _:x <dgraph.type> "Person" .
-      }
-    }
-  `;
-
-  const response = connection.invokeDgraphDqlMutation(
-    dgraph_dql_host,
-    statement,
-  );
-  return response.data.uids.get("x");
-}
-
-export function newPerson2(
+export function newPerson(
   hostName: string,
   firstName: string,
   lastName: string,
@@ -149,7 +110,7 @@ function getPersonCount(): i32 {
   `;
 
   const response = connection.invokeGraphqlApi<AggregatePersonResult>(
-    dgraph_gql_host,
+    dgraph_host,
     statement,
   );
   return response.data.aggregatePerson.count;
@@ -169,7 +130,7 @@ export function getRandomPerson(): Person {
   `;
 
   const results = connection.invokeGraphqlApi<PeopleData>(
-    dgraph_gql_host,
+    dgraph_host,
     statement,
   );
   const person = results.data.people[0];
