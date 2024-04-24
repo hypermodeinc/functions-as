@@ -42,13 +42,8 @@
       "authHeader": "x-api-key"
     },
     {
-      "name": "dgraph-gql",
+      "name": "dgraph",
       "endpoint": "https://blue-sky.cloud.dgraph.io/graphql",
-      "authHeader": "X-Auth-Token"
-    },
-    {
-      "name": "dgraph-dql",
-      "endpoint": "https://blue-sky.cloud.dgraph.io",
       "authHeader": "X-Auth-Token"
     }
   ]

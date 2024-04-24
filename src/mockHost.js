@@ -1,22 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export default class MockHost {
-  executeDQL(pHostName, pStatement, pVariables, isMutation) {
-    const hostName = this.getString(pHostName);
-    const statement = this.getString(pStatement);
-    const variables = this.getString(pVariables);
-
-    if (isMutation) {
-      throw new Error(`Unmocked DQL Mutation: ${statement}`);
-    } else {
-      switch (statement) {
-        case "ping":
-          return this.newString('{"data":"pong"}');
-      }
-
-      throw new Error(`Unmocked DQL Query: ${statement}`);
-    }
-  }
-
   executeGQL(pHostName, pStatement, pVariables) {
     const hostName = this.getString(pHostName);
     const statement = this.getString(pStatement);
@@ -89,7 +72,6 @@ export default class MockHost {
 
   getImports() {
     return {
-      executeDQL: this.executeDQL.bind(this),
       executeGQL: this.executeGQL.bind(this),
       invokeClassifier: this.invokeClassifier.bind(this),
       computeEmbedding: this.computeEmbedding.bind(this),
