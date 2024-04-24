@@ -43,6 +43,7 @@ export class TypeDefinition implements TypeInfo {
     if (typeMap.has(this.path)) return true;
     if (this.path.startsWith("~lib/array/Array<")) return true;
     if (this.path.startsWith("~lib/map/Map<")) return true;
+    if (this.path.startsWith("~lib/@hypermode/")) return true;
 
     return false;
   }

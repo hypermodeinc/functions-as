@@ -1,5 +1,10 @@
 # Change Log
 
+# UNRELEASED
+
+- **(BREAKING)** Most APIs for host functions have been renamed. [#44](https://github.com/gohypermode/functions-as/pull/44)
+- Types used by host functions are captured in the metadata. [#65](https://github.com/gohypermode/functions-as/pull/65)
+
 # 2024-04-18 - Version 0.5.0
 
 _Note: Requires Hypermode Runtime v0.5.0 or newer_
