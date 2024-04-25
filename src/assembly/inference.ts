@@ -71,8 +71,7 @@ export abstract class inference {
     modelName: string,
     texts: Map<string, string>,
   ): Map<string, f64[]> {
-    const response = host.computeEmbedding(modelName, JSON.stringify(texts));
-    return JSON.parse<Map<string, f64[]>>(response);
+    return host.computeEmbedding(modelName, texts);
   }
 
   public static generateText(

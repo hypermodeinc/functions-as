@@ -16,8 +16,8 @@ export declare function invokeClassifier(
 
 export declare function computeEmbedding(
   modelName: string,
-  sentenceMap: string,
-): string;
+  sentenceMap: Map<string, string>,
+): Map<string, f64[]>;
 
 export declare function invokeTextGenerator(
   modelId: string,
