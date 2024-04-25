@@ -6,7 +6,7 @@
 export declare function executeGQL(
   hostName: string,
   statement: string,
-  parameters: string,
+  variables: string,
 ): string;
 
 export declare function invokeClassifier(

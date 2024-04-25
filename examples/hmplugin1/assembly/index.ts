@@ -1,9 +1,5 @@
 import { JSON } from "json-as";
-import {
-  connection,
-  inference,
-  QueryParameters,
-} from "@hypermode/functions-as";
+import { connection, inference, QueryVariables } from "@hypermode/functions-as";
 
 export function add(a: i32, b: i32): i32 {
   return a + b;
@@ -44,14 +40,14 @@ export function queryPeopleWithVars(
     }
   `;
 
-  const parameters = new QueryParameters();
-  parameters.set("firstName", firstName);
-  parameters.set("lastName", lastName);
+  const vars = new QueryVariables();
+  vars.set("firstName", firstName);
+  vars.set("lastName", lastName);
 
   const response = connection.invokeGraphqlApi<PeopleData>(
     dgraph_host,
     statement,
-    parameters,
+    vars,
   );
   const people = response.data.people;
   people.forEach((p) => p.updateFullName());

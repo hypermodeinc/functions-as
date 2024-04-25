@@ -1,5 +1,5 @@
 import * as host from "./hypermode";
-import { QueryParameters } from "./queryparams";
+import { QueryVariables } from "./queryvars";
 import { GQLResponse } from "./types/gqltypes";
 import { JSON } from "json-as";
 
@@ -7,10 +7,10 @@ export abstract class connection {
   static invokeGraphqlApi<TData>(
     hostName: string,
     statement: string,
-    parameters: QueryParameters = new QueryParameters(),
+    variables: QueryVariables = new QueryVariables(),
   ): GQLResponse<TData> {
-    const paramsJson = parameters.toJSON();
-    const response = host.executeGQL(hostName, statement, paramsJson);
+    const varsJson = variables.toJSON();
+    const response = host.executeGQL(hostName, statement, varsJson);
     return JSON.parse<GQLResponse<TData>>(response);
   }
 }
