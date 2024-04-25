@@ -1,3 +1,5 @@
+// We need this import for some reason or we get a compile error. Probably a bug in json-as.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { JSON } from "json-as";
 
 
