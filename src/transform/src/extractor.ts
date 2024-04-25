@@ -169,9 +169,12 @@ export class Extractor {
 
   private getHostFunctions() {
     const results: importExportInfo[] = [];
-    this.program.moduleImports.get("hypermode").forEach((v, k) => {
-      results.push({ name: k, function: v.internalName });
-    });
+    const hypermodeImports = this.program.moduleImports.get("hypermode");
+    if (hypermodeImports) {
+      hypermodeImports.forEach((v, k) => {
+        results.push({ name: k, function: v.internalName });
+      });
+    }
     return results;
   }
 
