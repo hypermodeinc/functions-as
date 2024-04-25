@@ -49,12 +49,12 @@ export function queryPeopleWithVars(
     statement,
     vars,
   );
-  const people = response.data.people;
+  const people = response.data!.people;
   people.forEach((p) => p.updateFullName());
   return people;
 }
 
-export function queryPeople(): Person[] {
+export function queryPeople(): Person[] | null {
   const statement = `
     query {
       people: queryPerson {
@@ -69,7 +69,8 @@ export function queryPeople(): Person[] {
     dgraph_host,
     statement,
   );
-  return results.data.people;
+  if (!results.data) return [];
+  return results.data!.people;
 }
 
 export function newPerson(
@@ -93,7 +94,7 @@ export function newPerson(
     hostName,
     statement,
   );
-  const person = response.data.addPerson.people[0];
+  const person = response.data!.addPerson.people[0];
   person.updateFullName();
   return person;
 }
@@ -111,10 +112,10 @@ function getPersonCount(): i32 {
     dgraph_host,
     statement,
   );
-  return response.data.aggregatePerson.count;
+  return response.data!.aggregatePerson.count;
 }
 
-export function getRandomPerson(): Person {
+export function getRandomPerson(): Person | null {
   const count = getPersonCount();
   const offset = <u32>Math.floor(Math.random() * count);
   const statement = `
@@ -131,7 +132,8 @@ export function getRandomPerson(): Person {
     dgraph_host,
     statement,
   );
-  const person = results.data.people[0];
+  if (!results.data || results.data!.people.length == 0) return null;
+  const person = results.data!.people[0];
   person.updateFullName();
   return person;
 }
