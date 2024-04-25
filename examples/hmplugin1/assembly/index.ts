@@ -73,6 +73,16 @@ export function queryPeople(): Person[] | null {
   return results.data!.people;
 }
 
+export function testBadQuery(): Person[] {
+  const statement = "this is a bad query";
+  const results = connection.invokeGraphqlApi<PeopleData>(
+    dgraph_host,
+    statement,
+  );
+  if (!results.data) return [];
+  return results.data!.people;
+}
+
 export function newPerson(
   hostName: string,
   firstName: string,
