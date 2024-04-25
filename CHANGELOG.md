@@ -1,5 +1,9 @@
 # Change Log
 
+# UNRELEASED
+
+- Fixed compilation transform error when there are no host functions used. [#68](https://github.com/gohypermode/functions-as/pull/68)
+
 # 2024-04-25 - Version 0.6.0
 
 _Note: Requires Hypermode Runtime v0.6.0 or newer_
