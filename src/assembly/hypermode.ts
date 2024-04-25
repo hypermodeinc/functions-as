@@ -20,7 +20,7 @@ export declare function computeEmbedding(
 ): Map<string, f64[]>;
 
 export declare function invokeTextGenerator(
-  modelId: string,
+  modelName: string,
   instruction: string,
   sentence: string,
   format: string,

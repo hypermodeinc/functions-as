@@ -13,9 +13,9 @@ export default class MockHost {
     throw new Error(`Unmocked GraphQL Query: ${statement}`);
   }
 
-  invokeClassifier(pModelId, pSentence) {
-    const modelId = this.getString(pModelId);
-    const sentence = this.getString(pSentence);
+  invokeClassifier(pModelName, pSentenceMap) {
+    const modelName = this.getString(pModelName);
+    const sentenceMap = this.getString(pSentenceMap);
 
     return this.newString(
       '{ \
@@ -33,17 +33,17 @@ export default class MockHost {
     );
   }
 
-  computeEmbedding(pModelId, pSentence) {
-    const modelId = this.getString(pModelId);
-    const sentence = this.getString(pSentence);
+  computeEmbedding(pModelName, pSentenceMap) {
+    const modelName = this.getString(pModelName);
+    const sentenceMap = this.getString(pSentenceMap);
 
     return this.newString(
       '{"text": [0.1, 0.2, 0.3], "text2": [0.2, 0.3, 0.4]}',
     );
   }
 
-  invokeTextGenerator(pModelId, pInstruction, pSentence, pFormat) {
-    const modelId = this.getString(pModelId);
+  invokeTextGenerator(pModelName, pInstruction, pSentence, pFormat) {
+    const modelName = this.getString(pModelName);
     const instruction = this.getString(pInstruction);
     const sentence = this.getString(pSentence);
     const format = this.getString(pFormat);
