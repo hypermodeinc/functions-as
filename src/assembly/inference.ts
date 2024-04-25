@@ -1,4 +1,5 @@
 import * as host from "./hypermode";
+import * as utils from "./utils";
 import { JSON } from "json-as";
 
 export abstract class inference {
@@ -57,8 +58,11 @@ export abstract class inference {
     modelName: string,
     texts: Map<string, string>,
   ): Map<string, Map<string, f32>> {
-    const response = host.invokeClassifier(modelName, JSON.stringify(texts));
-    return JSON.parse<Map<string, Map<string, f32>>>(response);
+    const result = host.invokeClassifier(modelName, texts);
+    if (utils.resultIsInvalid(result)) {
+      throw new Error("Unable to classify text.");
+    }
+    return result;
   }
 
   public static getTextEmbedding(modelName: string, text: string): f64[] {
@@ -72,8 +76,11 @@ export abstract class inference {
     modelName: string,
     texts: Map<string, string>,
   ): Map<string, f64[]> {
-    const response = host.computeEmbedding(modelName, JSON.stringify(texts));
-    return JSON.parse<Map<string, f64[]>>(response);
+    const result = host.computeEmbedding(modelName, texts);
+    if (utils.resultIsInvalid(result)) {
+      throw new Error("Unable to compute embeddings.");
+    }
+    return result;
   }
 
   public static generateText(
@@ -81,7 +88,16 @@ export abstract class inference {
     instruction: string,
     prompt: string,
   ): string {
-    return host.invokeTextGenerator(modelName, instruction, prompt, "text");
+    const result = host.invokeTextGenerator(
+      modelName,
+      instruction,
+      prompt,
+      "text",
+    );
+    if (utils.resultIsInvalid(result)) {
+      throw new Error("Unable to generate text.");
+    }
+    return result;
   }
 
   public static generateData<TData>(
@@ -97,14 +113,18 @@ export abstract class inference {
       "\n" +
       instruction;
 
-    const generated = host.invokeTextGenerator(
+    const result = host.invokeTextGenerator(
       modelName,
       modifiedInstruction,
       text,
       "json_object",
     );
 
-    return JSON.parse<TData>(generated, true);
+    if (utils.resultIsInvalid(result)) {
+      throw new Error("Unable to generate data.");
+    }
+
+    return JSON.parse<TData>(result, true);
   }
 
   public static generateList<TData>(
@@ -122,14 +142,18 @@ export abstract class inference {
       "]}\n" +
       instruction;
 
-    const generated = host.invokeTextGenerator(
+    const result = host.invokeTextGenerator(
       modelName,
       modifiedInstruction,
       text,
       "json_object",
     );
 
-    const jsonList = JSON.parse<Map<string, TData[]>>(generated, true);
+    if (utils.resultIsInvalid(result)) {
+      throw new Error("Unable to generate data.");
+    }
+
+    const jsonList = JSON.parse<Map<string, TData[]>>(result, true);
     return jsonList.get("list");
   }
 }
