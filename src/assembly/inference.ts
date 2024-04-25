@@ -57,8 +57,7 @@ export abstract class inference {
     modelName: string,
     texts: Map<string, string>,
   ): Map<string, Map<string, f32>> {
-    const response = host.invokeClassifier(modelName, JSON.stringify(texts));
-    return JSON.parse<Map<string, Map<string, f32>>>(response);
+    return host.invokeClassifier(modelName, texts);
   }
 
   public static getTextEmbedding(modelName: string, text: string): f64[] {

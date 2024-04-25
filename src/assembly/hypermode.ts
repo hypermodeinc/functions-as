@@ -11,8 +11,8 @@ export declare function executeGQL(
 
 export declare function invokeClassifier(
   modelName: string,
-  sentenceMap: string,
-): string;
+  sentenceMap: Map<string, string>,
+): Map<string, Map<string, f32>>;
 
 export declare function computeEmbedding(
   modelName: string,
