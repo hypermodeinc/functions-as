@@ -197,8 +197,48 @@ export function testEmbeddings(ids: string, texts: string): EmbeddingObject[] {
   return resultObjs;
 }
 
-export function testTextGenerator(instruction: string, text: string): string {
+export function testGenerateText(instruction: string, text: string): string {
   return inference.generateText(openai_generator_model, instruction, text);
+}
+
+
+@json
+class Product {
+  id: string | null = null;
+  name: string = "";
+  price: f64 = 0.0;
+  description: string = "";
+}
+
+const sampleProduct = <Product>{
+  id: "123",
+  name: "Shoes",
+  price: 50.0,
+  description: "Great shoes for walking.",
+};
+
+export function testGenerateProduct(
+  instruction: string,
+  text: string,
+): Product {
+  return inference.generateData<Product>(
+    openai_generator_model,
+    instruction,
+    text,
+    sampleProduct,
+  );
+}
+
+export function testGenerateProducts(
+  instruction: string,
+  text: string,
+): Product[] {
+  return inference.generateList<Product>(
+    openai_generator_model,
+    instruction,
+    text,
+    sampleProduct,
+  );
 }
 
 

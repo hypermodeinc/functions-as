@@ -42,6 +42,11 @@
       "authHeader": "x-api-key"
     },
     {
+      "name": "openai",
+      "endpoint": "https://api.openai.com/v1",
+      "authHeader": "x-api-key"
+    },
+    {
       "name": "dgraph",
       "endpoint": "https://blue-sky.cloud.dgraph.io/graphql",
       "authHeader": "X-Auth-Token"
