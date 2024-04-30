@@ -1,2 +1,0 @@
-# don't run prettier on graphql files, because it places every directive on a new line
-*.graphql

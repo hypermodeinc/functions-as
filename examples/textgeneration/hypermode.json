@@ -1,0 +1,19 @@
+{
+  "$schema": "https://raw.githubusercontent.com/gohypermode/manifest/latest/hypermode.schema.json",
+  "models": [
+    {
+      "name": "text_generator",
+      "task": "generation",
+      "sourceModel": "gpt-3.5-turbo",
+      "provider": "openai",
+      "host": "openai"
+    }
+  ],
+  "hosts": [
+    {
+      "name": "openai",
+      "endpoint": "https://api.openai.com/v1",
+      "authHeader": "x-api-key"
+    }
+  ]
+}

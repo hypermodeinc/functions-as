@@ -1,7 +1,8 @@
 {
-  "name": "hmplugin1",
+  "name": "simple-example",
+  "private": true,
   "version": "1.0.0",
-  "description": "Hypermode Example Plugin",
+  "description": "Hypermode Functions Simple Example",
   "author": "Hypermode, Inc.",
   "license": "MIT",
   "type": "module",
