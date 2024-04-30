@@ -26,3 +26,20 @@ export function getRandomPerson(): Person {
   const person = people[index];
   return person;
 }
+
+// This function demonstrates various ways to log messages and errors.
+export function testErrors(): void {
+  // This is a simple log message. It has no level.
+  console.log("This is a simple log message.");
+
+  // These messages are logged at different levels.
+  console.debug("This is a debug message.");
+  console.info("This is an info message.");
+  console.warn("This is a warning message.");
+
+  // This logs an error message, but allows the function to continue.
+  console.error("This is an error message.");
+
+  // This throws an error, which will log the message as "fatal" and exit the function.
+  throw new Error("This is a message from a thrown error.");
+}
