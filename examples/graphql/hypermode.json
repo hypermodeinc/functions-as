@@ -1,0 +1,11 @@
+{
+  "$schema": "https://raw.githubusercontent.com/gohypermode/manifest/latest/hypermode.schema.json",
+  "models": [],
+  "hosts": [
+    {
+      "name": "dgraph",
+      "endpoint": "https://blue-sky.cloud.dgraph.io/graphql",
+      "authHeader": "X-Auth-Token"
+    }
+  ]
+}

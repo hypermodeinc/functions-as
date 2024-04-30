@@ -4,6 +4,7 @@ import {
   Class,
   ElementKind,
   Function as Func,
+  FunctionDeclaration,
   Program,
   Property,
   Type,
@@ -29,17 +30,11 @@ export class Extractor {
 
   getProgramInfo(): ProgramInfo {
     const functions = this.getExportedFunctions()
-      .map((e) => {
-        const f = this.program.instancesByName.get(e.functionName) as Func;
-        return new FunctionSignature(
-          e.exportName,
-          f.signature.parameterTypes.map((t, i) => ({
-            name: f.localsByIndex[i].name,
-            type: getTypeInfo(t),
-          })),
-          getTypeInfo(f.signature.returnType),
-        );
-      })
+      .map((e) => this.convertToFunctionSignature(e))
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    const hostFunctions = this.getHostFunctions()
+      .map((e) => this.convertToFunctionSignature(e))
       .sort((a, b) => a.name.localeCompare(b.name));
 
     const allTypes = new Map<string, TypeDefinition>(
@@ -59,9 +54,11 @@ export class Extractor {
     );
 
     const typePathsUsed = new Set(
-      functions.flatMap((f) =>
-        f.parameters.map((p) => p.type.path).concat(f.returnType.path),
-      ),
+      functions
+        .concat(hostFunctions)
+        .flatMap((f) =>
+          f.parameters.map((p) => p.type.path).concat(f.returnType.path),
+        ),
     );
 
     const typesUsed = new Map<string, TypeDefinition>();
@@ -147,11 +144,8 @@ export class Extractor {
       }));
   }
 
-  private getExportedFunctions(): {
-    exportName: string;
-    functionName: string;
-  }[] {
-    const results = [];
+  private getExportedFunctions() {
+    const results: importExportInfo[] = [];
 
     for (let i = 0; i < this.module.getNumExports(); ++i) {
       const ref = this.module.getExportByIndex(i);
@@ -167,11 +161,40 @@ export class Extractor {
       }
 
       const functionName = info.value.replace(/^export:/, "");
-      results.push({ exportName, functionName });
+      results.push({ name: exportName, function: functionName });
     }
 
     return results;
   }
+
+  private getHostFunctions() {
+    const results: importExportInfo[] = [];
+    const hypermodeImports = this.program.moduleImports.get("hypermode");
+    if (hypermodeImports) {
+      hypermodeImports.forEach((v, k) => {
+        results.push({ name: k, function: v.internalName });
+      });
+    }
+    return results;
+  }
+
+  private convertToFunctionSignature(e: importExportInfo): FunctionSignature {
+    const f = this.program.instancesByName.get(e.function) as Func;
+    const d = f.declaration as FunctionDeclaration;
+    return new FunctionSignature(
+      e.name,
+      f.signature.parameterTypes.map((t, i) => ({
+        name: d.signature.parameters[i].name.text,
+        type: getTypeInfo(t),
+      })),
+      getTypeInfo(f.signature.returnType),
+    );
+  }
+}
+
+interface importExportInfo {
+  name: string;
+  function: string;
 }
 
 export function getTypeInfo(t: Type): TypeInfo {

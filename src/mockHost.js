@@ -1,22 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export default class MockHost {
-  executeDQL(pHostName, pStatement, pVariables, isMutation) {
-    const hostName = this.getString(pHostName);
-    const statement = this.getString(pStatement);
-    const variables = this.getString(pVariables);
-
-    if (isMutation) {
-      throw new Error(`Unmocked DQL Mutation: ${statement}`);
-    } else {
-      switch (statement) {
-        case "ping":
-          return this.newString('{"data":"pong"}');
-      }
-
-      throw new Error(`Unmocked DQL Query: ${statement}`);
-    }
-  }
-
   executeGQL(pHostName, pStatement, pVariables) {
     const hostName = this.getString(pHostName);
     const statement = this.getString(pStatement);
@@ -30,9 +13,9 @@ export default class MockHost {
     throw new Error(`Unmocked GraphQL Query: ${statement}`);
   }
 
-  invokeClassifier(pModelId, pSentence) {
-    const modelId = this.getString(pModelId);
-    const sentence = this.getString(pSentence);
+  invokeClassifier(pModelName, pSentenceMap) {
+    const modelName = this.getString(pModelName);
+    const sentenceMap = this.getString(pSentenceMap);
 
     return this.newString(
       '{ \
@@ -50,17 +33,17 @@ export default class MockHost {
     );
   }
 
-  computeEmbedding(pModelId, pSentence) {
-    const modelId = this.getString(pModelId);
-    const sentence = this.getString(pSentence);
+  computeEmbedding(pModelName, pSentenceMap) {
+    const modelName = this.getString(pModelName);
+    const sentenceMap = this.getString(pSentenceMap);
 
     return this.newString(
       '{"text": [0.1, 0.2, 0.3], "text2": [0.2, 0.3, 0.4]}',
     );
   }
 
-  invokeTextGenerator(pModelId, pInstruction, pSentence, pFormat) {
-    const modelId = this.getString(pModelId);
+  invokeTextGenerator(pModelName, pInstruction, pSentence, pFormat) {
+    const modelName = this.getString(pModelName);
     const instruction = this.getString(pInstruction);
     const sentence = this.getString(pSentence);
     const format = this.getString(pFormat);
@@ -89,7 +72,6 @@ export default class MockHost {
 
   getImports() {
     return {
-      executeDQL: this.executeDQL.bind(this),
       executeGQL: this.executeGQL.bind(this),
       invokeClassifier: this.invokeClassifier.bind(this),
       computeEmbedding: this.computeEmbedding.bind(this),

@@ -1,40 +1,28 @@
 import * as host from "./hypermode";
-import { QueryParameters } from "./queryparams";
+import * as utils from "./utils";
+import { QueryVariables } from "./queryvars";
 import { GQLResponse } from "./types/gqltypes";
 import { JSON } from "json-as";
-import { DQLResponse, DQLMutationResponse } from "./types/dqltypes";
 
 export abstract class connection {
   static invokeGraphqlApi<TData>(
     hostName: string,
     statement: string,
-    parameters: QueryParameters = new QueryParameters(),
+    variables: QueryVariables = new QueryVariables(),
   ): GQLResponse<TData> {
-    const paramsJson = parameters.toJSON();
-    const response = host.executeGQL(hostName, statement, paramsJson);
-    return JSON.parse<GQLResponse<TData>>(response);
-  }
+    const varsJson = variables.toJSON();
+    const response = host.executeGQL(hostName, statement, varsJson);
+    if (utils.resultIsInvalid(response)) {
+      throw new Error("Error invoking GraphQL API.");
+    }
 
-  public static invokeDgraphDqlMutation(
-    hostName: string,
-    query: string,
-    parameters: QueryParameters = new QueryParameters(),
-  ): DQLResponse<DQLMutationResponse> {
-    return this.invokeDQL<DQLMutationResponse>(
-      hostName,
-      true,
-      query,
-      parameters,
-    );
+    const results = JSON.parse<GQLResponse<TData>>(response);
+    if (results.errors) {
+      console.error("GraphQL API Errors:" + JSON.stringify(results.errors));
+    }
+    return results;
   }
-
-  public static invokeDgraphDqlQuery<TData>(
-    hostName: string,
-    query: string,
-    parameters: QueryParameters = new QueryParameters(),
-  ): DQLResponse<TData> {
-    return this.invokeDQL<TData>(hostName, false, query, parameters);
-  }
+  
   public static fetchGet<TData>(
     hostName: string,
     query: string,
@@ -42,19 +30,5 @@ export abstract class connection {
     const response = host.fetchGet(hostName, query);
     return JSON.parse<TData>(response);
 
-  }
-
-
-
-
-  private static invokeDQL<TData>(
-    hostName: string,
-    isMutation: bool,
-    query: string,
-    parameters: QueryParameters,
-  ): DQLResponse<TData> {
-    const paramsJson = parameters.toJSON();
-    const response = host.executeDQL(hostName, query, paramsJson, isMutation);
-    return JSON.parse<DQLResponse<TData>>(response);
   }
 }

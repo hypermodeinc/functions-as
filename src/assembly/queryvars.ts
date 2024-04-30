@@ -1,28 +1,28 @@
 import { Variant } from "as-variant/assembly";
 import { JSON } from "json-as";
 
-export class QueryParameters {
-  private parameters: Map<string, Variant> = new Map<string, Variant>();
+export class QueryVariables {
+  private variables: Map<string, Variant> = new Map<string, Variant>();
 
   public set<T>(name: string, value: T): void {
-    this.parameters.set(name, Variant.from(value));
+    this.variables.set(name, Variant.from(value));
   }
 
   public toJSON(): string {
     /*
     The following would be ideal but is not currently supported:
       
-        return JSON.stringify(this.parameters);
+        return JSON.stringify(this.variables);
     
     See https://github.com/JairusSW/as-json/issues/64
     Instead, we have to manually create a JSON string.
     */
     const segments: string[] = [];
 
-    const keys = this.parameters.keys();
-    const values = this.parameters.values();
+    const keys = this.variables.keys();
+    const values = this.variables.values();
 
-    for (let i = 0; i < this.parameters.size; i++) {
+    for (let i = 0; i < this.variables.size; i++) {
       const key = JSON.stringify(keys[i]);
       const value = values[i];
 
@@ -105,7 +105,7 @@ export class QueryParameters {
 
         default:
           throw new Error(
-            "Query parameters must be simple types, or arrays of simple types.",
+            "Query variables must be simple types, or arrays of simple types.",
           );
       }
     }

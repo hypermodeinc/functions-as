@@ -14,7 +14,59 @@ updates:
           - "patch"
 
   - package-ecosystem: "npm"
-    directory: "/examples/hmplugin1"
+    directory: "/examples/simple"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "16:00"
+    groups:
+      minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "npm"
+    directory: "/examples/classification"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "16:00"
+    groups:
+      minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "npm"
+    directory: "/examples/embedding"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "16:00"
+    groups:
+      minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "npm"
+    directory: "/examples/graphql"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "16:00"
+    groups:
+      minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "npm"
+    directory: "/examples/textgeneration"
     schedule:
       interval: "weekly"
       day: "wednesday"
