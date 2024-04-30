@@ -3,13 +3,18 @@
 ![NPM Version](https://img.shields.io/npm/v/%40hypermode%2Ffunctions-as)
 ![NPM Downloads](https://img.shields.io/npm/dw/%40hypermode%2Ffunctions-as)
 
-# Hypermode Functions Library for AssemblyScript
+# Hypermode Functions SDK for AssemblyScript
 
-This repository contains the shared library used by Hypermode functions written in
-[AssemblyScript](https://www.assemblyscript.org/).
+This repository contains the SDK used by [Hypermode](https://hypermode.com)
+Functions written in [AssemblyScript](https://www.assemblyscript.org/).
 
-It provides access to the core functionality of the Hypermode platform,
-and helper classes and functions for use with Hypermode Functions.
+The SDK provides a library to access the Hypermode platform, and helper classes
+and functions for use with Hypermode Functions, and examples to demonstrate usage.
+
+## Documentation
+
+Please visit [docs.hypermode.com](https://docs.hypermode.com/) for detailed docs
+covering the Hypermode platform, including this SDK.
 
 ## Getting Started
 
