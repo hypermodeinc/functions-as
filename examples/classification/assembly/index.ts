@@ -2,7 +2,7 @@ import { inference } from "@hypermode/functions-as";
 import { JSON } from "json-as";
 
 // This model name should match one defined in the hypermode.json manifest file.
-const modelName: string = "my_custom_classifier";
+const modelName: string = "my-custom-classifier";
 
 // This function takes input text and a probability threshold, and returns the
 // classification label determined by the model.
