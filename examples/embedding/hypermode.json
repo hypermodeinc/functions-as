@@ -1,24 +1,24 @@
 {
-  "$schema": "https://raw.githubusercontent.com/gohypermode/manifest/latest/hypermode.schema.json",
+  "$schema": "https://manifest.hypermode.com/hypermode.json",
   "models": [
     {
-      "name": "my_embedding",
+      "name": "my-embedding",
       "task": "embedding",
       "sourceModel": "sentence-transformers/all-MiniLM-L6-v2",
       "host": "hypermode",
       "provider": "hugging-face"
     },
     {
-      "name": "my_custom_embedding",
+      "name": "my-custom-embedding",
       "task": "embedding",
       "sourceModel": "all-MiniLM-L6-v2",
-      "host": "aws_embedding",
+      "host": "aws-embedding",
       "provider": "custom"
     }
   ],
   "hosts": [
     {
-      "name": "aws_embedding",
+      "name": "aws-embedding",
       "endpoint": "https://2f050wcjqd.execute-api.us-east-1.amazonaws.com/dev/embedding",
       "authHeader": "x-api-key"
     }

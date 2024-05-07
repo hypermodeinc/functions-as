@@ -28,7 +28,7 @@ export abstract class inference {
 
     const keys = labels.keys();
     let max = labels.get(keys[0]);
-    let result = "";
+    let result = keys[0];
     for (let i = 1; i < keys.length; i++) {
       const key = keys[i];
       const value = labels.get(key);

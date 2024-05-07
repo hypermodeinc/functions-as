@@ -2,7 +2,7 @@ import { inference } from "@hypermode/functions-as";
 import { Product, sampleProduct } from "./product";
 
 // This model name should match the one defined in the hypermode.json manifest file.
-const modelName: string = "text_generator";
+const modelName: string = "text-generator";
 
 // This function generates some text based on the instruction and prompt provided.
 export function generateText(instruction: string, prompt: string): string {
