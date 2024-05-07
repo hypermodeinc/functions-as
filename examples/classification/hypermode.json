@@ -2,23 +2,23 @@
   "$schema": "https://manifest.hypermode.com/hypermode.json",
   "models": [
     {
-      "name": "my_classifier",
+      "name": "my-classifier",
       "task": "classification",
       "sourceModel": "distilbert/distilbert-base-uncased",
       "host": "hypermode",
       "provider": "hugging-face"
     },
     {
-      "name": "my_custom_classifier",
+      "name": "my-custom-classifier",
       "task": "classification",
       "sourceModel": "distilbert-base-uncased",
-      "host": "aws_classifier",
+      "host": "aws-classifier",
       "provider": "custom"
     }
   ],
   "hosts": [
     {
-      "name": "aws_classifier",
+      "name": "aws-classifier",
       "endpoint": "https://nerpndlnl6.execute-api.us-east-1.amazonaws.com/dev/classifier",
       "authHeader": "x-api-key"
     }

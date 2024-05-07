@@ -2,7 +2,7 @@ import { inference } from "@hypermode/functions-as";
 import { JSON } from "json-as";
 
 // This model name should match one defined in the hypermode.json manifest file.
-const modelName: string = "my_custom_embedding";
+const modelName: string = "my-custom-embedding";
 
 // This function takes input text and returns the vector embedding for that text.
 export function testEmbedding(text: string): f64[] {
