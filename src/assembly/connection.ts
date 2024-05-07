@@ -22,25 +22,27 @@ export abstract class connection {
     }
     return results;
   }
-  
-  public static fetch<TData>(
-    hostName: string,
-    request: HtttpRequest
-  ): TData {
+
+  public static fetch<TData>(hostName: string, request: HtttpRequest): TData {
     if (request.method != "POST" && request.body != "GET") {
       throw new Error("HttpRequest method muts be GET or POST");
     }
     // Convert the request object to a JSON string until runtime supports Object passing
-    const response = host.fetch(hostName, request.method, request.path, request.body, request.headers);
+    const response = host.fetch(
+      hostName,
+      request.method,
+      request.path,
+      request.body,
+      request.headers,
+    );
     return JSON.parse<TData>(response);
-
   }
 }
 /* HttpRequest class. Base url is provided by the host configuration.
-  * The Request class is used to make HTTP requests to the host.
-  * The host configuration is provided by the user in the hypermode.json file.
-  * Security is handled by the host configuration.
-  */
+ * The Request class is used to make HTTP requests to the host.
+ * The host configuration is provided by the user in the hypermode.json file.
+ * Security is handled by the host configuration.
+ */
 export class HtttpRequest {
   method: string = "GET";
   path: string = "";
