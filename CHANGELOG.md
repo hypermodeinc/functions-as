@@ -3,7 +3,7 @@
 # UNRELEASED
 
 - Fixed threshold logic bug in `inference.classifyText` [#76](https://github.com/gohypermode/functions-as/pull/76)
-- Align `hypermode.json` examples to changes in manifest schema [#79](https://github.com/gohypermode/functions-as/pull/79) [#80](https://github.com/gohypermode/functions-as/pull/80)
+- Align `hypermode.json` examples to changes in manifest schema [#79](https://github.com/gohypermode/functions-as/pull/79) [#80](https://github.com/gohypermode/functions-as/pull/80) [#81](https://github.com/gohypermode/functions-as/pull/81)
 
 # 2024-04-25 - Version 0.6.1
 
