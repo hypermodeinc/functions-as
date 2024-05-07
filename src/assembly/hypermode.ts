@@ -26,7 +26,10 @@ export declare function invokeTextGenerator(
   format: string,
 ): string;
 
-export declare function fetchGet(
+export declare function fetch(
   hostName: string,
-  statement: string,
+  method: string,
+  path: string,
+  body: string,
+  headers: Map<string, string>,
 ): string;
