@@ -27,6 +27,9 @@ export abstract class connection {
     hostName: string,
     request: HtttpRequest
   ): TData {
+    if (request.method != "POST" && request.body != "GET") {
+      throw new Error("HttpRequest method muts be GET or POST");
+    }
     // Convert the request object to a JSON string until runtime supports Object passing
     const response = host.fetch(hostName, request.method, request.path, request.body, request.headers);
     return JSON.parse<TData>(response);
