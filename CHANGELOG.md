@@ -1,6 +1,8 @@
 # Change Log
 
-# UNRELEASED
+# 2024-05-13 - Version 0.7.0
+
+_Note: Requires Hypermode Runtime v0.7.0 or newer_
 
 - Fixed threshold logic bug in `inference.classifyText` [#76](https://github.com/gohypermode/functions-as/pull/76)
 - Align `hypermode.json` examples to changes in manifest schema [#79](https://github.com/gohypermode/functions-as/pull/79) [#80](https://github.com/gohypermode/functions-as/pull/80) [#81](https://github.com/gohypermode/functions-as/pull/81)
