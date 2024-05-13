@@ -2,7 +2,7 @@ import { JSON } from "json-as";
 
 const emptyArrayBuffer = new ArrayBuffer(0);
 
-// @ts-ignore: decorator
+// @ts-expect-error: decorator
 @external("hypermode", "httpFetch")
 declare function fetchFromHost(request: Request): Response;
 
