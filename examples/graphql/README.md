@@ -1,6 +1,6 @@
 # Hypermode GraphQL Example Plugin
 
-This is an example shows how to call a GraphQL endpoint to execute queries and mutations.
+This example shows how to call a GraphQL endpoint to execute queries and mutations.
 
 It uses a Dgraph, at the host configured in the `hypermode.json` manifest.
 
