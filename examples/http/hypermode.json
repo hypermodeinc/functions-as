@@ -1,0 +1,22 @@
+{
+  "$schema": "https://manifest.hypermode.com/hypermode.json",
+  "hosts": [
+    {
+      "name": "example",
+      "endpoint": "https://example.com"
+    },
+    {
+      "name": "zenquotes",
+      "endpoint": "https://zenquotes.io"
+    },
+    {
+      "name": "picsum",
+      "endpoint": "https://picsum.photos"
+    },
+    {
+      "name": "github",
+      "endpoint": "https://api.github.com",
+      "authHeader": "Authorization"
+    }
+  ]
+}
