@@ -39,7 +39,7 @@ Before compiling any example, you must first do the following:
 1. Clone this repository locally:
 
    ```sh
-   git clone https://github.com/gohypermode/functions-as
+   git clone https://github.com/hypermodeAI/functions-as
    ```
 
 2. From the repository root, navigate to the `src` folder:
@@ -96,12 +96,12 @@ On a successful build, you'll find the output in the example's `build` folder.
 ### Creating your own Hypermode plugin
 
 When you are ready to start writing your own Hypermode plugin, we recommend starting
-from the [Hypermode Template Project](https://github.com/gohypermode/template-project).
+from the [Hypermode Template Project](https://github.com/hypermodeAI/template-project).
 
 It is pre-configured to use the latest version of this library, and has all of the
 necessary configuration, scripts, and workflows needed to develop your Hypermode functions.
 
-1. Navigate to the [Hypermode Template Project](https://github.com/gohypermode/template-project) repository.
+1. Navigate to the [Hypermode Template Project](https://github.com/hypermodeAI/template-project) repository.
 2. Click the "Use this template" button in the upper-right corner to create your own repository.
 3. In the `functions` folder, edit the `package.json` file to update the `name`, `version`, `description`,
    `author`, and `license` properties as needed for your purposes.
