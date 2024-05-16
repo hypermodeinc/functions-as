@@ -5,11 +5,11 @@ import process from "process";
 import console from "console";
 import semver from "semver";
 
-const npm = process.env.npm_execpath;
+const npmPath = process.env.npm_execpath;
 const pkg = process.env.npm_package_name;
 const ver = process.env.npm_package_version;
 
-if (!npm) {
+if (!npmPath) {
   console.error("This script must be run with npm.");
   process.exit(1);
 }
@@ -29,7 +29,7 @@ await validatePackageJson();
 await validateAsJson();
 
 console.log(`Building ${pkg}@${ver} in ${target} mode...`);
-const cmd = `node ${npm} exec -- asc assembly/index.ts -o build/${pkg}.wasm --target ${target}`;
+const cmd = `node "${npmPath}" exec -- asc assembly/index.ts -o build/${pkg}.wasm --target ${target}`;
 try {
   execSync(cmd, { stdio: "inherit" });
 } catch {
