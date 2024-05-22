@@ -1,8 +1,4 @@
-// For now, this import is required when we use @json, even if we're not calling
-// methods on the JSON class.  It will be fixed in the future.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { JSON } from "json-as";
-
+// These classes are used by the example functions in the index.ts file.
 
 @json
 export class Person {
