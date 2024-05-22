@@ -1,72 +1,16 @@
 version: 2
 updates:
   - package-ecosystem: "npm"
-    directory: "/src"
-    schedule:
-      interval: "weekly"
-      day: "wednesday"
-      time: "16:00"
-    groups:
-      minor-and-patch:
-        applies-to: version-updates
-        update-types:
-          - "minor"
-          - "patch"
-
-  - package-ecosystem: "npm"
-    directory: "/examples/simple"
-    schedule:
-      interval: "weekly"
-      day: "wednesday"
-      time: "16:00"
-    groups:
-      minor-and-patch:
-        applies-to: version-updates
-        update-types:
-          - "minor"
-          - "patch"
-
-  - package-ecosystem: "npm"
-    directory: "/examples/classification"
-    schedule:
-      interval: "weekly"
-      day: "wednesday"
-      time: "16:00"
-    groups:
-      minor-and-patch:
-        applies-to: version-updates
-        update-types:
-          - "minor"
-          - "patch"
-
-  - package-ecosystem: "npm"
-    directory: "/examples/embedding"
-    schedule:
-      interval: "weekly"
-      day: "wednesday"
-      time: "16:00"
-    groups:
-      minor-and-patch:
-        applies-to: version-updates
-        update-types:
-          - "minor"
-          - "patch"
-
-  - package-ecosystem: "npm"
-    directory: "/examples/graphql"
-    schedule:
-      interval: "weekly"
-      day: "wednesday"
-      time: "16:00"
-    groups:
-      minor-and-patch:
-        applies-to: version-updates
-        update-types:
-          - "minor"
-          - "patch"
-
-  - package-ecosystem: "npm"
-    directory: "/examples/textgeneration"
+    # multiple directories can be specified - see:
+    # https://github.blog/changelog/2024-04-29-dependabot-multi-directory-configuration-public-beta-now-available/
+    directories:
+      - "/src"
+      - "/examples/classification"
+      - "/examples/embedding"
+      - "/examples/graphql"
+      - "/examples/http"
+      - "/examples/simple"
+      - "/examples/textgeneration"
     schedule:
       interval: "weekly"
       day: "wednesday"
