@@ -21,9 +21,9 @@
     "xid-ts": "^1.1.0"
   },
   "devDependencies": {
-    "@types/node": "^20.12.12",
-    "@typescript-eslint/eslint-plugin": "^7.9.0",
-    "@typescript-eslint/parser": "^7.9.0",
+    "@types/node": "^20.12.13",
+    "@typescript-eslint/eslint-plugin": "^7.11.0",
+    "@typescript-eslint/parser": "^7.11.0",
     "assemblyscript": "^0.27.27",
     "assemblyscript-prettier": "^3.0.1",
     "eslint": "^8.57.0",
