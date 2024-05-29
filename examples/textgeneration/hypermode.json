@@ -1,6 +1,7 @@
 {
   "$schema": "https://manifest.hypermode.com/hypermode.json",
   "models": {
+    // This defines an external model that will be used for text generation.
     "text-generator": {
       "task": "generation",
       "sourceModel": "gpt-3.5-turbo",
@@ -9,6 +10,10 @@
     }
   },
   "hosts": {
+    // This defines the OpenAI host, which is used by the model above.
+    // The {{API_KEY}} will be replaced by the secret provided in the Hypermode Console.
+    // Note that "baseUrl" is used instead of "endpoint", because OpenAI has multiple endpoints
+    // for different tasks.  Hypermode will automatically select the correct endpoint as needed.
     "openai": {
       "baseUrl": "https://api.openai.com/",
       "headers": {
