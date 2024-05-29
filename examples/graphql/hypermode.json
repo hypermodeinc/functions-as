@@ -1,11 +1,13 @@
 {
   "$schema": "https://manifest.hypermode.com/hypermode.json",
-  "models": [],
-  "hosts": [
-    {
-      "name": "dgraph",
+  "models": {
+  },
+  "hosts": {
+    "dgraph": {
       "endpoint": "https://blue-sky.cloud.dgraph.io/graphql",
-      "authHeader": "X-Auth-Token"
+      "headers": {
+        "X-Auth-Token": "{{AUTH_TOKEN}}"
+      }
     }
-  ]
+  }
 }

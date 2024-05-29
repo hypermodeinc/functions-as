@@ -1,26 +1,25 @@
 {
   "$schema": "https://manifest.hypermode.com/hypermode.json",
-  "models": [
-    {
-      "name": "my-embedding",
+  "models": {
+    "my-embedding": {
       "task": "embedding",
       "sourceModel": "sentence-transformers/all-MiniLM-L6-v2",
       "host": "hypermode",
       "provider": "hugging-face"
     },
-    {
-      "name": "my-custom-embedding",
+    "my-custom-embedding": {
       "task": "embedding",
       "sourceModel": "all-MiniLM-L6-v2",
       "host": "aws-embedding",
       "provider": "custom"
     }
-  ],
-  "hosts": [
-    {
-      "name": "aws-embedding",
+  },
+  "hosts": {
+    "aws-embedding": {
       "endpoint": "https://2f050wcjqd.execute-api.us-east-1.amazonaws.com/dev/embedding",
-      "authHeader": "x-api-key"
+      "headers": {
+        "X-API-Key": "{{API_KEY}}"
+      }
     }
-  ]
+  }
 }
