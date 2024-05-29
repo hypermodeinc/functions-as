@@ -3,6 +3,7 @@
 ## UNRELEASED
 
 - Fixed bug in plugin build script [#87](https://github.com/gohypermode/functions-as/pull/87)
+- Updated all examples to use new manifest format [#94](https://github.com/gohypermode/functions-as/pull/94)
 
 ## 2024-05-13 - Version 0.7.0
 
