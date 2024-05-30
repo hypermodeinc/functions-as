@@ -1,26 +1,29 @@
 {
   "$schema": "https://manifest.hypermode.com/hypermode.json",
-  "models": [
-    {
-      "name": "my-embedding",
+  "models": {
+    // This defines a model from Hugging Face that is hosted on Hypermode.
+    "my-embedding": {
       "task": "embedding",
       "sourceModel": "sentence-transformers/all-MiniLM-L6-v2",
       "host": "hypermode",
       "provider": "hugging-face"
     },
-    {
-      "name": "my-custom-embedding",
+    // This defines a custom model that is hosted on AWS, at the host specified below.
+    "my-custom-embedding": {
       "task": "embedding",
       "sourceModel": "all-MiniLM-L6-v2",
       "host": "aws-embedding",
       "provider": "custom"
     }
-  ],
-  "hosts": [
-    {
-      "name": "aws-embedding",
+  },
+  "hosts": {
+    // This defines a host that is used by the custom model above.
+    // The {{API_KEY}} will be replaced by the secret provided in the Hypermode Console.
+    "aws-embedding": {
       "endpoint": "https://2f050wcjqd.execute-api.us-east-1.amazonaws.com/dev/embedding",
-      "authHeader": "x-api-key"
+      "headers": {
+        "X-API-Key": "{{API_KEY}}"
+      }
     }
-  ]
+  }
 }

@@ -1,5 +1,9 @@
 {
   "$schema": "https://manifest.hypermode.com/hypermode.json",
-  "models": [],
-  "hosts": []
+  "models": {
+    // No models are used by this example, but if you add any, they would go here.
+  },
+  "hosts": {
+    // No hosts are used by this example, but if you add any, they would go here.
+  }
 }

@@ -1,22 +1,28 @@
 {
   "$schema": "https://manifest.hypermode.com/hypermode.json",
-  "hosts": [
-    {
-      "name": "example",
-      "endpoint": "https://example.com"
+  "models": {
+    // No models are used by this example, but if you add any, they would go here.
+  },
+  "hosts": {
+    // These are the hosts used by the functions in this example project.
+    // Where secrets are required, {{SECRET_NAME}} templates are replaced with
+    // the values specified in the Hypermode Console.
+    // Note that "baseUrl" is specified instead of "endpoint", to allow for
+    // customization of the URL in the function code.
+    "example": {
+      "baseUrl": "https://example.com/"
     },
-    {
-      "name": "zenquotes",
-      "endpoint": "https://zenquotes.io"
+    "zenquotes": {
+      "baseUrl": "https://zenquotes.io/"
     },
-    {
-      "name": "picsum",
-      "endpoint": "https://picsum.photos"
+    "picsum": {
+      "baseUrl": "https://picsum.photos/"
     },
-    {
-      "name": "github",
-      "endpoint": "https://api.github.com",
-      "authHeader": "Authorization"
+    "github": {
+      "baseUrl": "https://api.github.com/",
+      "headers": {
+        "Authorization": "Bearer {{AUTH_TOKEN}}"
+      }
     }
-  ]
+  }
 }

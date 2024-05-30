@@ -37,19 +37,31 @@ export function getRandomImage(width: i32, height: i32): Image {
   };
 }
 
-// This function demonstrates a more complex HTTP call.
-// It makes a POST request to the GitHub API to create an issue.
-// See https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#create-an-issue
-// To use it, you must add a GitHub personal access token to your Hypermode secrets.
-// Create a fine-grained token at https://github.com/settings/tokens?type=beta with access
-// to write issues to the repository you want to use.
-//
-// NOTE: do not pass the Authorization header in the request.
-// Instead, set the authHeader in the hypermode.json manifest file to "Authorization".
-// The Hypermode Runtime will retrieve the token from your secrets and add it to the request.
-// The secret should be prefixed with "Bearer ".
-// In development, you can set the token as an environment variable, in an .env file if desired.
-// Example: HYP_HOST_KEY_GITHUB=Bearer <your-token>
+/** This function demonstrates a more complex HTTP call.
+    It makes a POST request to the GitHub API to create an issue.
+    See https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#create-an-issue
+    To use it, you must add a GitHub personal access token to your Hypermode secrets.
+    Create a fine-grained token at https://github.com/settings/tokens?type=beta with access
+    to write issues to the repository you want to use.
+
+    NOTE: Do not pass the Authorization header when creating the request in code.
+    That would be a security risk, as the token could be exposed in the source code repository.
+
+    Instead, configure the headers in the hypermode.json manifest as follows:
+
+    "hosts": {
+      "github": {
+        "baseUrl": "https://api.github.com/",
+        "headers": {
+          "Authorization": "Bearer {{AUTH_TOKEN}}"
+        }
+      }
+    }
+
+    The Hypermode Runtime will retrieve the token from your secrets and add it to the request.
+    To set the secret, after committing the changes to your code and manifest file, go to the
+    Hypermode Console UI, find the "github" host and add your token to the AUTH_TOKEN secret.
+**/
 export function createGithubIssue(
   owner: string,
   repo: string,

@@ -1,26 +1,29 @@
 {
   "$schema": "https://manifest.hypermode.com/hypermode.json",
-  "models": [
-    {
-      "name": "my-classifier",
+  "models": {
+    // This defines a model from Hugging Face that is hosted on Hypermode.
+    "my-classifier": {
       "task": "classification",
       "sourceModel": "distilbert/distilbert-base-uncased",
       "host": "hypermode",
       "provider": "hugging-face"
     },
-    {
-      "name": "my-custom-classifier",
+    // This defines a custom model that is hosted on AWS, at the host specified below.
+    "my-custom-classifier": {
       "task": "classification",
       "sourceModel": "distilbert-base-uncased",
       "host": "aws-classifier",
       "provider": "custom"
     }
-  ],
-  "hosts": [
-    {
-      "name": "aws-classifier",
+  },
+  "hosts": {
+    // This defines a host that is used by the custom model above.
+    // The {{API_KEY}} will be replaced by the secret provided in the Hypermode Console.
+    "aws-classifier": {
       "endpoint": "https://nerpndlnl6.execute-api.us-east-1.amazonaws.com/dev/classifier",
-      "authHeader": "x-api-key"
+      "headers": {
+        "X-API-Key": "{{API_KEY}}"
+      }
     }
-  ]
+  }
 }
