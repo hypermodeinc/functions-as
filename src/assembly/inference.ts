@@ -83,6 +83,68 @@ export abstract class inference {
     return result;
   }
 
+  public static getTextEmbeddingAndIndex(
+    modelName: string,
+    text: string,
+    collectionName: string,
+  ): f64[] {
+    const textMap = new Map<string, string>();
+    textMap.set("text", text);
+    const res = this.getTextEmbeddingsAndIndex(
+      modelName,
+      textMap,
+      collectionName,
+    );
+    return res.get("text");
+  }
+
+  public static semanticSearchForText(
+    modelName: string,
+    text: string,
+    collectionName: string,
+    numResults: i32,
+  ): string[] {
+    const textMap = new Map<string, string>();
+    textMap.set("text", text);
+    const res = this.semanticSearchForTexts(
+      modelName,
+      textMap,
+      collectionName,
+      numResults,
+    );
+    return res.get("text");
+  }
+
+  public static semanticSearchForTexts(
+    modelName: string,
+    texts: Map<string, string>,
+    collectionName: string,
+    numResults: i32,
+  ): Map<string, string[]> {
+    const result = host.embedAndSearchIndex(
+      modelName,
+      texts,
+      collectionName,
+      numResults,
+    );
+    if (utils.resultIsInvalid(result)) {
+      throw new Error("Unable to compute embeddings and search index.");
+    }
+    return result;
+  }
+
+  public static getTextEmbeddingsAndIndex(
+    modelName: string,
+    texts: Map<string, string>,
+    collectionName: string,
+  ): Map<string, f64[]> {
+    const result = host.embedAndIndex(modelName, texts, collectionName);
+    if (utils.resultIsInvalid(result)) {
+      throw new Error("Unable to compute embeddings and index.");
+    }
+    return result;
+  }
+
   public static generateText(
     modelName: string,
     instruction: string,

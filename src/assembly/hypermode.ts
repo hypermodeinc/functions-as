@@ -25,3 +25,16 @@ export declare function invokeTextGenerator(
   sentence: string,
   format: string,
 ): string;
+
+export declare function embedAndIndex(
+  modelName: string,
+  sentenceMap: Map<string, string>,
+  collectionName: string,
+): Map<string, f64[]>;
+
+export declare function embedAndSearchIndex(
+  modelName: string,
+  sentenceMap: Map<string, string>,
+  collectionName: string,
+  numResults: i32,
+): Map<string, string[]>;
