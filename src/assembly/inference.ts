@@ -83,65 +83,66 @@ export abstract class inference {
     return result;
   }
 
-  public static getTextEmbeddingAndIndex(
-    modelName: string,
-    text: string,
+  public static insertToVectorIndex(
     collectionName: string,
-  ): f64[] {
-    const textMap = new Map<string, string>();
-    textMap.set("text", text);
-    const res = this.getTextEmbeddingsAndIndex(
-      modelName,
-      textMap,
+    vectorIndexName: string,
+    id: string,
+    vector: f64[],
+  ): host.VectorIndexOperationResult {
+    return host.insertToVectorIndex(
       collectionName,
+      vectorIndexName,
+      id,
+      vector,
     );
-    return res.get("text");
   }
 
-  public static semanticSearchForText(
-    modelName: string,
-    text: string,
+  public static searchVectorIndex(
     collectionName: string,
-    numResults: i32,
-  ): string[] {
-    const textMap = new Map<string, string>();
-    textMap.set("text", text);
-    const res = this.semanticSearchForTexts(
-      modelName,
-      textMap,
+    vectorIndexName: string,
+    vector: f64[],
+    limit: i32,
+  ): host.VectorIndexOperationResult {
+    return host.searchVectorIndex(
       collectionName,
-      numResults,
+      vectorIndexName,
+      vector,
+      limit,
     );
-    return res.get("text");
   }
 
-  public static getTextEmbeddingsAndIndex(
-    modelName: string,
-    texts: Map<string, string>,
+  public static deleteFromVectorIndex(
     collectionName: string,
-  ): Map<string, f64[]> {
-    const result = host.embedAndIndex(modelName, texts, collectionName);
-    if (utils.resultIsInvalid(result)) {
-      throw new Error("Unable to compute embeddings and index.");
-    }
-    return result;
+    vectorIndexName: string,
+    id: string,
+  ): host.VectorIndexOperationResult {
+    return host.deleteFromVectorIndex(collectionName, vectorIndexName, id);
   }
 
-  public static semanticSearchForTexts(
-    modelName: string,
-    texts: Map<string, string>,
+  public static searchAndInsertToVectorIndex(
     collectionName: string,
-    numResults: i32,
-  ): Map<string, string[]> {
-    const result = host.embedAndSearchIndex(
-      modelName,
-      texts,
+    vectorIndexName: string,
+    id: string,
+    vector: f64[],
+    limit: i32,
+  ): host.VectorIndexOperationResult {
+    const searchResult = this.searchVectorIndex(
       collectionName,
-      numResults,
+      vectorIndexName,
+      vector,
+      limit,
     );
-    if (utils.resultIsInvalid(result)) {
-      throw new Error("Unable to compute embeddings and search index.");
-    }
+
+    const insertResult = this.insertToVectorIndex(
+      collectionName,
+      vectorIndexName,
+      id,
+      vector,
+    );
+
+    const result = new host.VectorIndexOperationResult();
+    result.mutation = insertResult.mutation;
+    result.query = searchResult.query;
     return result;
   }
 

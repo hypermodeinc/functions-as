@@ -26,15 +26,44 @@ export declare function invokeTextGenerator(
   format: string,
 ): string;
 
-export declare function embedAndIndex(
-  modelName: string,
-  sentenceMap: Map<string, string>,
-  collectionName: string,
-): Map<string, f64[]>;
+export class VectorIndexOperationResult {
+  mutation: VectorIndexMutationResult;
+  query: VectorIndexSearchResult;
+}
 
-export declare function embedAndSearchIndex(
-  modelName: string,
-  sentenceMap: Map<string, string>,
+export class VectorIndexMutationResult {
+  status: string;
+  operation: string;
+  id: string;
+  vector: f64[];
+}
+
+export class VectorIndexSearchResult {
+  status: string;
+  objects: VectorIndexSearchResultObject[];
+}
+
+export class VectorIndexSearchResultObject {
+  id: string;
+  score: f64;
+}
+
+export declare function insertToVectorIndex(
   collectionName: string,
-  numResults: i32,
-): Map<string, string[]>;
+  vectorIndexName: string,
+  id: string,
+  vector: f64[],
+): VectorIndexOperationResult;
+
+export declare function searchVectorIndex(
+  collectionName: string,
+  vectorIndexName: string,
+  vector: f64[],
+  limit: i32,
+): VectorIndexOperationResult;
+
+export declare function deleteFromVectorIndex(
+  collectionName: string,
+  vectorIndexName: string,
+  id: string,
+): VectorIndexOperationResult;
