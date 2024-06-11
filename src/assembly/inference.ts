@@ -83,62 +83,51 @@ export abstract class inference {
     return result;
   }
 
+  public static createVectorIndex(
+    vectorIndexName: string,
+    indexType: string,
+  ): host.VectorIndexActionResult {
+    return host.createVectorIndex(vectorIndexName, indexType);
+  }
+
+  public static removeVectorIndex(
+    vectorIndexName: string,
+  ): host.VectorIndexActionResult {
+    return host.removeVectorIndex(vectorIndexName);
+  }
+
   public static insertToVectorIndex(
-    collectionName: string,
     vectorIndexName: string,
     id: string,
     vector: f64[],
   ): host.VectorIndexOperationResult {
-    return host.insertToVectorIndex(
-      collectionName,
-      vectorIndexName,
-      id,
-      vector,
-    );
+    return host.insertToVectorIndex(vectorIndexName, id, vector);
   }
 
   public static searchVectorIndex(
-    collectionName: string,
     vectorIndexName: string,
     vector: f64[],
     limit: i32,
   ): host.VectorIndexOperationResult {
-    return host.searchVectorIndex(
-      collectionName,
-      vectorIndexName,
-      vector,
-      limit,
-    );
+    return host.searchVectorIndex(vectorIndexName, vector, limit);
   }
 
   public static deleteFromVectorIndex(
-    collectionName: string,
     vectorIndexName: string,
     id: string,
   ): host.VectorIndexOperationResult {
-    return host.deleteFromVectorIndex(collectionName, vectorIndexName, id);
+    return host.deleteFromVectorIndex(vectorIndexName, id);
   }
 
   public static searchAndInsertToVectorIndex(
-    collectionName: string,
     vectorIndexName: string,
     id: string,
     vector: f64[],
     limit: i32,
   ): host.VectorIndexOperationResult {
-    const searchResult = this.searchVectorIndex(
-      collectionName,
-      vectorIndexName,
-      vector,
-      limit,
-    );
+    const searchResult = this.searchVectorIndex(vectorIndexName, vector, limit);
 
-    const insertResult = this.insertToVectorIndex(
-      collectionName,
-      vectorIndexName,
-      id,
-      vector,
-    );
+    const insertResult = this.insertToVectorIndex(vectorIndexName, id, vector);
 
     const result = new host.VectorIndexOperationResult();
     result.mutation = insertResult.mutation;

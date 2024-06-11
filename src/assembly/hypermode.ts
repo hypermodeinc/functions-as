@@ -26,6 +26,12 @@ export declare function invokeTextGenerator(
   format: string,
 ): string;
 
+export class VectorIndexActionResult {
+  status: string;
+  action: string;
+  name: string;
+}
+
 export class VectorIndexOperationResult {
   mutation: VectorIndexMutationResult;
   query: VectorIndexSearchResult;
@@ -48,22 +54,28 @@ export class VectorIndexSearchResultObject {
   score: f64;
 }
 
+export declare function createVectorIndex(
+  vectorIndexName: string,
+  indexType: string,
+): VectorIndexActionResult;
+
+export declare function removeVectorIndex(
+  vectorIndexName: string,
+): VectorIndexActionResult;
+
 export declare function insertToVectorIndex(
-  collectionName: string,
   vectorIndexName: string,
   id: string,
   vector: f64[],
 ): VectorIndexOperationResult;
 
 export declare function searchVectorIndex(
-  collectionName: string,
   vectorIndexName: string,
   vector: f64[],
   limit: i32,
 ): VectorIndexOperationResult;
 
 export declare function deleteFromVectorIndex(
-  collectionName: string,
   vectorIndexName: string,
   id: string,
 ): VectorIndexOperationResult;
