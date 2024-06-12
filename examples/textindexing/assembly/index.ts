@@ -13,10 +13,10 @@ export function embed(text: string): f64[] {
 export function testUpsertText(text: string): string {
   const response = collections.upsertToTextIndex(collectionName, null, text);
   if (response.mutation !== null) {
-    if (response.mutation.status !== "success") {
+    if (response.mutation!.status !== "success") {
       throw new Error("Failed to upsert text");
     }
-    return response.mutation.id;
+    return response.mutation!.id;
   } else {
     throw new Error("Mutation result is null");
   }
@@ -25,7 +25,7 @@ export function testUpsertText(text: string): string {
 export function testDeleteText(id: string): string {
   const response = collections.deleteFromTextIndex(collectionName, id);
   if (response.mutation !== null) {
-    return response.mutation.status;
+    return response.mutation!.status;
   } else {
     throw new Error("Mutation result is null");
   }
@@ -41,10 +41,10 @@ export function testSearchText(
     10,
   );
   if (response.query !== null) {
-    if (response.query.status !== "success") {
+    if (response.query!.status !== "success") {
       throw new Error("Failed to search text");
     }
-    return response.query.objects;
+    return response.query!.objects;
   } else {
     throw new Error("Query result is null");
   }
@@ -69,7 +69,7 @@ export function testRecomputeIndex(): string {
     searchMethods[0],
   );
   if (response.mutation !== null) {
-    return response.mutation.status;
+    return response.mutation!.status;
   } else {
     throw new Error("Mutation result is null");
   }
