@@ -1,6 +1,6 @@
 // @ts-expect-error: decorator
 @external("hypermode", "log")
-declare function logToHypermode(level: string, message: string): void;
+declare function log(level: string, message: string): void;
 
 // @ts-expect-error: decorator
 @lazy const timers = new Map<string, u64>();
@@ -8,28 +8,28 @@ declare function logToHypermode(level: string, message: string): void;
 export default abstract class hypermode_console {
   static assert<T>(condition: T, message: string = ""): void {
     if (!condition) {
-      logToHypermode("error", "Assertion failed: " + message);
+      log("error", "Assertion failed: " + message);
     }
   }
 
   static log(message: string = ""): void {
-    logToHypermode("", message);
+    log("", message);
   }
 
   static debug(message: string = ""): void {
-    logToHypermode("debug", message);
+    log("debug", message);
   }
 
   static info(message: string = ""): void {
-    logToHypermode("info", message);
+    log("info", message);
   }
 
   static warn(message: string = ""): void {
-    logToHypermode("warning", message);
+    log("warning", message);
   }
 
   static error(message: string = ""): void {
-    logToHypermode("error", message);
+    log("error", message);
   }
 
   static time(label: string = "default"): void {
