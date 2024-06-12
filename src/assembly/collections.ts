@@ -96,7 +96,7 @@ export function searchTextIndex(
   return result;
 }
 
-export function recomputeTextColumn(
+export function recomputeTextIndex(
   collection: string,
   searchMethod: string,
 ): TextIndexOperationResult {

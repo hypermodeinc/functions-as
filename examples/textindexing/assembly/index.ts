@@ -62,3 +62,15 @@ export function searchAndUpsertText(
     true,
   );
 }
+
+export function testRecomputeIndex(): string {
+  const response = collections.recomputeTextIndex(
+    collectionName,
+    searchMethods[0],
+  );
+  if (response.mutation !== null) {
+    return response.mutation.status;
+  } else {
+    throw new Error("Mutation result is null");
+  }
+}
