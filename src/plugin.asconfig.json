@@ -1,6 +1,9 @@
 {
   "options": {
-    "lib": ["./node_modules/@assemblyscript/wasi-shim/assembly"],
+    "lib": [
+      "./assembly/overrides",
+      "./node_modules/@assemblyscript/wasi-shim/assembly"
+    ],
     "use": [
       "ASC_WASI=1",
       "abort=wasi_abort",
@@ -10,7 +13,7 @@
       "performance=wasi_performance",
       "process=wasi_process",
       "Date=wasi_Date",
-      "console=~lib/@hypermode/functions-as/assembly/overrides/console/hypermode_console"
+      "console=hypermode_console"
     ],
     "exportStart": "_start",
     "exportRuntime": true
