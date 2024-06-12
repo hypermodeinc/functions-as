@@ -64,7 +64,6 @@ async function validatePackageJson() {
   // Note: This is a minimal set of dependencies required for the plugin to build correctly.
   // The versions may be lower than the latest available, or the ones used by our library.
   verifyPackageInstalled(pkgJson, "assemblyscript", "0.27.26", true);
-  verifyPackageInstalled(pkgJson, "@assemblyscript/wasi-shim", "0.1.0", true);
   verifyPackageInstalled(pkgJson, "visitor-as", "0.11.4", true);
 
   const overrides = pkgJson.overrides;
