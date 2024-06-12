@@ -5,6 +5,7 @@
 - Fixed bug in plugin build script [#87](https://github.com/gohypermode/functions-as/pull/87)
 - Updated all examples to use new manifest format [#94](https://github.com/gohypermode/functions-as/pull/94)
 - Support query variables of any serializable type [#99](https://github.com/gohypermode/functions-as/pull/99)
+- Route `console.log` through Runtime host function [#101](https://github.com/gohypermode/functions-as/pull/101)
 
 ## 2024-05-13 - Version 0.7.0
 
