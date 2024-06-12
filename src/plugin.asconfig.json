@@ -7,7 +7,7 @@
     "use": [
       "console=hypermode_console",
       "abort=hypermode_abort",
-      "trace=wasi_trace",
+      "trace=hypermode_trace",
       "seed=wasi_seed",
       "crypto=wasi_crypto",
       "performance=wasi_performance",
