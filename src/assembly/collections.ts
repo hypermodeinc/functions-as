@@ -82,7 +82,7 @@ export function searchTextIndex(
   searchAlgorithm: string = "cosine",
   upsert: boolean = false,
 ): TextIndexOperationResult {
-  let result = hostSearchTextIndex(
+  const result = hostSearchTextIndex(
     collection,
     searchMethod,
     text,
