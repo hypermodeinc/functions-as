@@ -16,6 +16,7 @@
     "lint:fix": "eslint --ext .ts --fix ."
   },
   "dependencies": {
+    "@assemblyscript/wasi-shim": "^0.1.0",
     "json-as": "^0.8.4",
     "xid-ts": "^1.1.0"
   },
@@ -42,6 +43,7 @@
     "assembly/**/*.ts",
     "!assembly/**/__tests__",
     "bin/build-plugin.js",
+    "plugin.asconfig.json",
     "transform/lib/*.js"
   ]
 }
