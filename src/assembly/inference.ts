@@ -83,58 +83,6 @@ export abstract class inference {
     return result;
   }
 
-  public static createVectorIndex(
-    vectorIndexName: string,
-    indexType: string,
-  ): host.VectorIndexActionResult {
-    return host.createVectorIndex(vectorIndexName, indexType);
-  }
-
-  public static removeVectorIndex(
-    vectorIndexName: string,
-  ): host.VectorIndexActionResult {
-    return host.removeVectorIndex(vectorIndexName);
-  }
-
-  public static insertToVectorIndex(
-    vectorIndexName: string,
-    id: string,
-    vector: f64[],
-  ): host.VectorIndexOperationResult {
-    return host.insertToVectorIndex(vectorIndexName, id, vector);
-  }
-
-  public static searchVectorIndex(
-    vectorIndexName: string,
-    vector: f64[],
-    limit: i32,
-  ): host.VectorIndexOperationResult {
-    return host.searchVectorIndex(vectorIndexName, vector, limit);
-  }
-
-  public static deleteFromVectorIndex(
-    vectorIndexName: string,
-    id: string,
-  ): host.VectorIndexOperationResult {
-    return host.deleteFromVectorIndex(vectorIndexName, id);
-  }
-
-  public static searchAndInsertToVectorIndex(
-    vectorIndexName: string,
-    id: string,
-    vector: f64[],
-    limit: i32,
-  ): host.VectorIndexOperationResult {
-    const searchResult = this.searchVectorIndex(vectorIndexName, vector, limit);
-
-    const insertResult = this.insertToVectorIndex(vectorIndexName, id, vector);
-
-    const result = new host.VectorIndexOperationResult();
-    result.mutation = insertResult.mutation;
-    result.query = searchResult.query;
-    return result;
-  }
-
   public static generateText(
     modelName: string,
     instruction: string,
