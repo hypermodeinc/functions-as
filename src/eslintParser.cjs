@@ -4,12 +4,14 @@ module.exports = { ...parser };
 const utils = require("./node_modules/@typescript-eslint/typescript-estree/dist/node-utils.js");
 const ts = require("typescript");
 
-// In AssemblyScript, functions can be decorated
+// In AssemblyScript, functions and variables can be decorated
 nodeCanBeDecorated = utils.nodeCanBeDecorated;
 utils.nodeCanBeDecorated = function (node) {
-  if (node.kind == ts.SyntaxKind.FunctionDeclaration) {
-    return true;
+  switch (node.kind) {
+    case ts.SyntaxKind.FunctionDeclaration:
+    case ts.SyntaxKind.VariableStatement:
+      return true;
+    default:
+      return nodeCanBeDecorated(node);
   }
-
-  return nodeCanBeDecorated(node);
 };

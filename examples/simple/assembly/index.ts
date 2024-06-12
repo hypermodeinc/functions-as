@@ -39,7 +39,15 @@ export function testErrors(): void {
 
   // This logs an error message, but allows the function to continue.
   console.error("This is an error message.");
+  console.error(
+    `This is line 1 of a multi-line error message.
+This is line 2 of a multi-line error message.
+This is line 3 of a multi-line error message.`,
+  );
 
   // This throws an error, which will log the message as "fatal" and exit the function.
-  throw new Error("This is a message from a thrown error.");
+  throw new Error(
+    `This is a message from a thrown error.
+This is a second line from a thrown error.`,
+  );
 }
