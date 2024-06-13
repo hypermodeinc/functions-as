@@ -58,7 +58,6 @@ export function searchAndUpsertText(
     searchMethods[0],
     text,
     10,
-    "cosine",
     true,
   );
 }

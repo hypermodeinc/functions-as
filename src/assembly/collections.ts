@@ -42,7 +42,6 @@ declare function hostSearchTextIndex(
   collection: string,
   searchMethod: string,
   text: string,
-  searchAlgorithm: string,
   limit: i32,
 ): TextIndexOperationResult;
 
@@ -79,16 +78,9 @@ export function searchTextIndex(
   searchMethod: string,
   text: string,
   limit: i32,
-  searchAlgorithm: string = "cosine",
   upsert: boolean = false,
 ): TextIndexOperationResult {
-  const result = hostSearchTextIndex(
-    collection,
-    searchMethod,
-    text,
-    searchAlgorithm,
-    limit,
-  );
+  const result = hostSearchTextIndex(collection, searchMethod, text, limit);
   if (upsert) {
     const upsertRes = upsertToTextIndex(collection, null, text);
     result.mutation = upsertRes.mutation;
