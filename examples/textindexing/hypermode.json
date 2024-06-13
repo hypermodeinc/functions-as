@@ -20,7 +20,7 @@
     }
   },
   "collections": {
-    "myCollection": {
+    "myProducts": {
       "searchMethods": {
         "searchMethod1": {
           "embedder": "embed"
