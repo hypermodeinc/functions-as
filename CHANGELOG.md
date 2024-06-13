@@ -2,6 +2,7 @@
 
 ## UNRELEASED
 
+- Add collections host functions [#96](https://github.com/hypermodeAI/functions-as/pull/96)
 - Fixed bug in plugin build script [#87](https://github.com/gohypermode/functions-as/pull/87)
 - Updated all examples to use new manifest format [#94](https://github.com/gohypermode/functions-as/pull/94)
 - Support query variables of any serializable type [#99](https://github.com/gohypermode/functions-as/pull/99)
