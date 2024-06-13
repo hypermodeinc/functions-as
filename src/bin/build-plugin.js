@@ -64,7 +64,6 @@ async function validatePackageJson() {
   // Note: This is a minimal set of dependencies required for the plugin to build correctly.
   // The versions may be lower than the latest available, or the ones used by our library.
   verifyPackageInstalled(pkgJson, "assemblyscript", "0.27.26", true);
-  verifyPackageInstalled(pkgJson, "@assemblyscript/wasi-shim", "0.1.0", true);
   verifyPackageInstalled(pkgJson, "visitor-as", "0.11.4", true);
 
   const overrides = pkgJson.overrides;
@@ -89,10 +88,26 @@ async function validateAsJson() {
 
   const config = JSON.parse(await readFile(file));
 
-  const t = "@hypermode/functions-as/transform";
-  const transforms = config?.options?.transform || [];
-  if (!transforms.includes(t)) {
-    console.error(`${file} must include "${t}" in the "transform" option.`);
+  const p = "./node_modules/@hypermode/functions-as/plugin.asconfig.json";
+  if (config.extends !== p) {
+    const msg = `${file} must contain the following:
+{
+  "extends": "${p}"
+}
+`;
+    console.error(msg);
     process.exit(1);
+  }
+
+  const requiredTransforms = [
+    "@hypermode/functions-as/transform",
+    "json-as/transform",
+  ];
+  const transforms = config?.options?.transform || [];
+  for (const t of requiredTransforms) {
+    if (!transforms.includes(t)) {
+      console.error(`${file} must include "${t}" in the "transform" option.`);
+      process.exit(1);
+    }
   }
 }
