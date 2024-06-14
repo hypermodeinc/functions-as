@@ -3,7 +3,11 @@ import { inference, collections } from "@hypermode/functions-as";
 // This model name should match one defined in the hypermode.json manifest file.
 const modelName: string = "my-custom-embedding";
 const myProducts: string = "myProducts";
-const searchMethods: string[] = ["searchMethod1"];
+const searchMethods: string[] = [
+  "searchMethod1",
+  "searchMethod2",
+  "searchMethod3",
+];
 
 // This function takes input text and returns the vector embedding for that text.
 export function embed(text: string): f64[] {
