@@ -12,11 +12,17 @@ export function embed(text: string): f64[] {
 
 export function upsertProduct(description: string): string {
   const response = collections.upsertToTextIndex(myProducts, null, description);
+  if (response.status !== "success") {
+    return response.error;
+  }
   return response.id;
 }
 
 export function deleteProduct(id: string): string {
   const response = collections.deleteFromTextIndex(myProducts, id);
+  if (response.status !== "success") {
+    return response.error;
+  }
   return response.status;
 }
 
@@ -44,6 +50,9 @@ export function recomputeIndexes(): string[] {
       myProducts,
       searchMethods[i],
     );
+    if (response.status !== "success") {
+      responseArr.push(response.error);
+    }
     responseArr.push(response.status);
   }
   return responseArr;

@@ -5,6 +5,7 @@ export class TextIndexMutationResult {
   operation!: string;
   status!: string;
   id!: string;
+  error!: string;
 }
 
 export class TextIndexSearchResult {
@@ -12,6 +13,7 @@ export class TextIndexSearchResult {
   searchMethod!: string;
   status!: string;
   objects!: TextIndexSearchResultObject[];
+  error!: string;
 }
 
 export class TextIndexSearchResultObject {

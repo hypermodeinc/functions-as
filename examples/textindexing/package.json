@@ -1,8 +1,8 @@
 {
-  "name": "embedding-example",
+  "name": "text-indexing-example",
   "private": true,
   "version": "1.0.0",
-  "description": "Hypermode Functions Embedding Example",
+  "description": "Hypermode Functions Text Indexing Example",
   "author": "Hypermode, Inc.",
   "license": "MIT",
   "type": "module",
@@ -15,16 +15,15 @@
   },
   "dependencies": {
     "@hypermode/functions-as": "../../src",
-    "json-as": "^0.8.3"
+    "json-as": "^0.8.4"
   },
   "devDependencies": {
-    "@assemblyscript/wasi-shim": "^0.1.0",
-    "@typescript-eslint/eslint-plugin": "^7.11.0",
-    "@typescript-eslint/parser": "^7.11.0",
+    "@typescript-eslint/eslint-plugin": "^7.13.0",
+    "@typescript-eslint/parser": "^7.13.0",
     "assemblyscript": "^0.27.27",
     "assemblyscript-prettier": "^3.0.1",
     "eslint": "^8.57.0",
-    "prettier": "^3.2.5",
+    "prettier": "^3.3.2",
     "typescript": "^5.4.5",
     "visitor-as": "^0.11.4"
   },
