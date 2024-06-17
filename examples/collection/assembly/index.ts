@@ -15,7 +15,7 @@ export function embed(text: string): f64[] {
 }
 
 export function upsertProduct(description: string): string {
-  const response = collections.upsertToTextIndex(myProducts, null, description);
+  const response = collections.upsert(myProducts, null, description);
   if (response.status !== "success") {
     return response.error;
   }
@@ -23,19 +23,23 @@ export function upsertProduct(description: string): string {
 }
 
 export function deleteProduct(id: string): string {
-  const response = collections.deleteFromTextIndex(myProducts, id);
+  const response = collections.remove(myProducts, id);
   if (response.status !== "success") {
     return response.error;
   }
   return response.status;
 }
 
+export function getProduct(id: string): string {
+  return collections.getText(myProducts, id);
+}
+
 export function searchProducts(
   product: string,
-): collections.TextIndexSearchResult[] {
-  const responseArr: collections.TextIndexSearchResult[] = [];
+): collections.CollectionSearchResult[] {
+  const responseArr: collections.CollectionSearchResult[] = [];
   for (let i: i32 = 0; i < searchMethods.length; i++) {
-    const response = collections.searchTextIndex(
+    const response = collections.search(
       myProducts,
       searchMethods[i],
       product,
@@ -50,7 +54,7 @@ export function searchProducts(
 export function recomputeIndexes(): string[] {
   const responseArr: string[] = [];
   for (let i: i32 = 0; i < searchMethods.length; i++) {
-    const response = collections.recomputeTextIndex(
+    const response = collections.recomputeSearchMethod(
       myProducts,
       searchMethods[i],
     );

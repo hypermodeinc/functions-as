@@ -1,8 +1,8 @@
 {
-  "name": "text-indexing-example",
+  "name": "collection-example",
   "private": true,
   "version": "1.0.0",
-  "description": "Hypermode Functions Text Indexing Example",
+  "description": "Hypermode Functions Collection Example",
   "author": "Hypermode, Inc.",
   "license": "MIT",
   "type": "module",

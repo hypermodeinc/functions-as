@@ -1,6 +1,6 @@
 import * as utils from "./utils";
 
-export class TextIndexMutationResult {
+export class CollectionMutationResult {
   collection!: string;
   operation!: string;
   status!: string;
@@ -8,51 +8,51 @@ export class TextIndexMutationResult {
   error!: string;
 }
 
-export class TextIndexSearchResult {
+export class CollectionSearchResult {
   collection!: string;
   searchMethod!: string;
   status!: string;
-  objects!: TextIndexSearchResultObject[];
+  objects!: CollectionSearchResultObject[];
   error!: string;
 }
 
-export class TextIndexSearchResultObject {
+export class CollectionSearchResultObject {
   id!: string;
   text!: string;
   score!: f64;
 }
 
 // @ts-expect-error: decorator
-@external("hypermode", "upsertToTextIndex")
-declare function hostUpsertToTextIndex(
+@external("hypermode", "upsertToCollection")
+declare function hostUpsertToCollection(
   collection: string,
   id: string | null,
   text: string,
-): TextIndexMutationResult;
+): CollectionMutationResult;
 
 // @ts-expect-error: decorator
-@external("hypermode", "deleteFromTextIndex")
-declare function hostDeleteFromTextIndex(
+@external("hypermode", "deleteFromCollection")
+declare function hostDeleteFromCollection(
   collection: string,
   id: string,
-): TextIndexMutationResult;
+): CollectionMutationResult;
 
 // @ts-expect-error: decorator
-@external("hypermode", "searchTextIndex")
-declare function hostSearchTextIndex(
+@external("hypermode", "searchCollection")
+declare function hostSearchCollection(
   collection: string,
   searchMethod: string,
   text: string,
   limit: i32,
   returnText: bool,
-): TextIndexSearchResult;
+): CollectionSearchResult;
 
 // @ts-expect-error: decorator
-@external("hypermode", "recomputeTextIndex")
-declare function hostRecomputeTextIndex(
+@external("hypermode", "recomputeSearchMethod")
+declare function hostRecomputeSearchMethod(
   collection: string,
   searchMethod: string,
-): TextIndexMutationResult;
+): CollectionMutationResult;
 
 // @ts-expect-error: decorator
 @external("hypermode", "getText")
@@ -60,12 +60,12 @@ declare function hostGetText(collection: string, id: string): string;
 
 // add data to in-mem storage, get all embedders for a collection, run text through it
 // and insert the Text into the Text indexes for each search method
-export function upsertToTextIndex(
+export function upsert(
   collection: string,
   id: string | null,
   text: string,
-): TextIndexMutationResult {
-  const result = hostUpsertToTextIndex(collection, id, text);
+): CollectionMutationResult {
+  const result = hostUpsertToCollection(collection, id, text);
   if (utils.resultIsInvalid(result)) {
     throw new Error("Error upserting to Text index.");
   }
@@ -73,11 +73,11 @@ export function upsertToTextIndex(
 }
 
 // remove data from in-mem storage and indexes
-export function deleteFromTextIndex(
+export function remove(
   collection: string,
   id: string,
-): TextIndexMutationResult {
-  const result = hostDeleteFromTextIndex(collection, id);
+): CollectionMutationResult {
+  const result = hostDeleteFromCollection(collection, id);
   if (utils.resultIsInvalid(result)) {
     throw new Error("Error deleting from Text index.");
   }
@@ -87,14 +87,14 @@ export function deleteFromTextIndex(
 // fetch embedders for collection & search method, run text through it and
 // search Text index for similar Texts, return the result ids
 // open question: how do i return a more expansive result from string array
-export function searchTextIndex(
+export function search(
   collection: string,
   searchMethod: string,
   text: string,
   limit: i32,
   returnText: bool = false,
-): TextIndexSearchResult {
-  const result = hostSearchTextIndex(
+): CollectionSearchResult {
+  const result = hostSearchCollection(
     collection,
     searchMethod,
     text,
@@ -107,11 +107,11 @@ export function searchTextIndex(
   return result;
 }
 
-export function recomputeTextIndex(
+export function recomputeSearchMethod(
   collection: string,
   searchMethod: string,
-): TextIndexMutationResult {
-  const result = hostRecomputeTextIndex(collection, searchMethod);
+): CollectionMutationResult {
+  const result = hostRecomputeSearchMethod(collection, searchMethod);
   if (utils.resultIsInvalid(result)) {
     throw new Error("Error recomputing Text index.");
   }
