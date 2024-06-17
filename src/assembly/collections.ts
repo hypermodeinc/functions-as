@@ -27,7 +27,7 @@ export class CollectionSearchResult {
 export class CollectionSearchResultObject {
   id!: string;
   text!: string;
-  score!: f32;
+  score!: f64;
 }
 
 // @ts-expect-error: decorator

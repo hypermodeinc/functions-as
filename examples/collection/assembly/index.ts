@@ -37,7 +37,7 @@ export function getProduct(id: string): string {
 export function computeSimilarityBetweenProducts(
   id1: string,
   id2: string,
-): f32 {
+): f64 {
   return collections.computeSimilarity(myProducts, "searchMethod1", id1, id2)
     .score;
 }
