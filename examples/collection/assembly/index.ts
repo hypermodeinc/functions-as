@@ -34,6 +34,14 @@ export function getProduct(id: string): string {
   return collections.getText(myProducts, id);
 }
 
+export function computeSimilarityBetweenProducts(
+  id1: string,
+  id2: string,
+): f32 {
+  return collections.computeSimilarity(myProducts, "searchMethod1", id1, id2)
+    .score;
+}
+
 export function searchProducts(
   product: string,
 ): collections.CollectionSearchResult[] {

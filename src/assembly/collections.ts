@@ -27,7 +27,7 @@ export class CollectionSearchResult {
 export class CollectionSearchResultObject {
   id!: string;
   text!: string;
-  score!: f64;
+  score!: f32;
 }
 
 // @ts-expect-error: decorator
@@ -61,6 +61,15 @@ declare function hostRecomputeSearchMethod(
   collection: string,
   searchMethod: string,
 ): SearchMethodMutationResult;
+
+// @ts-expect-error: decorator
+@external("hypermode", "computeSimilarity")
+declare function hostComputeSimilarity(
+  collection: string,
+  searchMethod: string,
+  id1: string,
+  id2: string,
+): CollectionSearchResultObject;
 
 // @ts-expect-error: decorator
 @external("hypermode", "getText")
@@ -124,6 +133,15 @@ export function recomputeSearchMethod(
     throw new Error("Error recomputing Text index.");
   }
   return result;
+}
+
+export function computeSimilarity(
+  collection: string,
+  searchMethod: string,
+  id1: string,
+  id2: string,
+): CollectionSearchResultObject {
+  return hostComputeSimilarity(collection, searchMethod, id1, id2);
 }
 
 export function getText(collection: string, id: string): string {
