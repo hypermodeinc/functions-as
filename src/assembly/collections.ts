@@ -8,6 +8,14 @@ export class CollectionMutationResult {
   error!: string;
 }
 
+export class SearchMethodMutationResult {
+  collection!: string;
+  searchMethod!: string;
+  operation!: string;
+  status!: string;
+  error!: string;
+}
+
 export class CollectionSearchResult {
   collection!: string;
   searchMethod!: string;
@@ -52,7 +60,7 @@ declare function hostSearchCollection(
 declare function hostRecomputeSearchMethod(
   collection: string,
   searchMethod: string,
-): CollectionMutationResult;
+): SearchMethodMutationResult;
 
 // @ts-expect-error: decorator
 @external("hypermode", "getText")
@@ -110,7 +118,7 @@ export function search(
 export function recomputeSearchMethod(
   collection: string,
   searchMethod: string,
-): CollectionMutationResult {
+): SearchMethodMutationResult {
   const result = hostRecomputeSearchMethod(collection, searchMethod);
   if (utils.resultIsInvalid(result)) {
     throw new Error("Error recomputing Text index.");
