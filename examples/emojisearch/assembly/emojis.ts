@@ -1030,6 +1030,7 @@ export const starterEmojis: string[] = [
   "🇿🇦",
   "🇿🇲",
   "🇿🇼",
+  "📝",
 ];
 
 export function getEmojiFromString(text: string): string {
