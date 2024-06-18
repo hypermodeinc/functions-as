@@ -163,7 +163,7 @@ export class HypermodeMetadata {
     this.functions.forEach((f) => writeItem(f.toString()));
     stream.write("\n");
 
-    writeHeader("Hypermode Embedders:");
+    writeHeader("Embedder Functions:");
     this.embedders.forEach((f) => writeItem(f.toString()));
     stream.write("\n");
 
