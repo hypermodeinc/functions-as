@@ -11,7 +11,6 @@ import {
   CommonFlags,
 } from "assemblyscript/dist/assemblyscript.js";
 import { isStdlib } from "./utils.js";
-import { ExportImportStatement } from "types:assemblyscript/src/ast";
 
 export default class HypermodeTransform extends Transform {
   public embedders: string[] | null = null;
@@ -32,7 +31,6 @@ export default class HypermodeTransform extends Transform {
     }
 
     this.embedders = exportedFunctions.map((e) => e.name.text);
-
   }
   afterCompile(module: binaryen.Module) {
     const extractor = new Extractor(this, module);
