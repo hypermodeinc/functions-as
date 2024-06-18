@@ -43,8 +43,18 @@ export class HypermodeMetadata {
 
   addEmbedders(functions: FunctionSignature[]) {
     for (const func of functions) {
-      if (func.parameters.length != 1) throw new Error("Expected embedder to have one argument, but found " + (func.parameters.length ? "multiple" : "no") + " arguments!");
-      if (func.parameters[0].type.name != "string") throw new Error("Expected embedder to have one argument of type 'string', but found '" + func.parameters[0].type.name + "' instead!");
+      if (func.parameters.length != 1)
+        throw new Error(
+          "Expected embedder to have one argument, but found " +
+            (func.parameters.length ? "multiple" : "no") +
+            " arguments!",
+        );
+      if (func.parameters[0].type.name != "string")
+        throw new Error(
+          "Expected embedder to have one argument of type 'string', but found '" +
+            func.parameters[0].type.name +
+            "' instead!",
+        );
       this.embedders.push(func);
     }
   }

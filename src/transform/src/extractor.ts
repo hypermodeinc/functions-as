@@ -33,24 +33,31 @@ export class Extractor {
 
   getProgramInfo(): ProgramInfo {
     if (!(this.transform instanceof HypermodeTransform)) {
-      console.warn("Using custom transform. Cannot use @embedded unless using the HypermodeTransform!");
+      console.warn(
+        "Using custom transform. Cannot use @embedded unless using the HypermodeTransform!",
+      );
     }
-    
+
     const functions = this.getExportedFunctions()
       .filter((e) => {
-        return !(this.transform instanceof HypermodeTransform) || 
-               !(<HypermodeTransform>this.transform).embedders.includes(e.name);
+        return (
+          !(this.transform instanceof HypermodeTransform) ||
+          !(<HypermodeTransform>this.transform).embedders.includes(e.name)
+        );
       })
       .map((e) => this.convertToFunctionSignature(e))
       .sort((a, b) => a.name.localeCompare(b.name));
-    
-    const embedders = this.transform instanceof HypermodeTransform
-      ? this.getExportedFunctions()
-          .filter((e) => (<HypermodeTransform>this.transform).embedders.includes(e.name))
-          .map((e) => this.convertToFunctionSignature(e))
-          .sort((a, b) => a.name.localeCompare(b.name))
-      : [];
-    
+
+    const embedders =
+      this.transform instanceof HypermodeTransform
+        ? this.getExportedFunctions()
+            .filter((e) =>
+              (<HypermodeTransform>this.transform).embedders.includes(e.name),
+            )
+            .map((e) => this.convertToFunctionSignature(e))
+            .sort((a, b) => a.name.localeCompare(b.name))
+        : [];
+
     const hostFunctions = this.getHostFunctions()
       .map((e) => this.convertToFunctionSignature(e))
       .sort((a, b) => a.name.localeCompare(b.name));
