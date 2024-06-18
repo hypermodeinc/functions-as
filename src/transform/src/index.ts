@@ -11,27 +11,28 @@ import {
   CommonFlags,
 } from "assemblyscript/dist/assemblyscript.js";
 import { isStdlib } from "./utils.js";
+import { ExportImportStatement } from "types:assemblyscript/src/ast";
 
 export default class HypermodeTransform extends Transform {
   public embedders: string[] | null = null;
   afterParse(parser: Parser): void | Promise<void> {
+    const exportedFunctions: FunctionDeclaration[] = [];
     for (const source of parser.sources) {
-      if (source.isLibrary) continue;
       if (isStdlib(source)) continue;
-      const exportedFunctions = source.statements.filter(
-        (e) =>
-          e.kind == NodeKind.FunctionDeclaration &&
-          (<FunctionDeclaration>e).flags == CommonFlags.Export,
-      ) as FunctionDeclaration[];
-      this.embedders = exportedFunctions
-        .filter((e) =>
-          e.decorators?.find(
-            (v) => (<IdentifierExpression>v.name).text == "embedder",
-          ),
-        )
-        .map((e) => e.name.text);
-      break;
+      exportedFunctions.push(
+        ...(source.statements.filter(
+          (e) =>
+            e.kind == NodeKind.FunctionDeclaration &&
+            (<FunctionDeclaration>e).flags == CommonFlags.Export &&
+            (<FunctionDeclaration>e).decorators?.find(
+              (v) => (<IdentifierExpression>v.name).text == "embedder",
+            ),
+        ) as FunctionDeclaration[]),
+      );
     }
+
+    this.embedders = exportedFunctions.map((e) => e.name.text);
+
   }
   afterCompile(module: binaryen.Module) {
     const extractor = new Extractor(this, module);
