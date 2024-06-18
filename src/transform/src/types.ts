@@ -1,6 +1,7 @@
 export class ProgramInfo {
   functions: FunctionSignature[];
   types: TypeDefinition[];
+  embedders: FunctionSignature[];
 }
 
 export class FunctionSignature {
