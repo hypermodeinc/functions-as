@@ -1031,3 +1031,17 @@ export const starterEmojis: string[] = [
   "🇿🇲",
   "🇿🇼",
 ];
+
+export function getEmojiFromString(text: string): string {
+  if (
+    text.length >= 2 &&
+    0xd800 <= text.charCodeAt(0) &&
+    text.charCodeAt(0) <= 0xdbff
+  ) {
+    // The first character is a high surrogate, return the first two characters
+    return text.substring(0, 2);
+  } else {
+    // The first character is not a high surrogate, return the first character
+    return text.substring(0, 1);
+  }
+}

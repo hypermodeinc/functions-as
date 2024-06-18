@@ -1,5 +1,5 @@
 import { inference, collections } from "@hypermode/functions-as";
-import { starterEmojis } from "./emojis";
+import { starterEmojis, getEmojiFromString } from "./emojis";
 
 // This model name should match one defined in the hypermode.json manifest file.
 const embeddingModelName: string = "my-custom-embedding";
@@ -31,7 +31,7 @@ export function generateEmojiDescriptions(): string[] {
   return allEmojis;
 }
 
-export function upsertAllKnownEmojis(): string {
+export function upsertAllStarterEmojis(): string {
   let response = "";
   const descriptions = generateEmojiDescriptions();
   for (let i: i32 = 0; i < descriptions.length; i++) {
@@ -48,18 +48,7 @@ export function insertEmoji(emoji: string): string {
   const texts = collections.getTexts(emojis);
   for (let i: i32 = 0; i < texts.keys().length; i++) {
     const text = texts.get(texts.keys()[i]);
-    let textEmoji = "";
-    if (
-      text.length >= 2 &&
-      0xd800 <= text.charCodeAt(0) &&
-      text.charCodeAt(0) <= 0xdbff
-    ) {
-      // The first character is a high surrogate, return the first two characters
-      textEmoji = text.substring(0, 2);
-    } else {
-      // The first character is not a high surrogate, return the first character
-      textEmoji = text.substring(0, 1);
-    }
+    const textEmoji = getEmojiFromString(text);
     if (textEmoji === emoji) {
       return "Emoji already exists";
     }
@@ -77,24 +66,13 @@ export function insertEmoji(emoji: string): string {
   return response.status;
 }
 
-export function upsertEmoji(
+export function updateEmoji(
   id: string,
   emoji: string,
   emojiText: string,
 ): string {
   const text = collections.getText(emojis, id);
-  let textEmoji = "";
-  if (
-    text.length >= 2 &&
-    0xd800 <= text.charCodeAt(0) &&
-    text.charCodeAt(0) <= 0xdbff
-  ) {
-    // The first character is a high surrogate, return the first two characters
-    textEmoji = text.substring(0, 2);
-  } else {
-    // The first character is not a high surrogate, return the first character
-    textEmoji = text.substring(0, 1);
-  }
+  const textEmoji = getEmojiFromString(text);
   if (textEmoji !== emoji) {
     return "Emoji does not match";
   }
@@ -109,22 +87,10 @@ export function upsertEmoji(
 
 export function getEmoji(id: string): string {
   const text = collections.getText(emojis, id);
-  if (
-    text.length >= 2 &&
-    0xd800 <= text.charCodeAt(0) &&
-    text.charCodeAt(0) <= 0xdbff
-  ) {
-    // The first character is a high surrogate, return the first two characters
-    return text.substring(0, 2);
-  } else {
-    // The first character is not a high surrogate, return the first character
-    return text.substring(0, 1);
-  }
+  return getEmojiFromString(text);
 }
 
-export function findMatchingEmoji(
-  emojiDescription: string,
-): collections.CollectionSearchResultObject[] {
+export function findMatchingEmoji(emojiDescription: string): string[] {
   const response = collections.search(
     emojis,
     searchMethod,
@@ -132,19 +98,19 @@ export function findMatchingEmoji(
     5,
     true,
   );
-  return response.objects;
-  // const text = response.objects[0].text;
-  // if (
-  //   text.length >= 2 &&
-  //   0xd800 <= text.charCodeAt(0) &&
-  //   text.charCodeAt(0) <= 0xdbff
-  // ) {
-  //   // The first character is a high surrogate, return the first two characters
-  //   return text.substring(0, 2);
-  // } else {
-  //   // The first character is not a high surrogate, return the first character
-  //   return text.substring(0, 1);
-  // }
+
+  const responseArr: string[] = [];
+
+  if (response.status !== "success") {
+    responseArr.push(response.error);
+    return responseArr;
+  }
+
+  for (let i: i32 = 0; i < response.objects.length; i++) {
+    const text = response.objects[i].text;
+    responseArr.push(getEmojiFromString(text));
+  }
+  return responseArr;
 }
 
 export function recomputeIndex(): string {
