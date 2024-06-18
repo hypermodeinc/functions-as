@@ -124,7 +124,7 @@ export abstract class inference {
       throw new Error("Unable to generate data.");
     }
 
-    return JSON.parse<TData>(result, true);
+    return JSON.parse<TData>(result);
   }
 
   public static generateList<TData>(
@@ -153,7 +153,7 @@ export abstract class inference {
       throw new Error("Unable to generate data.");
     }
 
-    const jsonList = JSON.parse<Map<string, TData[]>>(result, true);
+    const jsonList = JSON.parse<Map<string, TData[]>>(result);
     return jsonList.get("list");
   }
 }
