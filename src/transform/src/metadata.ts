@@ -18,6 +18,7 @@ export class HypermodeMetadata {
   gitRepo?: string;
   gitCommit?: string;
   functions: FunctionSignature[] = [];
+  embedders: FunctionSignature[] = [];
   types: TypeDefinition[] = [];
 
   static generate(): HypermodeMetadata {
@@ -38,6 +39,14 @@ export class HypermodeMetadata {
 
   addFunctions(functions: FunctionSignature[]) {
     this.functions.push(...functions);
+  }
+
+  addEmbedders(functions: FunctionSignature[]) {
+    for (const func of functions) {
+      if (func.parameters.length != 1) throw new Error("Expected embedder to have one argument, but found " + (func.parameters.length ? "multiple" : "no") + " arguments!");
+      if (func.parameters[0].type.name != "string") throw new Error("Expected embedder to have one argument of type 'string', but found '" + func.parameters[0].type.name + "' instead!");
+      this.embedders.push(func);
+    }
   }
 
   addTypes(types: TypeDefinition[]) {
@@ -115,6 +124,10 @@ export class HypermodeMetadata {
 
     writeHeader("Hypermode Functions:");
     this.functions.forEach((f) => writeItem(f.toString()));
+    stream.write("\n");
+
+    writeHeader("Hypermode Embedders:");
+    this.embedders.forEach((f) => writeItem(f.toString()));
     stream.write("\n");
 
     const types = this.types.filter((t) => !t.isHidden());

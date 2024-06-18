@@ -16,23 +16,41 @@ import {
   TypeInfo,
   typeMap,
 } from "./types.js";
+import HypermodeTransform from "./index.js";
 
 export class Extractor {
   binaryen: typeof binaryen;
   module: binaryen.Module;
   program: Program;
+  transform: Transform;
 
   constructor(transform: Transform, module: binaryen.Module) {
     this.program = transform.program;
     this.binaryen = transform.binaryen;
     this.module = module;
+    this.transform = transform;
   }
 
   getProgramInfo(): ProgramInfo {
+    if (!(this.transform instanceof HypermodeTransform)) {
+      console.warn("Using custom transform. Cannot use @embedded unless using the HypermodeTransform!");
+    }
+    
     const functions = this.getExportedFunctions()
+      .filter((e) => {
+        return !(this.transform instanceof HypermodeTransform) || 
+               !(<HypermodeTransform>this.transform).embedders.includes(e.name);
+      })
       .map((e) => this.convertToFunctionSignature(e))
       .sort((a, b) => a.name.localeCompare(b.name));
-
+    
+    const embedders = this.transform instanceof HypermodeTransform
+      ? this.getExportedFunctions()
+          .filter((e) => (<HypermodeTransform>this.transform).embedders.includes(e.name))
+          .map((e) => this.convertToFunctionSignature(e))
+          .sort((a, b) => a.name.localeCompare(b.name))
+      : [];
+    
     const hostFunctions = this.getHostFunctions()
       .map((e) => this.convertToFunctionSignature(e))
       .sort((a, b) => a.name.localeCompare(b.name));
@@ -76,7 +94,7 @@ export class Extractor {
       (a.name + a.path).localeCompare(b.name + b.path),
     );
 
-    return { functions, types };
+    return { functions, types, embedders };
   }
 
   private expandDependentTypes(

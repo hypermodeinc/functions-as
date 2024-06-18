@@ -9,6 +9,10 @@ import {
 // This host name should match one defined in the hypermode.json manifest file.
 const hostName: string = "dgraph";
 
+@embedder
+export function foo(data: string): f64[] {
+  return []
+}
 // This function returns the results of querying for all people in the database.
 export function queryPeople(): Person[] | null {
   const statement = `
