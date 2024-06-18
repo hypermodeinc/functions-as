@@ -49,12 +49,39 @@ export class HypermodeMetadata {
             (func.parameters.length ? "multiple" : "no") +
             " arguments!",
         );
-      if (func.parameters[0].type.name != "string")
+      const type = func.parameters[0].type.name;
+      const returnType = func.returnType.name;
+
+      if (type != "string" && type != "string[]" && type != "Array<string>") {
         throw new Error(
-          "Expected embedder to have one argument of type 'string', but found '" +
-            func.parameters[0].type.name +
+          "Expected embedder to have one argument of type 'string' or 'string[]', but found '" +
+            type +
             "' instead!",
         );
+      }
+
+      if (
+        type == "string" &&
+        returnType != "f64[]" &&
+        returnType != "Array<f64>"
+      ) {
+        throw new Error(
+          "Expected return type to be of type 'f64[]', but found '" +
+            returnType +
+            "' instead!",
+        );
+      } else if (
+        (type == "Array<string>" || type == "string[]") &&
+        returnType != "f64[][]" &&
+        returnType != "Array<Array<f64>>"
+      ) {
+        throw new Error(
+          "Expected return type to be of type 'f64[][]', but found '" +
+            returnType +
+            "' instead!",
+        );
+      }
+
       this.embedders.push(func);
     }
   }

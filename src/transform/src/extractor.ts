@@ -34,7 +34,7 @@ export class Extractor {
   getProgramInfo(): ProgramInfo {
     if (!(this.transform instanceof HypermodeTransform)) {
       console.warn(
-        "Using custom transform. Cannot use @embedded unless using the HypermodeTransform!",
+        "Using custom transform. Cannot use @embedder unless using the HypermodeTransform!",
       );
     }
 
