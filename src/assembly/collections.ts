@@ -75,6 +75,10 @@ declare function hostComputeSimilarity(
 @external("hypermode", "getText")
 declare function hostGetText(collection: string, id: string): string;
 
+// @ts-expect-error: decorator
+@external("hypermode", "getTexts")
+declare function hostGetTexts(collection: string): Map<string, string>;
+
 // add data to in-mem storage, get all embedders for a collection, run text through it
 // and insert the Text into the Text indexes for each search method
 export function upsert(
@@ -146,4 +150,8 @@ export function computeSimilarity(
 
 export function getText(collection: string, id: string): string {
   return hostGetText(collection, id);
+}
+
+export function getTexts(collection: string): Map<string, string> {
+  return hostGetTexts(collection);
 }

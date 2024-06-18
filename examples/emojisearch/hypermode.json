@@ -1,0 +1,41 @@
+{
+  "$schema": "https://manifest.hypermode.com/hypermode.json",
+  "models": {
+    "my-custom-embedding": {
+      "task": "embedding",
+      "sourceModel": "all-MiniLM-L6-v2",
+      "provider": "custom",
+      "host": "aws-embedding"
+    },
+    "text-generator": {
+      "task": "generation",
+      "sourceModel": "gpt-3.5-turbo",
+      "provider": "openai",
+      "host": "openai"
+    }
+  },
+
+  "hosts": {
+    "aws-embedding": {
+      "endpoint": "https://2f050wcjqd.execute-api.us-east-1.amazonaws.com/dev/embedding",
+      "headers": {
+        "X-API-Key": "{{API_KEY}}"
+      }
+    },
+    "openai": {
+      "endpoint": "https://api.openai.com/v1",
+      "headers": {
+        "Authorization": "Bearer {{API_KEY}}"
+      }
+    }
+  },
+  "collections": {
+    "emojis": {
+      "searchMethods": {
+        "searchMethod1": {
+          "embedder": "embed"
+        }
+      }
+    }
+  }
+}
