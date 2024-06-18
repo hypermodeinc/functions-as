@@ -177,7 +177,7 @@ export class Content {
    * @throws An error if the cannot be deserialized into the specified type.
    */
   json<T>(): T {
-    return JSON.parse<T>(this.text(), true);
+    return JSON.parse<T>(this.text());
   }
 }
 
