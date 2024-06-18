@@ -18,7 +18,6 @@ export default class HypermodeTransform extends Transform {
     for (const source of parser.sources) {
       if (source.isLibrary) continue;
       if (isStdlib(source)) continue;
-      console.log("PATH: " + source.simplePath);
       const exportedFunctions = source.statements.filter(
         (e) =>
           e.kind == NodeKind.FunctionDeclaration &&
