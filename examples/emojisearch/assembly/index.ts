@@ -90,27 +90,10 @@ export function getEmoji(id: string): string {
   return getEmojiFromString(text);
 }
 
-export function findMatchingEmoji(emojiDescription: string): string[] {
-  const response = collections.search(
-    emojis,
-    searchMethod,
-    emojiDescription,
-    5,
-    true,
-  );
-
-  const responseArr: string[] = [];
-
-  if (response.status !== "success") {
-    responseArr.push(response.error);
-    return responseArr;
-  }
-
-  for (let i: i32 = 0; i < response.objects.length; i++) {
-    const text = response.objects[i].text;
-    responseArr.push(getEmojiFromString(text));
-  }
-  return responseArr;
+export function findMatchingEmoji(
+  emojiDescription: string,
+): collections.CollectionSearchResult {
+  return collections.search(emojis, searchMethod, emojiDescription, 5, true);
 }
 
 export function recomputeIndex(): string {
