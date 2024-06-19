@@ -7,6 +7,7 @@
 - Support query variables of any serializable type [#99](https://github.com/gohypermode/functions-as/pull/99)
 - Route `console.log` through Runtime host function [#102](https://github.com/gohypermode/functions-as/pull/102)
 - Support `@embedder` decorator to denote embedded function [#104](https://github.com/hypermodeAI/functions-as/pull/104)
+- Implement new models interface and rework examples [#106](https://github.com/hypermodeAI/functions-as/pull/106)
 
 ## 2024-05-13 - Version 0.7.0
 
