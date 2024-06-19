@@ -1,5 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+
+import console from "console";
+
 export default class MockHost {
+  log(pLevel, pMessage) {
+    const level = this.getString(pLevel);
+    const message = this.getString(pMessage);
+    console.log(`[${level}] ${message}`);
+  }
+
   executeGQL(pHostName, pStatement, pVariables) {
     const hostName = this.getString(pHostName);
     const statement = this.getString(pStatement);
@@ -70,12 +79,36 @@ export default class MockHost {
     return this.newString(response);
   }
 
+  httpFetch(pRequest) {
+    console.log("Not implemented: httpFetch");
+    return 0;
+  }
+
+  lookupModel(pModelName) {
+    const modelName = this.getString(pModelName);
+
+    console.log("Not implemented: lookupModel");
+    return 0;
+  }
+
+  invokeModel(pModelName, pInput) {
+    const modelName = this.getString(pModelName);
+    const input = this.getString(pInput);
+
+    console.log("Not implemented: invokeModel");
+    return 0;
+  }
+
   getImports() {
     return {
+      log: this.log.bind(this),
       executeGQL: this.executeGQL.bind(this),
       invokeClassifier: this.invokeClassifier.bind(this),
       computeEmbedding: this.computeEmbedding.bind(this),
       invokeTextGenerator: this.invokeTextGenerator.bind(this),
+      httpFetch: this.httpFetch.bind(this),
+      lookupModel: this.lookupModel.bind(this),
+      invokeModel: this.invokeModel.bind(this),
     };
   }
 
