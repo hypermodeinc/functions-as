@@ -1,6 +1,8 @@
 import { inference } from "@hypermode/functions-as";
 import { JSON } from "json-as";
 
+// TODO: This is example uses the old API, and will be updated soon to the new model interface.
+
 // This model name should match one defined in the hypermode.json manifest file.
 const modelName: string = "my-custom-classifier";
 
