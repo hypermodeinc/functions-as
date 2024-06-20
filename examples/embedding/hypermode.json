@@ -14,6 +14,12 @@
       "sourceModel": "all-MiniLM-L6-v2",
       "host": "aws-embedding",
       "provider": "custom"
+    },
+    "openai-embeddings": {
+      "task": "embedding",
+      "sourceModel": "text-embedding-3-large",
+      "provider": "openai",
+      "host": "openai-embeddings"
     }
   },
   "hosts": {
@@ -23,6 +29,12 @@
       "endpoint": "https://2f050wcjqd.execute-api.us-east-1.amazonaws.com/dev/embedding",
       "headers": {
         "X-API-Key": "{{API_KEY}}"
+      }
+    },
+    "openai-embeddings": {
+      "endpoint": "https://api.openai.com/v1/embeddings",
+      "headers": {
+        "Authorization": "Bearer {{API_KEY}}"
       }
     }
   }

@@ -17,11 +17,12 @@
   },
   "dependencies": {
     "@assemblyscript/wasi-shim": "^0.1.0",
+    "@hypermode/models-as": "^0.1.6",
     "json-as": "^0.9.6",
     "xid-ts": "^1.1.0"
   },
   "devDependencies": {
-    "@types/node": "^20.14.4",
+    "@types/node": "^20.14.5",
     "@typescript-eslint/eslint-plugin": "^7.13.1",
     "@typescript-eslint/parser": "^7.13.1",
     "assemblyscript": "^0.27.27",
