@@ -129,7 +129,7 @@ export function insertEmoji(emoji: string): string {
   const upsertString = emoji + " " + emojitext;
   const response = collections.upsert(emojis, null, upsertString);
   if (!response.isSuccessful) {
-    return response.error;
+    throw new Error(response.error);
   }
   return response.status;
 }
@@ -148,7 +148,7 @@ export function updateEmoji(
   const upsertString = emoji + ": " + emojiText;
   const response = collections.upsert(emojis, key, upsertString);
   if (!response.isSuccessful) {
-    return response.error;
+    throw new Error(response.error);
   }
   return response.status;
 }
@@ -167,7 +167,7 @@ export function findMatchingEmoji(
 export function recomputeIndex(): string {
   const response = collections.recomputeSearchMethod(emojis, searchMethod);
   if (!response.isSuccessful) {
-    return response.error;
+    throw new Error(response.error);
   }
   return response.status;
 }

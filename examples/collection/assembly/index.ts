@@ -18,7 +18,7 @@ export function embed(text: string): f64[] {
 export function upsertProduct(description: string): string {
   const response = collections.upsert(myProducts, null, description);
   if (!response.isSuccessful) {
-    return response.error;
+    throw new Error(response.error);
   }
   return response.key;
 }
@@ -26,7 +26,7 @@ export function upsertProduct(description: string): string {
 export function deleteProduct(key: string): string {
   const response = collections.remove(myProducts, key);
   if (!response.isSuccessful) {
-    return response.error;
+    throw new Error(response.error);
   }
   return response.status;
 }
@@ -68,7 +68,7 @@ export function recomputeIndexes(): string[] {
       searchMethods[i],
     );
     if (!response.isSuccessful) {
-      responseArr.push(response.error);
+      throw new Error(response.error);
     }
     responseArr.push(response.status);
   }
