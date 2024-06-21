@@ -5,7 +5,7 @@ import { starterEmojis, getEmojiFromString } from "./emojis";
 const embeddingModelName: string = "my-custom-embedding";
 const generationModelName: string = "text-generator";
 const emojis: string = "emojis";
-const searchMethod: string = "searchMethod1";
+const searchMethod: string = "searchMethod2";
 
 // This function takes input text and returns the vector embedding for that text.
 export function embed(text: string): f64[] {
@@ -67,26 +67,26 @@ export function insertEmoji(emoji: string): string {
 }
 
 export function updateEmoji(
-  id: string,
+  key: string,
   emoji: string,
   emojiText: string,
 ): string {
-  const text = collections.getText(emojis, id);
+  const text = collections.getText(emojis, key);
   const textEmoji = getEmojiFromString(text);
   if (textEmoji !== emoji) {
     return "Emoji does not match";
   }
 
   const upsertString = emoji + ": " + emojiText;
-  const response = collections.upsert(emojis, id, upsertString);
+  const response = collections.upsert(emojis, key, upsertString);
   if (response.status !== "success") {
     return response.error;
   }
   return response.status;
 }
 
-export function getEmoji(id: string): string {
-  const text = collections.getText(emojis, id);
+export function getEmoji(key: string): string {
+  const text = collections.getText(emojis, key);
   return getEmojiFromString(text);
 }
 

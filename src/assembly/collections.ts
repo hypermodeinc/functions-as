@@ -4,7 +4,7 @@ export class CollectionMutationResult {
   collection!: string;
   operation!: string;
   status!: string;
-  id!: string;
+  key!: string;
   error!: string;
 }
 
@@ -25,7 +25,7 @@ export class CollectionSearchResult {
 }
 
 export class CollectionSearchResultObject {
-  id!: string;
+  key!: string;
   text!: string;
   score!: f64;
 }
@@ -34,7 +34,7 @@ export class CollectionSearchResultObject {
 @external("hypermode", "upsertToCollection")
 declare function hostUpsertToCollection(
   collection: string,
-  id: string | null,
+  key: string | null,
   text: string,
 ): CollectionMutationResult;
 
@@ -42,7 +42,7 @@ declare function hostUpsertToCollection(
 @external("hypermode", "deleteFromCollection")
 declare function hostDeleteFromCollection(
   collection: string,
-  id: string,
+  key: string,
 ): CollectionMutationResult;
 
 // @ts-expect-error: decorator
@@ -67,13 +67,13 @@ declare function hostRecomputeSearchMethod(
 declare function hostComputeSimilarity(
   collection: string,
   searchMethod: string,
-  id1: string,
-  id2: string,
+  key1: string,
+  key2: string,
 ): CollectionSearchResultObject;
 
 // @ts-expect-error: decorator
 @external("hypermode", "getText")
-declare function hostGetText(collection: string, id: string): string;
+declare function hostGetText(collection: string, key: string): string;
 
 // @ts-expect-error: decorator
 @external("hypermode", "getTexts")
@@ -83,10 +83,10 @@ declare function hostGetTexts(collection: string): Map<string, string>;
 // and insert the Text into the Text indexes for each search method
 export function upsert(
   collection: string,
-  id: string | null,
+  key: string | null,
   text: string,
 ): CollectionMutationResult {
-  const result = hostUpsertToCollection(collection, id, text);
+  const result = hostUpsertToCollection(collection, key, text);
   if (utils.resultIsInvalid(result)) {
     throw new Error("Error upserting to Text index.");
   }
@@ -96,9 +96,9 @@ export function upsert(
 // remove data from in-mem storage and indexes
 export function remove(
   collection: string,
-  id: string,
+  key: string,
 ): CollectionMutationResult {
-  const result = hostDeleteFromCollection(collection, id);
+  const result = hostDeleteFromCollection(collection, key);
   if (utils.resultIsInvalid(result)) {
     throw new Error("Error deleting from Text index.");
   }
@@ -106,7 +106,7 @@ export function remove(
 }
 
 // fetch embedders for collection & search method, run text through it and
-// search Text index for similar Texts, return the result ids
+// search Text index for similar Texts, return the result keys
 // open question: how do i return a more expansive result from string array
 export function search(
   collection: string,
@@ -142,14 +142,14 @@ export function recomputeSearchMethod(
 export function computeSimilarity(
   collection: string,
   searchMethod: string,
-  id1: string,
-  id2: string,
+  key1: string,
+  key2: string,
 ): CollectionSearchResultObject {
-  return hostComputeSimilarity(collection, searchMethod, id1, id2);
+  return hostComputeSimilarity(collection, searchMethod, key1, key2);
 }
 
-export function getText(collection: string, id: string): string {
-  return hostGetText(collection, id);
+export function getText(collection: string, key: string): string {
+  return hostGetText(collection, key);
 }
 
 export function getTexts(collection: string): Map<string, string> {

@@ -3,11 +3,7 @@ import { inference, collections } from "@hypermode/functions-as";
 // This model name should match one defined in the hypermode.json manifest file.
 const modelName: string = "my-custom-embedding";
 const myProducts: string = "myProducts";
-const searchMethods: string[] = [
-  "searchMethod1",
-  "searchMethod2",
-  "searchMethod3",
-];
+const searchMethods: string[] = ["searchMethod1", "searchMethod2"];
 
 // This function takes input text and returns the vector embedding for that text.
 export function embed(text: string): f64[] {
@@ -19,26 +15,26 @@ export function upsertProduct(description: string): string {
   if (response.status !== "success") {
     return response.error;
   }
-  return response.id;
+  return response.key;
 }
 
-export function deleteProduct(id: string): string {
-  const response = collections.remove(myProducts, id);
+export function deleteProduct(key: string): string {
+  const response = collections.remove(myProducts, key);
   if (response.status !== "success") {
     return response.error;
   }
   return response.status;
 }
 
-export function getProduct(id: string): string {
-  return collections.getText(myProducts, id);
+export function getProduct(key: string): string {
+  return collections.getText(myProducts, key);
 }
 
 export function computeSimilarityBetweenProducts(
-  id1: string,
-  id2: string,
+  key1: string,
+  key2: string,
 ): f64 {
-  return collections.computeSimilarity(myProducts, "searchMethod1", id1, id2)
+  return collections.computeSimilarity(myProducts, "searchMethod1", key1, key2)
     .score;
 }
 

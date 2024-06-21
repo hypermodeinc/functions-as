@@ -30,16 +30,6 @@
           "index": {
             "type": "sequential"
           }
-        },
-        "searchMethod3": {
-          "embedder": "embed",
-          "index": {
-            "type": "hnsw",
-            "options": {
-              "efConstruction": 200,
-              "maxLevels": 48
-            }
-          }
         }
       }
     }
