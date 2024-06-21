@@ -74,12 +74,17 @@ declare function hostComputeSimilarity(
 ): CollectionSearchResultObject;
 
 // @ts-expect-error: decorator
-@external("hypermode", "getText")
-declare function hostGetText(collection: string, key: string): string;
+@external("hypermode", "getTextFromCollection")
+declare function hostGetTextFromCollection(
+  collection: string,
+  key: string,
+): string;
 
 // @ts-expect-error: decorator
-@external("hypermode", "getTexts")
-declare function hostGetTexts(collection: string): Map<string, string>;
+@external("hypermode", "getTextsFromCollection")
+declare function hostGetTextsFromCollection(
+  collection: string,
+): Map<string, string>;
 
 // add data to in-mem storage, get all embedders for a collection, run text through it
 // and insert the Text into the Text indexes for each search method
@@ -151,9 +156,9 @@ export function computeSimilarity(
 }
 
 export function getText(collection: string, key: string): string {
-  return hostGetText(collection, key);
+  return hostGetTextFromCollection(collection, key);
 }
 
 export function getTexts(collection: string): Map<string, string> {
-  return hostGetTexts(collection);
+  return hostGetTextsFromCollection(collection);
 }

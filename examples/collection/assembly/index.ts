@@ -2,7 +2,7 @@ import { collections } from "@hypermode/functions-as";
 import { models } from "@hypermode/functions-as";
 import { EmbeddingsModel } from "@hypermode/models-as/models/openai/embeddings";
 
-// This model name should match one defined in the hypermode.json manifest file.
+// These names should match the ones defined in the hypermode.json manifest file.
 const modelName: string = "openai-embeddings";
 const myProducts: string = "myProducts";
 const searchMethods: string[] = ["searchMethod1", "searchMethod2"];
@@ -68,7 +68,7 @@ export function recomputeIndexes(): string[] {
       searchMethods[i],
     );
     if (!response.isSuccessful) {
-      throw new Error(response.error);
+      throw new Error(searchMethods[i] + ": " + response.error);
     }
     responseArr.push(response.status);
   }

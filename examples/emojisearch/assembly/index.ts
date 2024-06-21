@@ -10,7 +10,7 @@ import {
 } from "@hypermode/models-as/models/openai/chat";
 import { JSON } from "json-as";
 
-// This model name should match one defined in the hypermode.json manifest file.
+// These names should match the ones defined in the hypermode.json manifest file.
 const embeddingModelName: string = "openai-embeddings";
 const generationModelName: string = "text-generator";
 const emojis: string = "emojis";
