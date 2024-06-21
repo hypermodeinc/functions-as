@@ -1,0 +1,34 @@
+{
+  "$schema": "https://manifest.hypermode.com/hypermode.json",
+  "models": {
+    "openai-embeddings": {
+      "sourceModel": "text-embedding-3-large",
+      "host": "openai"
+    }
+  },
+  "hosts": {
+    // This defines a host that is used by the custom model above.
+    // The {{API_KEY}} will be replaced by the secret provided in the Hypermode Console.
+    "openai": {
+      "endpoint": "https://api.openai.com/v1/embeddings",
+      "headers": {
+        "Authorization": "Bearer {{API_KEY}}"
+      }
+    }
+  },
+  "collections": {
+    "myProducts": {
+      "searchMethods": {
+        "searchMethod1": {
+          "embedder": "embed"
+        },
+        "searchMethod2": {
+          "embedder": "embed",
+          "index": {
+            "type": "sequential"
+          }
+        }
+      }
+    }
+  }
+}

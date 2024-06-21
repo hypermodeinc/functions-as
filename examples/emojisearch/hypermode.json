@@ -1,0 +1,33 @@
+{
+  "$schema": "https://manifest.hypermode.com/hypermode.json",
+  "models": {
+    "openai-embeddings": {
+      "sourceModel": "text-embedding-3-large",
+      "host": "openai",
+      "path": "v1/embeddings"
+    },
+    "text-generator": {
+      "sourceModel": "gpt-3.5-turbo",
+      "host": "openai",
+      "path": "v1/chat/completions"
+    }
+  },
+
+  "hosts": {
+    "openai": {
+      "baseUrl": "https://api.openai.com/",
+      "headers": {
+        "Authorization": "Bearer {{API_KEY}}"
+      }
+    }
+  },
+  "collections": {
+    "emojis": {
+      "searchMethods": {
+        "searchMethod1": {
+          "embedder": "embed"
+        }
+      }
+    }
+  }
+}
