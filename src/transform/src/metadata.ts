@@ -18,6 +18,7 @@ export class HypermodeMetadata {
   gitRepo?: string;
   gitCommit?: string;
   functions: FunctionSignature[] = [];
+  embedders: FunctionSignature[] = [];
   types: TypeDefinition[] = [];
 
   static generate(): HypermodeMetadata {
@@ -38,6 +39,51 @@ export class HypermodeMetadata {
 
   addFunctions(functions: FunctionSignature[]) {
     this.functions.push(...functions);
+  }
+
+  addEmbedders(functions: FunctionSignature[]) {
+    for (const func of functions) {
+      if (func.parameters.length != 1)
+        throw new Error(
+          "Expected embedder to have one argument, but found " +
+            (func.parameters.length ? "multiple" : "no") +
+            " arguments!",
+        );
+      const type = func.parameters[0].type.name;
+      const returnType = func.returnType.name;
+
+      if (type != "string" && type != "string[]" && type != "Array<string>") {
+        throw new Error(
+          "Expected embedder to have one argument of type 'string' or 'string[]', but found '" +
+            type +
+            "' instead!",
+        );
+      }
+
+      if (
+        type == "string" &&
+        returnType != "f64[]" &&
+        returnType != "Array<f64>"
+      ) {
+        throw new Error(
+          "Expected return type to be of type 'f64[]', but found '" +
+            returnType +
+            "' instead!",
+        );
+      } else if (
+        (type == "Array<string>" || type == "string[]") &&
+        returnType != "f64[][]" &&
+        returnType != "Array<Array<f64>>"
+      ) {
+        throw new Error(
+          "Expected return type to be of type 'f64[][]', but found '" +
+            returnType +
+            "' instead!",
+        );
+      }
+
+      this.embedders.push(func);
+    }
   }
 
   addTypes(types: TypeDefinition[]) {
@@ -115,6 +161,10 @@ export class HypermodeMetadata {
 
     writeHeader("Hypermode Functions:");
     this.functions.forEach((f) => writeItem(f.toString()));
+    stream.write("\n");
+
+    writeHeader("Embedder Functions:");
+    this.embedders.forEach((f) => writeItem(f.toString()));
     stream.write("\n");
 
     const types = this.types.filter((t) => !t.isHidden());
