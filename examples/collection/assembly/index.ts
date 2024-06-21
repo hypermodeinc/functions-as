@@ -60,17 +60,17 @@ export function searchProducts(
   return responseArr;
 }
 
-export function recomputeIndexes(): string[] {
-  const responseArr: string[] = [];
+export function recomputeIndexes(): Map<string, string> {
+  const responseArr: Map<string, string> = new Map<string, string>();
   for (let i: i32 = 0; i < searchMethods.length; i++) {
     const response = collections.recomputeSearchMethod(
       myProducts,
       searchMethods[i],
     );
     if (!response.isSuccessful) {
-      throw new Error(searchMethods[i] + ": " + response.error);
+      responseArr.set(searchMethods[i], response.error);
     }
-    responseArr.push(response.status);
+    responseArr.set(searchMethods[i], response.status);
   }
   return responseArr;
 }

@@ -38,21 +38,16 @@ export function getEmojiFromString(text: string): string {
   }
 }
 
-function generateList<TData>(
-  instruction: string,
-  text: string,
-  sample: TData,
-): TData[] {
+// see examples/textgeneration for explanation
+function generateListForEmoji(text: string): string[] {
   // Prompt trick: ask for a simple JSON object.
-  const modifiedInstruction =
-    "Only respond with valid JSON object in this format:\n" +
-    JSON.stringify(sample) +
-    "\n" +
-    instruction;
+  const instruction = `Write the emoji. It must precisely follow the sample. Only respond with valid JSON object containing a valid JSON array named 'list', in this format:
+  {"list":["😭: sobbing face", "🍎: red apple"]}
+  `;
 
   const model = models.getModel<ChatModel>(generationModelName);
   const input = model.createInput([
-    new SystemMessage(modifiedInstruction),
+    new SystemMessage(instruction),
     new UserMessage(text),
   ]);
 
@@ -63,7 +58,8 @@ function generateList<TData>(
   // The output should contain the JSON string we asked for.
   const json = output.choices[0].message.content.trim();
 
-  return JSON.parse<TData[]>(json);
+  const results = JSON.parse<Map<string, string[]>>(json);
+  return results.get("list");
 }
 
 export function generateEmojiDescriptions(): string[] {
@@ -73,11 +69,7 @@ export function generateEmojiDescriptions(): string[] {
     const end: i32 = min(i + batchSize, starterEmojis.length);
     const batch: string[] = starterEmojis.slice(i, end);
 
-    const emojiList = generateList<string>(
-      "write the emoji. It must precisely follow the sample",
-      batch.join(" "),
-      "😭: sobbing face",
-    );
+    const emojiList = generateListForEmoji(batch.join(", "));
 
     allEmojis = allEmojis.concat(emojiList);
   }
