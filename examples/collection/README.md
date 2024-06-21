@@ -1,5 +1,5 @@
-# Hypermode Text Indexing Example Plugin
+# Hypermode Collections Example Plugin
 
-This example shows how to invoke a model that can calculate vector embeddings.
+This example demonstrates the capabilities of Hypermode collections feature.
 
 See [./assembly/index.ts](./assembly/index.ts) for the implementation.

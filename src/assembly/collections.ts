@@ -1,27 +1,29 @@
 import * as utils from "./utils";
 
-export class CollectionMutationResult {
+export type CollectionStatus = string;
+export namespace CollectionStatus {
+  export const Success = "success";
+  export const Error = "error";
+}
+abstract class CollectionResult {
   collection!: string;
+  status!: CollectionStatus;
+  error!: string;
+  get isSuccessful(): bool {
+    return this.status == CollectionStatus.Success;
+  }
+}
+export class CollectionMutationResult extends CollectionResult {
   operation!: string;
-  status!: string;
   key!: string;
-  error!: string;
 }
-
-export class SearchMethodMutationResult {
-  collection!: string;
-  searchMethod!: string;
+export class SearchMethodMutationResult extends CollectionResult {
   operation!: string;
-  status!: string;
-  error!: string;
-}
-
-export class CollectionSearchResult {
-  collection!: string;
   searchMethod!: string;
-  status!: string;
+}
+export class CollectionSearchResult extends CollectionResult {
+  searchMethod!: string;
   objects!: CollectionSearchResultObject[];
-  error!: string;
 }
 
 export class CollectionSearchResultObject {

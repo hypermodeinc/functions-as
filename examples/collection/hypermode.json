@@ -1,21 +1,18 @@
 {
   "$schema": "https://manifest.hypermode.com/hypermode.json",
   "models": {
-    // This defines a custom model that is hosted on AWS, at the host specified below.
-    "my-custom-embedding": {
-      "task": "embedding",
-      "sourceModel": "all-MiniLM-L6-v2",
-      "host": "aws-embedding",
-      "provider": "custom"
+    "openai-embeddings": {
+      "sourceModel": "text-embedding-3-large",
+      "host": "openai"
     }
   },
   "hosts": {
     // This defines a host that is used by the custom model above.
     // The {{API_KEY}} will be replaced by the secret provided in the Hypermode Console.
-    "aws-embedding": {
-      "endpoint": "https://2f050wcjqd.execute-api.us-east-1.amazonaws.com/dev/embedding",
+    "openai": {
+      "endpoint": "https://api.openai.com/v1/embeddings",
       "headers": {
-        "X-API-Key": "{{API_KEY}}"
+        "Authorization": "Bearer {{API_KEY}}"
       }
     }
   },

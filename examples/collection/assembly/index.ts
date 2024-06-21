@@ -1,18 +1,23 @@
-import { inference, collections } from "@hypermode/functions-as";
+import { collections } from "@hypermode/functions-as";
+import { models } from "@hypermode/functions-as";
+import { EmbeddingsModel } from "@hypermode/models-as/models/openai/embeddings";
 
 // This model name should match one defined in the hypermode.json manifest file.
-const modelName: string = "my-custom-embedding";
+const modelName: string = "openai-embeddings";
 const myProducts: string = "myProducts";
 const searchMethods: string[] = ["searchMethod1", "searchMethod2"];
 
 // This function takes input text and returns the vector embedding for that text.
 export function embed(text: string): f64[] {
-  return inference.getTextEmbedding(modelName, text);
+  const model = models.getModel<EmbeddingsModel>(modelName);
+  const input = model.createInput(text);
+  const output = model.invoke(input);
+  return output.data[0].embedding;
 }
 
 export function upsertProduct(description: string): string {
   const response = collections.upsert(myProducts, null, description);
-  if (response.status !== "success") {
+  if (!response.isSuccessful) {
     return response.error;
   }
   return response.key;
@@ -20,7 +25,7 @@ export function upsertProduct(description: string): string {
 
 export function deleteProduct(key: string): string {
   const response = collections.remove(myProducts, key);
-  if (response.status !== "success") {
+  if (!response.isSuccessful) {
     return response.error;
   }
   return response.status;
@@ -62,7 +67,7 @@ export function recomputeIndexes(): string[] {
       myProducts,
       searchMethods[i],
     );
-    if (response.status !== "success") {
+    if (!response.isSuccessful) {
       responseArr.push(response.error);
     }
     responseArr.push(response.status);
