@@ -163,9 +163,11 @@ export class HypermodeMetadata {
     this.functions.forEach((f) => writeItem(f.toString()));
     stream.write("\n");
 
-    writeHeader("Embedder Functions:");
-    this.embedders.forEach((f) => writeItem(f.toString()));
-    stream.write("\n");
+    if (this.embedders.length > 0) {
+      writeHeader("Embedder Functions:");
+      this.embedders.forEach((f) => writeItem(f.toString()));
+      stream.write("\n");
+    }
 
     const types = this.types.filter((t) => !t.isHidden());
     if (types.length > 0) {
