@@ -15,7 +15,7 @@ export function embed(text: string): f64[] {
   return output.data[0].embedding;
 }
 
-export function upsertProduct(description: string): string {
+export function addProduct(description: string): string {
   const response = collections.upsert(myProducts, null, description);
   if (!response.isSuccessful) {
     throw new Error(response.error);
@@ -45,6 +45,7 @@ export function computeSimilarityBetweenProducts(
 
 export function searchProducts(
   product: string,
+  maxItems: i32,
 ): collections.CollectionSearchResult[] {
   const responseArr: collections.CollectionSearchResult[] = [];
   for (let i: i32 = 0; i < searchMethods.length; i++) {
@@ -52,7 +53,7 @@ export function searchProducts(
       myProducts,
       searchMethods[i],
       product,
-      10,
+      maxItems,
       true,
     );
     responseArr.push(response);

@@ -7,30 +7,78 @@ export namespace CollectionStatus {
   export const Error = "error";
 }
 abstract class CollectionResult {
-  collection!: string;
-  status!: CollectionStatus;
-  error!: string;
+  collection: string;
+  status: CollectionStatus;
+  error: string;
   get isSuccessful(): bool {
     return this.status == CollectionStatus.Success;
   }
+
+  constructor(collection: string, status: CollectionStatus, error: string) {
+    this.collection = collection;
+    this.status = status;
+    this.error = error;
+  }
 }
 export class CollectionMutationResult extends CollectionResult {
-  operation!: string;
-  key!: string;
+  operation: string;
+  key: string;
+
+  constructor(
+    collection: string,
+    status: CollectionStatus,
+    error: string,
+    operation: string,
+    key: string,
+  ) {
+    super(collection, status, error);
+    this.operation = operation;
+    this.key = key;
+  }
 }
 export class SearchMethodMutationResult extends CollectionResult {
-  operation!: string;
-  searchMethod!: string;
+  operation: string;
+  searchMethod: string;
+
+  constructor(
+    collection: string,
+    status: CollectionStatus,
+    error: string,
+    operation: string,
+    searchMethod: string,
+  ) {
+    super(collection, status, error);
+    this.operation = operation;
+    this.searchMethod = searchMethod;
+  }
 }
 export class CollectionSearchResult extends CollectionResult {
-  searchMethod!: string;
-  objects!: CollectionSearchResultObject[];
+  searchMethod: string;
+  objects: CollectionSearchResultObject[];
+
+  constructor(
+    collection: string,
+    status: CollectionStatus,
+    error: string,
+    searchMethod: string,
+    objects: CollectionSearchResultObject[],
+  ) {
+    super(collection, status, error);
+    this.searchMethod = searchMethod;
+    this.objects = objects;
+  }
 }
 
 export class CollectionSearchResultObject {
-  key!: string;
-  text!: string;
-  score!: f64;
+  key: string;
+  text: string;
+  score: f64;
+
+  constructor(key: string, text: string, score: f64) {
+    this.key = key;
+    this.text = text;
+    this.score = score;
+  }
 }
 
 // @ts-expect-error: decorator
@@ -94,9 +142,36 @@ export function upsert(
   key: string | null,
   text: string,
 ): CollectionMutationResult {
+  if (collection.length == 0) {
+    console.error("Collection is empty.");
+    return new CollectionMutationResult(
+      collection,
+      CollectionStatus.Error,
+      "Collection is empty.",
+      "upsert",
+      "",
+    );
+  }
+  if (text.length == 0) {
+    console.error("Text is empty.");
+    return new CollectionMutationResult(
+      collection,
+      CollectionStatus.Error,
+      "Text is empty.",
+      "upsert",
+      "",
+    );
+  }
   const result = hostUpsertToCollection(collection, key, text);
   if (utils.resultIsInvalid(result)) {
-    throw new Error("Error upserting to Text index.");
+    console.error("Error upserting to Text index.");
+    return new CollectionMutationResult(
+      collection,
+      CollectionStatus.Error,
+      "Error upserting to Text index.",
+      "upsert",
+      "",
+    );
   }
   return result;
 }
@@ -106,9 +181,36 @@ export function remove(
   collection: string,
   key: string,
 ): CollectionMutationResult {
+  if (collection.length == 0) {
+    console.error("Collection is empty.");
+    return new CollectionMutationResult(
+      collection,
+      CollectionStatus.Error,
+      "Collection is empty.",
+      "delete",
+      "",
+    );
+  }
+  if (key.length == 0) {
+    console.error("Key is empty.");
+    return new CollectionMutationResult(
+      collection,
+      CollectionStatus.Error,
+      "Key is empty.",
+      "delete",
+      "",
+    );
+  }
   const result = hostDeleteFromCollection(collection, key);
   if (utils.resultIsInvalid(result)) {
-    throw new Error("Error deleting from Text index.");
+    console.error("Error deleting from Text index.");
+    return new CollectionMutationResult(
+      collection,
+      CollectionStatus.Error,
+      "Error deleting from Text index.",
+      "delete",
+      "",
+    );
   }
   return result;
 }
@@ -123,6 +225,16 @@ export function search(
   limit: i32,
   returnText: bool = false,
 ): CollectionSearchResult {
+  if (text.length == 0) {
+    console.error("Text is empty.");
+    return new CollectionSearchResult(
+      collection,
+      CollectionStatus.Error,
+      "Text is empty.",
+      searchMethod,
+      [],
+    );
+  }
   const result = hostSearchCollection(
     collection,
     searchMethod,
@@ -131,7 +243,14 @@ export function search(
     returnText,
   );
   if (utils.resultIsInvalid(result)) {
-    throw new Error("Error searching Text index.");
+    console.error("Error searching Text index.");
+    return new CollectionSearchResult(
+      collection,
+      CollectionStatus.Error,
+      "Error searching Text index.",
+      searchMethod,
+      [],
+    );
   }
   return result;
 }
@@ -140,9 +259,36 @@ export function recomputeSearchMethod(
   collection: string,
   searchMethod: string,
 ): SearchMethodMutationResult {
+  if (collection.length == 0) {
+    console.error("Collection is empty.");
+    return new SearchMethodMutationResult(
+      collection,
+      CollectionStatus.Error,
+      "Collection is empty.",
+      "recompute",
+      searchMethod,
+    );
+  }
+  if (searchMethod.length == 0) {
+    console.error("Search method is empty.");
+    return new SearchMethodMutationResult(
+      collection,
+      CollectionStatus.Error,
+      "Search method is empty.",
+      "recompute",
+      searchMethod,
+    );
+  }
   const result = hostRecomputeSearchMethod(collection, searchMethod);
   if (utils.resultIsInvalid(result)) {
-    throw new Error("Error recomputing Text index.");
+    console.error("Error recomputing Text index.");
+    return new SearchMethodMutationResult(
+      collection,
+      CollectionStatus.Error,
+      "Error recomputing Text index.",
+      "recompute",
+      searchMethod,
+    );
   }
   return result;
 }
@@ -153,13 +299,41 @@ export function computeSimilarity(
   key1: string,
   key2: string,
 ): CollectionSearchResultObject {
+  if (collection.length == 0) {
+    console.error("Collection is empty.");
+    return new CollectionSearchResultObject("", "", 0.0);
+  }
+  if (searchMethod.length == 0) {
+    console.error("Search method is empty.");
+    return new CollectionSearchResultObject("", "", 0.0);
+  }
+  if (key1.length == 0) {
+    console.error("Key1 is empty.");
+    return new CollectionSearchResultObject("", "", 0.0);
+  }
+  if (key2.length == 0) {
+    console.error("Key2 is empty.");
+    return new CollectionSearchResultObject("", "", 0.0);
+  }
   return hostComputeSimilarity(collection, searchMethod, key1, key2);
 }
 
 export function getText(collection: string, key: string): string {
+  if (collection.length == 0) {
+    console.error("Collection is empty.");
+    return "";
+  }
+  if (key.length == 0) {
+    console.error("Key is empty.");
+    return "";
+  }
   return hostGetTextFromCollection(collection, key);
 }
 
 export function getTexts(collection: string): Map<string, string> {
+  if (collection.length == 0) {
+    console.error("Collection is empty.");
+    return new Map<string, string>();
+  }
   return hostGetTextsFromCollection(collection);
 }
