@@ -114,10 +114,9 @@ function generateText(instruction: string, prompt: string): string {
 
 export function insertEmoji(emoji: string): string {
   // check if emoji already exists
-  const texts = collections.getTexts(emojis);
-  for (let i: i32 = 0; i < texts.keys().length; i++) {
-    const text = texts.get(texts.keys()[i]);
-    const textEmoji = getEmojiFromString(text);
+  const texts = collections.getTexts(emojis).values();
+  for (let i: i32 = 0; i < texts.length; i++) {
+    const textEmoji = getEmojiFromString(texts[i]);
     if (textEmoji === emoji) {
       return "Emoji already exists";
     }

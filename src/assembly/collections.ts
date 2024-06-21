@@ -1,6 +1,7 @@
 import * as utils from "./utils";
 
 export type CollectionStatus = string;
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace CollectionStatus {
   export const Success = "success";
   export const Error = "error";
