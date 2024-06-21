@@ -7,3 +7,6 @@ export { http };
 
 import * as collections from "./collections";
 export { collections };
+
+import models from "./models";
+export { models };
