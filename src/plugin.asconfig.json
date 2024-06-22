@@ -19,7 +19,6 @@
   },
   "targets": {
     "debug": {
-      "sourceMap": true,
       "debug": true
     },
     "release": {
