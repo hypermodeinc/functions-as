@@ -1,5 +1,9 @@
 # Change Log
 
+## Unreleased
+
+- Remove `@embedder` decorator [#112](https://github.com/hypermodeAI/functions-as/pull/112)
+
 ## 2024-06-21 - Version 0.9.0
 
 _Note: Requires Hypermode Runtime v0.9.0 or newer_
