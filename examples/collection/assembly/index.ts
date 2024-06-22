@@ -3,7 +3,7 @@ import { models } from "@hypermode/functions-as";
 import { EmbeddingsModel } from "@hypermode/models-as/models/openai/embeddings";
 
 // These names should match the ones defined in the hypermode.json manifest file.
-const modelName: string = "openai-embeddings";
+const modelName: string = "embeddings";
 const myProducts: string = "myProducts";
 const searchMethods: string[] = ["searchMethod1", "searchMethod2"];
 

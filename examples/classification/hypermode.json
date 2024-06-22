@@ -3,17 +3,14 @@
   "models": {
     // This defines a model from Hugging Face that is hosted on Hypermode.
     "my-classifier": {
-      "task": "classification",
       "sourceModel": "distilbert/distilbert-base-uncased",
       "host": "hypermode",
       "provider": "hugging-face"
     },
     // This defines a custom model that is hosted on AWS, at the host specified below.
     "my-custom-classifier": {
-      "task": "classification",
       "sourceModel": "distilbert-base-uncased",
-      "host": "aws-classifier",
-      "provider": "custom"
+      "host": "aws-classifier"
     }
   },
   "hosts": {
