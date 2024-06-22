@@ -1,3 +1,4 @@
+import { Transform } from "assemblyscript/dist/transform.js";
 import binaryen from "assemblyscript/lib/binaryen.js";
 import {
   Class,
@@ -15,31 +16,20 @@ import {
   TypeInfo,
   typeMap,
 } from "./types.js";
-import HypermodeTransform from "./index.js";
 
 export class Extractor {
   binaryen: typeof binaryen;
   module: binaryen.Module;
   program: Program;
-  transform: HypermodeTransform;
 
-  constructor(transform: HypermodeTransform, module: binaryen.Module) {
+  constructor(transform: Transform, module: binaryen.Module) {
     this.program = transform.program;
     this.binaryen = transform.binaryen;
     this.module = module;
-    this.transform = transform;
   }
 
   getProgramInfo(): ProgramInfo {
     const functions = this.getExportedFunctions()
-      .filter((e) => {
-        return !this.transform.embedders.includes(e.name);
-      })
-      .map((e) => this.convertToFunctionSignature(e))
-      .sort((a, b) => a.name.localeCompare(b.name));
-
-    const embedders = this.getExportedFunctions()
-      .filter((e) => this.transform.embedders.includes(e.name))
       .map((e) => this.convertToFunctionSignature(e))
       .sort((a, b) => a.name.localeCompare(b.name));
 
@@ -86,7 +76,7 @@ export class Extractor {
       (a.name + a.path).localeCompare(b.name + b.path),
     );
 
-    return { functions, types, embedders };
+    return { functions, types };
   }
 
   private expandDependentTypes(
