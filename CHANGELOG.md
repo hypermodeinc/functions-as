@@ -1,6 +1,6 @@
 # Change Log
 
-## UNRELEASED
+## 2024-06-21 - Version 0.9.0
 
 - Add collections host functions [#96](https://github.com/hypermodeAI/functions-as/pull/96)
 - Fixed bug in plugin build script [#87](https://github.com/gohypermode/functions-as/pull/87)
