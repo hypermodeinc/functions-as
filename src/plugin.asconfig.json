@@ -2,6 +2,7 @@
   "options": {
     "lib": [
       "./assembly/overrides",
+      "../../@assemblyscript/wasi-shim/assembly",
       "./node_modules/@assemblyscript/wasi-shim/assembly"
     ],
     "use": [
