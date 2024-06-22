@@ -1,6 +1,8 @@
 # Change Log
 
-## UNRELEASED
+## 2024-06-21 - Version 0.9.0
+
+_Note: Requires Hypermode Runtime v0.9.0 or newer_
 
 - Add collections host functions [#96](https://github.com/hypermodeAI/functions-as/pull/96)
 - Fixed bug in plugin build script [#87](https://github.com/gohypermode/functions-as/pull/87)
@@ -9,6 +11,10 @@
 - Route `console.log` through Runtime host function [#102](https://github.com/gohypermode/functions-as/pull/102)
 - Support `@embedder` decorator to denote embedded function [#104](https://github.com/hypermodeAI/functions-as/pull/104)
 - Implement new models interface and rework examples [#106](https://github.com/hypermodeAI/functions-as/pull/106)
+
+## Version 0.8.0
+
+_skipped to align with runtime version_
 
 ## 2024-05-13 - Version 0.7.0
 
