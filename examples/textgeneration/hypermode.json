@@ -1,19 +1,18 @@
 {
   "$schema": "https://manifest.hypermode.com/hypermode.json",
   "models": {
-    // This defines an external model that will be used for text generation.
+    // This defines the model that will be used for text generation.
     "text-generator": {
-      "task": "generation",
       "sourceModel": "gpt-3.5-turbo",
-      "provider": "openai",
-      "host": "openai"
+      "host": "openai",
+      "path": "v1/chat/completions"
     }
   },
   "hosts": {
     // This defines the OpenAI host, which is used by the model above.
     // The {{API_KEY}} will be replaced by the secret provided in the Hypermode Console.
     "openai": {
-      "endpoint": "https://api.openai.com/v1/chat/completions",
+      "baseUrl": "https://api.openai.com/",
       "headers": {
         "Authorization": "Bearer {{API_KEY}}"
       }

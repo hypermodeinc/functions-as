@@ -11,7 +11,7 @@ import {
 import { JSON } from "json-as";
 
 // These names should match the ones defined in the hypermode.json manifest file.
-const embeddingModelName: string = "openai-embeddings";
+const embeddingModelName: string = "embeddings";
 const generationModelName: string = "text-generator";
 const emojis: string = "emojis";
 const searchMethod: string = "searchMethod1";
