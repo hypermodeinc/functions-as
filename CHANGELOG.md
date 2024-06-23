@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Remove `@embedder` decorator [#112](https://github.com/hypermodeAI/functions-as/pull/112)
+- Update examples [#113](https://github.com/hypermodeAI/functions-as/pull/113)
 
 ## 2024-06-21 - Version 0.9.0
 
