@@ -1,9 +1,9 @@
 import { collections } from "@hypermode/functions-as";
 import { starterEmojis } from "./emojis";
 import { models } from "@hypermode/functions-as";
-import { EmbeddingsModel } from "@hypermode/models-as/models/openai/embeddings";
+import { OpenAIEmbeddingsModel } from "@hypermode/models-as/models/openai/embeddings";
 import {
-  ChatModel,
+  OpenAIChatModel,
   ResponseFormat,
   SystemMessage,
   UserMessage,
@@ -17,8 +17,8 @@ const emojis: string = "emojis";
 const searchMethod: string = "searchMethod1";
 
 // This function takes input text and returns the vector embedding for that text.
-export function embed(text: string): f64[] {
-  const model = models.getModel<EmbeddingsModel>(embeddingModelName);
+export function embed(text: string): f32[] {
+  const model = models.getModel<OpenAIEmbeddingsModel>(embeddingModelName);
   const input = model.createInput(text);
   const output = model.invoke(input);
   return output.data[0].embedding;
@@ -45,7 +45,7 @@ function generateListForEmoji(text: string): string[] {
   {"list":["😭: sobbing face", "🍎: red apple"]}
   `;
 
-  const model = models.getModel<ChatModel>(generationModelName);
+  const model = models.getModel<OpenAIChatModel>(generationModelName);
   const input = model.createInput([
     new SystemMessage(instruction),
     new UserMessage(text),
@@ -90,7 +90,7 @@ export function upsertAllStarterEmojis(): string {
 
 function generateText(instruction: string, prompt: string): string {
   // The imported ChatModel interface follows the OpenAI Chat completion model input format.
-  const model = models.getModel<ChatModel>(generationModelName);
+  const model = models.getModel<OpenAIChatModel>(generationModelName);
   const input = model.createInput([
     new SystemMessage(instruction),
     new UserMessage(prompt),
