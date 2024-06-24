@@ -1,6 +1,6 @@
 import { models } from "@hypermode/functions-as";
 import { EmbeddingsModel } from "@hypermode/models-as/models/experimental/embeddings";
-import { EmbeddingsModel as OpenAIEmbeddingsModel } from "@hypermode/models-as/models/openai/embeddings";
+import { OpenAIEmbeddingsModel } from "@hypermode/models-as/models/openai/embeddings";
 
 // In this example, we will create embedding vectors from input text strings.
 // For comparison, we'll do this with two different models.
