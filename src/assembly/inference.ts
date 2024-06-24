@@ -1,6 +1,8 @@
 import * as utils from "./utils";
 import { JSON } from "json-as";
 
+// NOTE: all functions in this file are deprecated and will be removed in the future.
+
 // @ts-expect-error: decorator
 @external("hypermode", "invokeClassifier")
 declare function invokeClassifier(
@@ -23,7 +25,18 @@ declare function invokeTextGenerator(
   sentence: string,
   format: string,
 ): string;
+
+/**
+ * @deprecated
+ * This class is deprecated and will be removed in the future.
+ * Use `models.getModel` and the appropriate model interface instead.
+ */
 export abstract class inference {
+  /**
+   * @deprecated
+   * This function is deprecated and will be removed in the future.
+   * Use `models.getModel` with a classification model instead.
+   */
   public static getClassificationProbability(
     modelName: string,
     text: string,
@@ -40,6 +53,11 @@ export abstract class inference {
     return 0.0;
   }
 
+  /**
+   * @deprecated
+   * This function is deprecated and will be removed in the future.
+   * Use `models.getModel` with a classification model instead.
+   */
   public static classifyText(
     modelName: string,
     text: string,
@@ -65,6 +83,11 @@ export abstract class inference {
     return result;
   }
 
+  /**
+   * @deprecated
+   * This function is deprecated and will be removed in the future.
+   * Use `models.getModel` with a classification model instead.
+   */
   public static getClassificationLabelsForText(
     modelName: string,
     text: string,
@@ -75,6 +98,11 @@ export abstract class inference {
     return res.get("text");
   }
 
+  /**
+   * @deprecated
+   * This function is deprecated and will be removed in the future.
+   * Use `models.getModel` with a classification model instead.
+   */
   public static getClassificationLabelsForTexts(
     modelName: string,
     texts: Map<string, string>,
@@ -86,6 +114,11 @@ export abstract class inference {
     return result;
   }
 
+  /**
+   * @deprecated
+   * This function is deprecated and will be removed in the future.
+   * Use `models.getModel` with an embedding model instead.
+   */
   public static getTextEmbedding(modelName: string, text: string): f64[] {
     const textMap = new Map<string, string>();
     textMap.set("text", text);
@@ -93,6 +126,11 @@ export abstract class inference {
     return res.get("text");
   }
 
+  /**
+   * @deprecated
+   * This function is deprecated and will be removed in the future.
+   * Use `models.getModel` with an embedding model instead.
+   */
   public static getTextEmbeddings(
     modelName: string,
     texts: Map<string, string>,
@@ -104,6 +142,11 @@ export abstract class inference {
     return result;
   }
 
+  /**
+   * @deprecated
+   * This function is deprecated and will be removed in the future.
+   * Use `models.getModel` with a generative text model instead.
+   */
   public static generateText(
     modelName: string,
     instruction: string,
@@ -116,6 +159,11 @@ export abstract class inference {
     return result;
   }
 
+  /**
+   * @deprecated
+   * This function is deprecated and will be removed in the future.
+   * Use `models.getModel` with a generative text model instead.
+   */
   public static generateData<TData>(
     modelName: string,
     instruction: string,
@@ -143,6 +191,11 @@ export abstract class inference {
     return JSON.parse<TData>(result);
   }
 
+  /**
+   * @deprecated
+   * This function is deprecated and will be removed in the future.
+   * Use `models.getModel` with a generative text model instead.
+   */
   public static generateList<TData>(
     modelName: string,
     instruction: string,
