@@ -1,7 +1,28 @@
-import * as host from "./hypermode";
 import * as utils from "./utils";
 import { JSON } from "json-as";
 
+// @ts-expect-error: decorator
+@external("hypermode", "invokeClassifier")
+declare function invokeClassifier(
+  modelName: string,
+  sentenceMap: Map<string, string>,
+): Map<string, Map<string, f32>>;
+
+// @ts-expect-error: decorator
+@external("hypermode", "computeEmbedding")
+declare function computeEmbedding(
+  modelName: string,
+  sentenceMap: Map<string, string>,
+): Map<string, f64[]>;
+
+// @ts-expect-error: decorator
+@external("hypermode", "invokeTextGenerator")
+declare function invokeTextGenerator(
+  modelName: string,
+  instruction: string,
+  sentence: string,
+  format: string,
+): string;
 export abstract class inference {
   public static getClassificationProbability(
     modelName: string,
@@ -58,7 +79,7 @@ export abstract class inference {
     modelName: string,
     texts: Map<string, string>,
   ): Map<string, Map<string, f32>> {
-    const result = host.invokeClassifier(modelName, texts);
+    const result = invokeClassifier(modelName, texts);
     if (utils.resultIsInvalid(result)) {
       throw new Error("Unable to classify text.");
     }
@@ -76,7 +97,7 @@ export abstract class inference {
     modelName: string,
     texts: Map<string, string>,
   ): Map<string, f64[]> {
-    const result = host.computeEmbedding(modelName, texts);
+    const result = computeEmbedding(modelName, texts);
     if (utils.resultIsInvalid(result)) {
       throw new Error("Unable to compute embeddings.");
     }
@@ -88,12 +109,7 @@ export abstract class inference {
     instruction: string,
     prompt: string,
   ): string {
-    const result = host.invokeTextGenerator(
-      modelName,
-      instruction,
-      prompt,
-      "text",
-    );
+    const result = invokeTextGenerator(modelName, instruction, prompt, "text");
     if (utils.resultIsInvalid(result)) {
       throw new Error("Unable to generate text.");
     }
@@ -113,7 +129,7 @@ export abstract class inference {
       "\n" +
       instruction;
 
-    const result = host.invokeTextGenerator(
+    const result = invokeTextGenerator(
       modelName,
       modifiedInstruction,
       text,
@@ -142,7 +158,7 @@ export abstract class inference {
       "]}\n" +
       instruction;
 
-    const result = host.invokeTextGenerator(
+    const result = invokeTextGenerator(
       modelName,
       modifiedInstruction,
       text,
