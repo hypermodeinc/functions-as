@@ -3,7 +3,7 @@
 ## Unreleased
 
 - Remove `@embedder` decorator [#112](https://github.com/hypermodeAI/functions-as/pull/112)
-- Update examples [#113](https://github.com/hypermodeAI/functions-as/pull/113)
+- Update examples [#113](https://github.com/hypermodeAI/functions-as/pull/113) [#115](https://github.com/hypermodeAI/functions-as/pull/115)
 - Misc updates [#114](https://github.com/hypermodeAI/functions-as/pull/114)
   - `connection.invokeGraphqlApi` is now `graphql.execute`
   - `connection` and `inference` classes are now marked deprecated

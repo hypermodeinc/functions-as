@@ -1,5 +1,8 @@
 import { models } from "@hypermode/functions-as";
-import { ClassifierModel, ClassifierResult } from "./model";
+import {
+  ClassificationModel,
+  ClassifierResult,
+} from "@hypermode/models-as/models/experimental/classification";
 
 // This model name should match one defined in the hypermode.json manifest file.
 const modelName: string = "my-classifier";
@@ -8,7 +11,7 @@ const modelName: string = "my-classifier";
 // classification label determined by the model, if the confidence is above the
 // threshold. Otherwise, it returns an empty string.
 export function classifyText(text: string, threshold: f32): string {
-  const model = models.getModel<ClassifierModel>(modelName);
+  const model = models.getModel<ClassificationModel>(modelName);
   const input = model.createInput([text]);
   const output = model.invoke(input);
 
@@ -23,7 +26,7 @@ export function classifyText(text: string, threshold: f32): string {
 // This function takes input text and returns the classification labels and their
 // corresponding probabilities, as determined by the model.
 export function getClassificationLabels(text: string): Map<string, f32> {
-  const model = models.getModel<ClassifierModel>(modelName);
+  const model = models.getModel<ClassificationModel>(modelName);
   const input = model.createInput([text]);
   const output = model.invoke(input);
 
@@ -50,7 +53,7 @@ export function getMultipleClassificationLabels(
   ids: string[],
   texts: string[],
 ): Map<string, Map<string, f32>> {
-  const model = models.getModel<ClassifierModel>(modelName);
+  const model = models.getModel<ClassificationModel>(modelName);
   const input = model.createInput(texts);
   const output = model.invoke(input);
 
