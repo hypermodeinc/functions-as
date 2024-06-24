@@ -1,4 +1,4 @@
-import { connection, QueryVariables } from "@hypermode/functions-as";
+import { graphql, QueryVariables } from "@hypermode/functions-as";
 import {
   AddPersonPayload,
   AggregatePersonResult,
@@ -21,7 +21,7 @@ export function queryPeople(): Person[] | null {
     }
   `;
 
-  const response = connection.invokeGraphqlApi<PeopleData>(hostName, statement);
+  const response = graphql.execute<PeopleData>(hostName, statement);
   if (!response.data) return [];
   return response.data!.people;
 }
@@ -48,11 +48,7 @@ export function querySpecificPerson(
   vars.set("firstName", firstName);
   vars.set("lastName", lastName);
 
-  const response = connection.invokeGraphqlApi<PeopleData>(
-    hostName,
-    statement,
-    vars,
-  );
+  const response = graphql.execute<PeopleData>(hostName, statement, vars);
 
   if (!response.data) return null;
   const people = response.data!.people;
@@ -70,10 +66,7 @@ function getPersonCount(): i32 {
     }
   `;
 
-  const response = connection.invokeGraphqlApi<AggregatePersonResult>(
-    hostName,
-    statement,
-  );
+  const response = graphql.execute<AggregatePersonResult>(hostName, statement);
   return response.data!.aggregatePerson.count;
 }
 
@@ -91,7 +84,7 @@ export function getRandomPerson(): Person | null {
     }
   `;
 
-  const response = connection.invokeGraphqlApi<PeopleData>(hostName, statement);
+  const response = graphql.execute<PeopleData>(hostName, statement);
   if (!response.data) return null;
   const people = response.data!.people;
   if (people.length === 0) return null;
@@ -112,17 +105,14 @@ export function addPerson(firstName: string, lastName: string): Person {
     }
   `;
 
-  const response = connection.invokeGraphqlApi<AddPersonPayload>(
-    hostName,
-    statement,
-  );
+  const response = graphql.execute<AddPersonPayload>(hostName, statement);
   return response.data!.addPerson.people[0];
 }
 
 // This function demonstrates what happens when a bad query is executed.
 export function testBadQuery(): Person[] {
   const statement = "this is a bad query";
-  const results = connection.invokeGraphqlApi<PeopleData>(hostName, statement);
+  const results = graphql.execute<PeopleData>(hostName, statement);
   if (!results.data) return [];
   return results.data!.people;
 }
