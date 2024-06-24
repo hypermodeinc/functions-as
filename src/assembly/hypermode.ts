@@ -3,12 +3,6 @@
 
 // This file should only export functions from the "hypermode" host module.
 
-export declare function executeGQL(
-  hostName: string,
-  statement: string,
-  variables: string,
-): string;
-
 export declare function invokeClassifier(
   modelName: string,
   sentenceMap: Map<string, string>,
