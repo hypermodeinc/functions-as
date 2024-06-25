@@ -3,7 +3,7 @@ import { models } from "@hypermode/functions-as";
 import { Product, sampleProductJson } from "./product";
 
 import {
-  ChatModel,
+  OpenAIChatModel,
   ResponseFormat,
   SystemMessage,
   UserMessage,
@@ -19,7 +19,7 @@ const modelName: string = "text-generator";
 // This function generates some text based on the instruction and prompt provided.
 export function generateText(instruction: string, prompt: string): string {
   // The imported ChatModel interface follows the OpenAI Chat completion model input format.
-  const model = models.getModel<ChatModel>(modelName);
+  const model = models.getModel<OpenAIChatModel>(modelName);
   const input = model.createInput([
     new SystemMessage(instruction),
     new UserMessage(prompt),
@@ -47,7 +47,7 @@ ${sampleProductJson}`;
   const prompt = `The category is "${category}".`;
 
   // Set up the input for the model, creating messages for the instruction and prompt.
-  const model = models.getModel<ChatModel>(modelName);
+  const model = models.getModel<OpenAIChatModel>(modelName);
   const input = model.createInput([
     new SystemMessage(instruction),
     new UserMessage(prompt),
@@ -85,7 +85,7 @@ Only respond with valid JSON object containing a valid JSON array named 'list', 
   const prompt = `The category is "${category}".`;
 
   // Set up the input for the model, creating messages for the instruction and prompt.
-  const model = models.getModel<ChatModel>(modelName);
+  const model = models.getModel<OpenAIChatModel>(modelName);
   const input = model.createInput([
     new SystemMessage(instruction),
     new UserMessage(prompt),

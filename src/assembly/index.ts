@@ -1,7 +1,10 @@
+export * from "./compat";
 export * from "./queryvars";
 export * from "./inference";
-export * from "./connection";
 export * from "./postgresql";
+
+import * as graphql from "./graphql";
+export { graphql };
 
 import * as http from "./http";
 export { http };

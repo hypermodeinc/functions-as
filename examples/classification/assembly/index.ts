@@ -1,38 +1,66 @@
-import { inference } from "@hypermode/functions-as";
-import { JSON } from "json-as";
-
-// TODO: This is example uses the old API, and will be updated soon to the new model interface.
+import { models } from "@hypermode/functions-as";
+import {
+  ClassificationModel,
+  ClassifierResult,
+} from "@hypermode/models-as/models/experimental/classification";
 
 // This model name should match one defined in the hypermode.json manifest file.
-const modelName: string = "my-custom-classifier";
+const modelName: string = "my-classifier";
 
 // This function takes input text and a probability threshold, and returns the
-// classification label determined by the model.
+// classification label determined by the model, if the confidence is above the
+// threshold. Otherwise, it returns an empty string.
 export function classifyText(text: string, threshold: f32): string {
-  return inference.classifyText(modelName, text, threshold);
+  const model = models.getModel<ClassificationModel>(modelName);
+  const input = model.createInput([text]);
+  const output = model.invoke(input);
+
+  const prediction = output.predictions[0];
+  if (prediction.confidence >= threshold) {
+    return prediction.label;
+  }
+
+  return "";
 }
 
 // This function takes input text and returns the classification labels and their
 // corresponding probabilities, as determined by the model.
 export function getClassificationLabels(text: string): Map<string, f32> {
-  return inference.getClassificationLabelsForText(modelName, text);
+  const model = models.getModel<ClassificationModel>(modelName);
+  const input = model.createInput([text]);
+  const output = model.invoke(input);
+
+  const prediction = output.predictions[0];
+  const labels = getLabels(prediction);
+  return labels;
+}
+
+function getLabels(prediction: ClassifierResult): Map<string, f32> {
+  const labels = new Map<string, f32>();
+  for (let i = 0; i < prediction.probabilities.length; i++) {
+    const p = prediction.probabilities[i];
+    labels.set(p.label, p.probability);
+  }
+  return labels;
 }
 
 // This function is similar to the previous, but allows multiple items to be
-// classified at a time.
+// classified at a time. Note that it might be nicer to have passed in a
+// Map<string, string> instead of two arrays. However, that is not yet
+// supported in Hypermode. This example may be updated in the future when
+// that is supported.
 export function getMultipleClassificationLabels(
-  ids: string,
-  texts: string,
+  ids: string[],
+  texts: string[],
 ): Map<string, Map<string, f32>> {
-  // Presently, Hypermode doesn't support array inputs,
-  // So we'll pass arrays as JSON strings, example: '["id1", "id2"]'
-  // In the future, Hypermode will support array inputs, and this will be simplified.
-  const idArr = JSON.parse<string[]>(ids);
-  const textArr = JSON.parse<string[]>(texts);
-  const textMap = new Map<string, string>();
-  for (let i = 0; i < idArr.length; i++) {
-    textMap.set(idArr[i], textArr[i]);
-  }
+  const model = models.getModel<ClassificationModel>(modelName);
+  const input = model.createInput(texts);
+  const output = model.invoke(input);
 
-  return inference.getClassificationLabelsForTexts(modelName, textMap);
+  const results = new Map<string, Map<string, f32>>();
+  for (let i = 0; i < output.predictions.length; i++) {
+    const labels = getLabels(output.predictions[i]);
+    results.set(ids[i], labels);
+  }
+  return results;
 }

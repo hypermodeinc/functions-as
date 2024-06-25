@@ -1,5 +1,12 @@
-import * as host from "./hypermode";
 import { JSON } from "json-as";
+
+// @ts-expect-error: decorator
+@external("hypermode", "databaseQuery")
+export declare function databaseQuery(
+  datasourceName: string,
+  datasourceType: string,
+  queryData: string, // JSON data, structure depends upon the datasource type
+): string;
 
 export namespace postgresql {
   export class Point {
@@ -41,7 +48,7 @@ export namespace postgresql {
       params: params.data,
     };
 
-    const respHost = host.databaseQuery(
+    const respHost = databaseQuery(
       datasourceName,
       datasourceType,
       JSON.stringify<hostInput>(input),
