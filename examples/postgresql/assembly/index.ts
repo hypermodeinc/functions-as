@@ -7,7 +7,7 @@ class Person {
   id: i32 = 0;
   name!: string;
   age!: i32;
-  home!: postgresql.Point;
+  home!: postgresql.Point | null;
 }
 
 export function getAllPeople(): Person[] {
@@ -36,15 +36,14 @@ export function getPerson(id: i32): Person | null {
   return response.rows.length > 0 ? response.rows[0] : null;
 }
 
-export function addPerson(name: string, age: i32, lat: f64, lon: f64): Person {
+export function addPerson(name: string, age: i32): Person {
   const query = `
-    insert into people (name, age, home)
-    values ($1, $2, $3) RETURNING id`;
+    insert into people (name, age)
+    values ($1, $2) RETURNING id`;
 
   const params = new postgresql.Params();
   params.push(name);
   params.push(age);
-  params.push(new postgresql.Point(lat, lon));
 
   const response = postgresql.query<i32[]>(host, query, params);
 
@@ -53,5 +52,40 @@ export function addPerson(name: string, age: i32, lat: f64, lon: f64): Person {
   }
 
   const id = response.rows[0][0];
-  return <Person>{ id, name, age, home: new postgresql.Point(lat, lon) };
+  return <Person>{ id, name, age };
+}
+
+export function updatePersonHomeLocation(
+  id: string,
+  lat: f64,
+  lon: f64,
+): string {
+  const query = `update people set home = $1 where id = $2`;
+
+  const params = new postgresql.Params();
+  params.push(new postgresql.Point(lat, lon));
+  params.push(id);
+
+  const response = postgresql.query(host, query, params);
+
+  if (response.rowsAffected !== 1) {
+    throw new Error("Failed to update person.");
+  }
+
+  return "success";
+}
+
+export function deletePerson(id: i32): string {
+  const query = "delete from people where id = $1";
+
+  const params = new postgresql.Params();
+  params.push(id);
+
+  const response = postgresql.query(host, query, params);
+
+  if (response.rowsAffected !== 1) {
+    throw new Error("Failed to delete person.");
+  }
+
+  return "success";
 }
