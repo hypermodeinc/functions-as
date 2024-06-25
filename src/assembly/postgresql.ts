@@ -108,7 +108,12 @@ export function query<T>(
   params: Params = new Params(),
 ): Response<T> {
   const paramsJson = params.toJSON();
-  const response = databaseQuery(hostName, datasourceType, query, paramsJson);
+  const response = databaseQuery(
+    hostName,
+    datasourceType,
+    query.trim(),
+    paramsJson,
+  );
 
   if (utils.resultIsInvalid(response)) {
     throw new Error("Error performing PostgreSQL query.");
