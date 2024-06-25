@@ -1,4 +1,7 @@
+import * as utils from "./utils";
 import { JSON } from "json-as";
+
+const datasourceType = "postgresql";
 
 // @ts-expect-error: decorator
 @external("hypermode", "databaseQuery")
@@ -7,7 +10,13 @@ declare function databaseQuery(
   datasourceType: string,
   query: string,
   paramsJson: string,
-): string;
+): hostResponse;
+
+class hostResponse {
+  error!: string;
+  resultJson!: string;
+  rowsAffected!: u32;
+}
 
 export class Point {
   private X: f64;
@@ -36,7 +45,9 @@ export class Params {
 }
 
 export class Response<T> {
-  public rows!: T[];
+  error!: string;
+  rows!: T[];
+  rowsAffected!: u32;
 }
 
 export function query<T>(
@@ -44,28 +55,27 @@ export function query<T>(
   query: string,
   params: Params = new Params(),
 ): Response<T> {
-  const datasourceType = "postgresql";
-
-  const respHost = databaseQuery(
+  const paramsJson = params.toJSON();
+  const response = databaseQuery(
     datasourceName,
     datasourceType,
     query,
-    params.toJSON(),
+    paramsJson,
   );
 
-  const parsedResp = JSON.parse<hostResponse>(respHost);
-  if (parsedResp.error != "") {
-    throw new Error(parsedResp.error);
+  if (utils.resultIsInvalid(response)) {
+    throw new Error("Error performing PostgreSQL query.");
   }
 
-  const resp = new Response<T>();
-  resp.rows = JSON.parse<T[]>(parsedResp.result);
-  return resp;
-}
+  if (response.error) {
+    console.error("PostgreSQL Error: " + response.error);
+  }
 
+  const results: Response<T> = {
+    error: response.error,
+    rows: JSON.parse<T[]>(response.resultJson),
+    rowsAffected: response.rowsAffected,
+  };
 
-@json
-class hostResponse {
-  error!: string;
-  result!: string;
+  return results;
 }
