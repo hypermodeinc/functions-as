@@ -17,11 +17,11 @@ const emojis: string = "emojis";
 const searchMethod: string = "searchMethod1";
 
 // This function takes input text and returns the vector embedding for that text.
-export function embed(text: string): f64[] {
+export function embed(text: string[]): f32[][] {
   const model = models.getModel<OpenAIEmbeddingsModel>(embeddingModelName);
   const input = model.createInput(text);
   const output = model.invoke(input);
-  return output.data[0].embedding.map<f64>((e) => e); // TODO, remove the map when we are allowing f32[] return type
+  return output.data.map<f32[]>((d) => d.embedding);
 }
 
 export function getEmojiFromString(text: string): string {
@@ -62,30 +62,29 @@ function generateListForEmoji(text: string): string[] {
   return results.get("list");
 }
 
-export function generateEmojiDescriptions(): string[] {
-  let allEmojis: string[] = [];
-  const batchSize: i32 = 10;
-  for (let i: i32 = 0; i < starterEmojis.length; i += batchSize) {
-    const end: i32 = min(i + batchSize, starterEmojis.length);
-    const batch: string[] = starterEmojis.slice(i, end);
-
-    const emojiList = generateListForEmoji(batch.join(", "));
-
-    allEmojis = allEmojis.concat(emojiList);
-  }
-  return allEmojis;
-}
-
 export function upsertAllStarterEmojis(): string {
-  let response = "";
-  const descriptions = generateEmojiDescriptions();
-  for (let i: i32 = 0; i < descriptions.length; i++) {
-    response = insertEmoji(descriptions[i]);
-    if (response !== "success") {
-      return response;
+  const generateBatchSize: i32 = 10;
+  const upsertBatchSize: i32 = 50;
+  let emojiList: string[] = [];
+
+  // Generate emoji descriptions in batches of 10
+  for (let i: i32 = 0; i < starterEmojis.length; i += generateBatchSize) {
+    const end: i32 = min(i + generateBatchSize, starterEmojis.length);
+    const batch: string[] = starterEmojis.slice(i, end);
+    emojiList = emojiList.concat(generateListForEmoji(batch.join(", ")));
+  }
+
+  // Upsert emojis in batches of 50
+  for (let i: i32 = 0; i < emojiList.length; i += upsertBatchSize) {
+    const end: i32 = min(i + upsertBatchSize, emojiList.length);
+    const batch: string[] = emojiList.slice(i, end);
+    const response = collections.upsertBatch(emojis, null, batch);
+    if (response.isSuccessful === false) {
+      return response.error;
     }
   }
-  return response;
+
+  return "All starter emojis upserted successfully";
 }
 
 function generateText(instruction: string, prompt: string): string {
