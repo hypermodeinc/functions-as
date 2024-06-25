@@ -8,6 +8,7 @@
   - `connection.invokeGraphqlApi` is now `graphql.execute`
   - `connection` and `inference` classes are now marked deprecated
   - `graphql` and `classification` examples are updated
+- Add batch upserts [#116](https://github.com/hypermodeAI/functions-as/pull/116)
 
 ## 2024-06-21 - Version 0.9.0
 

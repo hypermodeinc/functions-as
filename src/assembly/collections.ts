@@ -22,18 +22,16 @@ abstract class CollectionResult {
 }
 export class CollectionMutationResult extends CollectionResult {
   operation: string;
-  key: string;
+  keys: string[] = [];
 
   constructor(
     collection: string,
     status: CollectionStatus,
     error: string,
     operation: string,
-    key: string,
   ) {
     super(collection, status, error);
     this.operation = operation;
-    this.key = key;
   }
 }
 export class SearchMethodMutationResult extends CollectionResult {
@@ -85,8 +83,8 @@ export class CollectionSearchResultObject {
 @external("hypermode", "upsertToCollection")
 declare function hostUpsertToCollection(
   collection: string,
-  key: string | null,
-  text: string,
+  key: string[],
+  text: string[],
 ): CollectionMutationResult;
 
 // @ts-expect-error: decorator
@@ -135,6 +133,47 @@ declare function hostGetTextsFromCollection(
   collection: string,
 ): Map<string, string>;
 
+// add batch upsert
+export function upsertBatch(
+  collection: string,
+  keys: string[] | null,
+  texts: string[],
+): CollectionMutationResult {
+  if (collection.length == 0) {
+    console.error("Collection is empty.");
+    return new CollectionMutationResult(
+      collection,
+      CollectionStatus.Error,
+      "Collection is empty.",
+      "upsert",
+    );
+  }
+  if (texts.length == 0) {
+    console.error("Texts is empty.");
+    return new CollectionMutationResult(
+      collection,
+      CollectionStatus.Error,
+      "Texts is empty.",
+      "upsert",
+    );
+  }
+  let keysArr: string[] = [];
+  if (keys != null) {
+    keysArr = keys;
+  }
+  const result = hostUpsertToCollection(collection, keysArr, texts);
+  if (utils.resultIsInvalid(result)) {
+    console.error("Error upserting to Text index.");
+    return new CollectionMutationResult(
+      collection,
+      CollectionStatus.Error,
+      "Error upserting to Text index.",
+      "upsert",
+    );
+  }
+  return result;
+}
+
 // add data to in-mem storage, get all embedders for a collection, run text through it
 // and insert the Text into the Text indexes for each search method
 export function upsert(
@@ -149,7 +188,6 @@ export function upsert(
       CollectionStatus.Error,
       "Collection is empty.",
       "upsert",
-      "",
     );
   }
   if (text.length == 0) {
@@ -159,10 +197,16 @@ export function upsert(
       CollectionStatus.Error,
       "Text is empty.",
       "upsert",
-      "",
     );
   }
-  const result = hostUpsertToCollection(collection, key, text);
+  const keys: string[] = [];
+  if (key != null) {
+    keys.push(key);
+  }
+
+  const texts: string[] = [text];
+
+  const result = hostUpsertToCollection(collection, keys, texts);
   if (utils.resultIsInvalid(result)) {
     console.error("Error upserting to Text index.");
     return new CollectionMutationResult(
@@ -170,7 +214,6 @@ export function upsert(
       CollectionStatus.Error,
       "Error upserting to Text index.",
       "upsert",
-      "",
     );
   }
   return result;
@@ -188,7 +231,6 @@ export function remove(
       CollectionStatus.Error,
       "Collection is empty.",
       "delete",
-      "",
     );
   }
   if (key.length == 0) {
@@ -198,7 +240,6 @@ export function remove(
       CollectionStatus.Error,
       "Key is empty.",
       "delete",
-      "",
     );
   }
   const result = hostDeleteFromCollection(collection, key);
@@ -209,7 +250,6 @@ export function remove(
       CollectionStatus.Error,
       "Error deleting from Text index.",
       "delete",
-      "",
     );
   }
   return result;
