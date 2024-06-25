@@ -1,8 +1,8 @@
-import { QueryVariables } from "..";
+import { graphql } from "..";
 
 describe("Query Variables Object", () => {
   it("can serialize", () => {
-    const vars = new QueryVariables();
+    const vars = new graphql.Variables();
     vars.set("key1", "abc");
     vars.set("key2", 123);
     vars.set("key3", true);

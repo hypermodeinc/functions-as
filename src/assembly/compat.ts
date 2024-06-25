@@ -1,5 +1,4 @@
-import { QueryVariables } from "./queryvars";
-import { execute, GQLResponse } from "./graphql";
+import { graphql } from ".";
 
 // This file retains compatibility with previous function versions.
 
@@ -13,8 +12,8 @@ export abstract class connection {
   static invokeGraphqlApi<TData>(
     hostName: string,
     statement: string,
-    variables: QueryVariables = new QueryVariables(),
-  ): GQLResponse<TData> {
-    return execute<TData>(hostName, statement, variables);
+    variables = new graphql.Variables(),
+  ): graphql.Response<TData> {
+    return graphql.execute<TData>(hostName, statement, variables);
   }
 }

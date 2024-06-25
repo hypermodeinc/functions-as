@@ -1,5 +1,9 @@
 # Change Log
 
+## UNRELEASED
+
+- Move/rename GraphQL types to `graphql` namespace [#118](https://github.com/hypermodeAI/functions-as/pull/118)
+
 ## 2024-06-24 - Version 0.9.1
 
 - Remove `@embedder` decorator [#112](https://github.com/hypermodeAI/functions-as/pull/112)
