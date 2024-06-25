@@ -6,8 +6,8 @@ const datasourceType = "postgresql";
 // @ts-expect-error: decorator
 @external("hypermode", "databaseQuery")
 declare function databaseQuery(
-  datasourceName: string,
-  datasourceType: string,
+  hostName: string,
+  dbType: string,
   query: string,
   paramsJson: string,
 ): hostResponse;
@@ -103,17 +103,12 @@ export class Response<T> {
 }
 
 export function query<T>(
-  datasourceName: string,
+  hostName: string,
   query: string,
   params: Params = new Params(),
 ): Response<T> {
   const paramsJson = params.toJSON();
-  const response = databaseQuery(
-    datasourceName,
-    datasourceType,
-    query,
-    paramsJson,
-  );
+  const response = databaseQuery(hostName, datasourceType, query, paramsJson);
 
   if (utils.resultIsInvalid(response)) {
     throw new Error("Error performing PostgreSQL query.");
