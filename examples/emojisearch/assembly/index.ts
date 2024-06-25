@@ -79,7 +79,7 @@ export function upsertAllStarterEmojis(): string {
     const end: i32 = min(i + upsertBatchSize, emojiList.length);
     const batch: string[] = emojiList.slice(i, end);
     const response = collections.upsertBatch(emojis, null, batch);
-    if (response.isSuccessful === false) {
+    if (!response.isSuccessful) {
       return response.error;
     }
   }

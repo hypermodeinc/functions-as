@@ -22,22 +22,16 @@ abstract class CollectionResult {
 }
 export class CollectionMutationResult extends CollectionResult {
   operation: string;
-  keys: string[];
+  keys: string[] = [];
 
   constructor(
     collection: string,
     status: CollectionStatus,
     error: string,
     operation: string,
-    keys: string[],
   ) {
     super(collection, status, error);
     this.operation = operation;
-    if (keys == null) {
-      this.keys = [];
-    } else {
-      this.keys = keys;
-    }
   }
 }
 export class SearchMethodMutationResult extends CollectionResult {
@@ -152,7 +146,6 @@ export function upsertBatch(
       CollectionStatus.Error,
       "Collection is empty.",
       "upsert",
-      [],
     );
   }
   if (texts.length == 0) {
@@ -162,7 +155,6 @@ export function upsertBatch(
       CollectionStatus.Error,
       "Texts is empty.",
       "upsert",
-      [],
     );
   }
   let keysArr: string[] = [];
@@ -177,7 +169,6 @@ export function upsertBatch(
       CollectionStatus.Error,
       "Error upserting to Text index.",
       "upsert",
-      [],
     );
   }
   return result;
@@ -197,7 +188,6 @@ export function upsert(
       CollectionStatus.Error,
       "Collection is empty.",
       "upsert",
-      [],
     );
   }
   if (text.length == 0) {
@@ -207,7 +197,6 @@ export function upsert(
       CollectionStatus.Error,
       "Text is empty.",
       "upsert",
-      [],
     );
   }
   const keys: string[] = [];
@@ -225,7 +214,6 @@ export function upsert(
       CollectionStatus.Error,
       "Error upserting to Text index.",
       "upsert",
-      [],
     );
   }
   return result;
@@ -243,7 +231,6 @@ export function remove(
       CollectionStatus.Error,
       "Collection is empty.",
       "delete",
-      [],
     );
   }
   if (key.length == 0) {
@@ -253,7 +240,6 @@ export function remove(
       CollectionStatus.Error,
       "Key is empty.",
       "delete",
-      [],
     );
   }
   const result = hostDeleteFromCollection(collection, key);
@@ -264,7 +250,6 @@ export function remove(
       CollectionStatus.Error,
       "Error deleting from Text index.",
       "delete",
-      [],
     );
   }
   return result;
