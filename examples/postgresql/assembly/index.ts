@@ -45,13 +45,13 @@ export function addPerson(name: string, age: i32): Person {
   params.push(name);
   params.push(age);
 
-  const response = postgresql.query<i32[]>(host, query, params);
+  const response = postgresql.queryScalar<i32>(host, query, params);
 
   if (response.rowsAffected != 1) {
     throw new Error("Failed to insert person.");
   }
 
-  const id = response.rows[0][0];
+  const id = response.value;
   return <Person>{ id, name, age };
 }
 
@@ -66,7 +66,7 @@ export function updatePersonHomeLocation(
   params.push(new postgresql.Point(lat, lon));
   params.push(id);
 
-  const response = postgresql.query(host, query, params);
+  const response = postgresql.execute(host, query, params);
 
   if (response.rowsAffected != 1) {
     throw new Error("Failed to update person.");
@@ -81,7 +81,7 @@ export function deletePerson(id: i32): string {
   const params = new postgresql.Params();
   params.push(id);
 
-  const response = postgresql.query(host, query, params);
+  const response = postgresql.execute(host, query, params);
 
   if (response.rowsAffected != 1) {
     throw new Error("Failed to delete person.");

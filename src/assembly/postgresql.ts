@@ -8,7 +8,7 @@ const datasourceType = "postgresql";
 declare function databaseQuery(
   hostName: string,
   dbType: string,
-  query: string,
+  statement: string,
   paramsJson: string,
 ): hostResponse;
 
@@ -96,22 +96,29 @@ export class Params {
   }
 }
 
-export class Response<T> {
-  error!: string;
-  rows!: T[];
-  rowsAffected!: u32;
+export class Response {
+  error: string | null = null;
+  rowsAffected: u32 = 0;
 }
 
-export function query<T>(
+export class QueryResponse<T> extends Response {
+  rows!: T[];
+}
+
+export class ScalarResponse<T> extends Response {
+  value!: T;
+}
+
+export function execute(
   hostName: string,
-  query: string,
+  statement: string,
   params: Params = new Params(),
-): Response<T> {
+): Response {
   const paramsJson = params.toJSON();
   const response = databaseQuery(
     hostName,
     datasourceType,
-    query.trim(),
+    statement.trim(),
     paramsJson,
   );
 
@@ -123,11 +130,58 @@ export function query<T>(
     console.error("PostgreSQL Error: " + response.error);
   }
 
-  const results: Response<T> = {
+  const results: Response = {
+    error: response.error,
+    rowsAffected: response.rowsAffected,
+  };
+
+  return results;
+}
+
+export function query<T>(
+  hostName: string,
+  statement: string,
+  params: Params = new Params(),
+): QueryResponse<T> {
+  const paramsJson = params.toJSON();
+  const response = databaseQuery(
+    hostName,
+    datasourceType,
+    statement.trim(),
+    paramsJson,
+  );
+
+  if (utils.resultIsInvalid(response)) {
+    throw new Error("Error performing PostgreSQL query.");
+  }
+
+  if (response.error) {
+    console.error("PostgreSQL Error: " + response.error);
+  }
+
+  const results: QueryResponse<T> = {
     error: response.error,
     rows: JSON.parse<T[]>(response.resultJson),
     rowsAffected: response.rowsAffected,
   };
 
   return results;
+}
+
+export function queryScalar<T>(
+  hostName: string,
+  statement: string,
+  params: Params = new Params(),
+): ScalarResponse<T> {
+  var response = query<T[]>(hostName, statement, params);
+
+  if (response.rows.length == 0 || response.rows[0].length == 0) {
+    throw new Error("No results returned from query.");
+  }
+
+  return <ScalarResponse<T>>{
+    error: response.error,
+    value: response.rows[0][0],
+    rowsAffected: response.rowsAffected,
+  };
 }
