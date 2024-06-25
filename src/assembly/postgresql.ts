@@ -5,7 +5,8 @@ import { JSON } from "json-as";
 declare function databaseQuery(
   datasourceName: string,
   datasourceType: string,
-  queryData: string, // JSON data, structure depends upon the datasource type
+  query: string,
+  paramsJson: string,
 ): string;
 
 export class Point {
@@ -23,11 +24,14 @@ export class Point {
 }
 
 export class Params {
-  data: string[] = [];
+  private data: string[] = [];
 
   public push<T>(val: T): void {
-    // @ts-ignore
-    this.data.push(val.toString());
+    this.data.push(JSON.stringify(val));
+  }
+
+  public toJSON(): string {
+    return `[${this.data.join(",")}]`;
   }
 }
 
@@ -42,15 +46,11 @@ export function query<T>(
 ): Response<T> {
   const datasourceType = "postgresql";
 
-  const input: hostInput = {
-    query: query,
-    params: params.data,
-  };
-
   const respHost = databaseQuery(
     datasourceName,
     datasourceType,
-    JSON.stringify<hostInput>(input),
+    query,
+    params.toJSON(),
   );
 
   const parsedResp = JSON.parse<hostResponse>(respHost);
@@ -61,13 +61,6 @@ export function query<T>(
   const resp = new Response<T>();
   resp.rows = JSON.parse<T[]>(parsedResp.result);
   return resp;
-}
-
-
-@json
-class hostInput {
-  query!: string;
-  params!: string[];
 }
 
 
