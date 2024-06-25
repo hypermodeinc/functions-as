@@ -7,7 +7,12 @@ class Person {
   id: i32 = 0;
   name!: string;
   age!: i32;
-  home!: postgresql.Point | null;
+  home!: Location | null;
+}
+
+class Location {
+  lat!: f64;
+  lon!: f64;
 }
 
 export function getAllPeople(): Person[] {
@@ -60,10 +65,11 @@ export function updatePersonHomeLocation(
   lat: f64,
   lon: f64,
 ): string {
-  const query = `update people set home = $1 where id = $2`;
+  const query = `update people set home = point($1, $2) where id = $3`;
 
   const params = new postgresql.Params();
-  params.push(new postgresql.Point(lat, lon));
+  params.push(lat);
+  params.push(lon);
   params.push(id);
 
   const response = postgresql.execute(host, query, params);
