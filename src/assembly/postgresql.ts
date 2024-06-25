@@ -57,7 +57,7 @@ export class Point {
     return this.toString();
   }
 
-  // @ts-ignore unused parameters
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   __DESERIALIZE(
     data: string,
     key_start: i32,
