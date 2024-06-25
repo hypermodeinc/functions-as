@@ -210,7 +210,7 @@ export function upsert(
       [],
     );
   }
-  let keys: string[] = [];
+  const keys: string[] = [];
   if (key != null) {
     keys.push(key);
   }
