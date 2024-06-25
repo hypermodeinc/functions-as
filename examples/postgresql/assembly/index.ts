@@ -1,7 +1,7 @@
 import { postgresql } from "@hypermode/functions-as";
 
 // The name of the PostgreSQL host, as specified in the hypermode.json manifest
-const host = "neon";
+const host = "my-database";
 
 class Person {
   id: i32 = 0;
