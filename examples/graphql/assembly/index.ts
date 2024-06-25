@@ -1,4 +1,4 @@
-import { graphql, QueryVariables } from "@hypermode/functions-as";
+import { graphql } from "@hypermode/functions-as";
 import {
   AddPersonPayload,
   AggregatePersonResult,
@@ -44,7 +44,7 @@ export function querySpecificPerson(
     }
   `;
 
-  const vars = new QueryVariables();
+  const vars = new graphql.Variables();
   vars.set("firstName", firstName);
   vars.set("lastName", lastName);
 
