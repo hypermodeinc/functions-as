@@ -47,7 +47,7 @@ export function addPerson(name: string, age: i32): Person {
 
   const response = postgresql.query<i32[]>(host, query, params);
 
-  if (response.rowsAffected !== 1) {
+  if (response.rowsAffected != 1) {
     throw new Error("Failed to insert person.");
   }
 
@@ -68,7 +68,7 @@ export function updatePersonHomeLocation(
 
   const response = postgresql.query(host, query, params);
 
-  if (response.rowsAffected !== 1) {
+  if (response.rowsAffected != 1) {
     throw new Error("Failed to update person.");
   }
 
@@ -83,7 +83,7 @@ export function deletePerson(id: i32): string {
 
   const response = postgresql.query(host, query, params);
 
-  if (response.rowsAffected !== 1) {
+  if (response.rowsAffected != 1) {
     throw new Error("Failed to delete person.");
   }
 
