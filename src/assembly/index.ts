@@ -1,5 +1,4 @@
 export * from "./compat";
-export * from "./queryvars";
 export * from "./inference";
 
 import * as postgresql from "./postgresql";
