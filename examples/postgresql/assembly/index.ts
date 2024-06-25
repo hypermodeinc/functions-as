@@ -10,20 +10,30 @@ class Person {
   home!: postgresql.Point;
 }
 
-export function queryPeople(): Person[] {
-  const query = "select name, age, home from people";
+export function getAllPeople(): Person[] {
+  const query = "select * from people";
   const response = postgresql.query<Person>(host, query);
   return response.rows;
 }
 
-export function getPerson(name: string): Person | null {
-  const query = "select age, home from people where name = $1";
+export function getPeopleByName(name: string): Person[] {
+  const query = "select * from people where name = $1";
 
-  const params: postgresql.Params = new postgresql.Params();
+  const params = new postgresql.Params();
   params.push(name);
 
   const response = postgresql.query<Person>(host, query, params);
-  return response.rows[0];
+  return response.rows;
+}
+
+export function getPerson(id: i32): Person | null {
+  const query = "select * from people where id = $1";
+
+  const params = new postgresql.Params();
+  params.push(id);
+
+  const response = postgresql.query<Person>(host, query, params);
+  return response.rows.length > 0 ? response.rows[0] : null;
 }
 
 export function addPerson(name: string, age: i32, lat: f64, lon: f64): Person {
@@ -31,7 +41,7 @@ export function addPerson(name: string, age: i32, lat: f64, lon: f64): Person {
     insert into people (name, age, home)
     values ($1, $2, $3) RETURNING id`;
 
-  const params: postgresql.Params = new postgresql.Params();
+  const params = new postgresql.Params();
   params.push(name);
   params.push(age);
   params.push(new postgresql.Point(lat, lon));
