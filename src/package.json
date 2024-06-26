@@ -1,6 +1,6 @@
 {
   "name": "@hypermode/functions-as",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "Hypermode library for AssemblyScript functions",
   "author": "Hypermode, Inc.",
   "license": "MIT",
@@ -22,7 +22,7 @@
     "xid-ts": "^1.1.0"
   },
   "devDependencies": {
-    "@types/node": "^20.14.8",
+    "@types/node": "^20.14.9",
     "@typescript-eslint/eslint-plugin": "^7.14.1",
     "@typescript-eslint/parser": "^7.14.1",
     "assemblyscript": "^0.27.28",
