@@ -127,6 +127,8 @@ export default class HypermodeTransform extends Transform {
                   } else {
                     defaultValue = "[...]";
                   }
+                } else if (param.initializer.kind === NodeKind.Null) {
+                  defaultValue = "null";
                 }
               }
               params.push({
