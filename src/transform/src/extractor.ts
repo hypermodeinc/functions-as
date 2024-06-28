@@ -192,6 +192,7 @@ export class Extractor {
           e.name +
           ", but could not find any!",
       );
+    console.log("Getting: " + e.name);
     const fn = this.funcMetadata.get(e.name);
     const params: Parameter[] = [];
     for (let i = 0; i < f.signature.parameterTypes.length; i++) {
@@ -199,6 +200,7 @@ export class Extractor {
       const paramMeta = fn.parameters.find(
         (e) => e.name == d.signature.parameters[i].name.text,
       );
+      if (!paramMeta) continue;
       const name = d.signature.parameters[i].name.text;
       const type = getTypeInfo(_type);
       const optional = paramMeta.optional;
