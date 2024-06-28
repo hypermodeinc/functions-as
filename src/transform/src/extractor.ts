@@ -1,4 +1,3 @@
-import { Transform } from "assemblyscript/dist/transform.js";
 import binaryen from "assemblyscript/lib/binaryen.js";
 import {
   Class,

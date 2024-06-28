@@ -19,6 +19,7 @@
     "@assemblyscript/wasi-shim": "^0.1.0",
     "@hypermode/models-as": "^0.2.1",
     "json-as": "^0.9.8",
+    "visitor-as": "^0.11.4",
     "xid-ts": "^1.1.0"
   },
   "devDependencies": {
