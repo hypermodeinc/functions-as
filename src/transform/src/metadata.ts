@@ -3,7 +3,7 @@ import { fileURLToPath } from "url";
 import { execSync } from "child_process";
 import * as path from "path";
 import { Xid } from "xid-ts";
-import binaryen from "assemblyscript/lib/binaryen.js";
+import binaryen from "assemblyscript/binaryen";
 import { Colors } from "assemblyscript/util/terminal.js";
 import { WriteStream as FSWriteStream } from "fs";
 import { WriteStream as TTYWriteStream } from "tty";

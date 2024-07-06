@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "ES2020",
-    "moduleResolution": "Node",
+    "module": "es2022",
+    "moduleResolution": "Bundler",
     "removeComments": true,
     "outDir": "./lib",
     "sourceMap": true

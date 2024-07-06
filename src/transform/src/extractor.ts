@@ -1,4 +1,4 @@
-import binaryen from "assemblyscript/lib/binaryen.js";
+import binaryen from "assemblyscript/binaryen";
 import {
   Class,
   ElementKind,
@@ -7,7 +7,7 @@ import {
   Program,
   Property,
   Type,
-} from "assemblyscript/dist/assemblyscript.js";
+} from "assemblyscript";
 import {
   FunctionSignature,
   Parameter,
@@ -23,13 +23,11 @@ export class Extractor {
   module: binaryen.Module;
   program: Program;
   transform: HypermodeTransform;
-  funcMetadata: Map<string, FunctionSignature>;
 
   constructor(transform: HypermodeTransform, module: binaryen.Module) {
     this.program = transform.program;
     this.binaryen = transform.binaryen;
     this.module = module;
-    this.funcMetadata = transform.funcMetadata;
   }
 
   getProgramInfo(): ProgramInfo {
@@ -185,30 +183,14 @@ export class Extractor {
   private convertToFunctionSignature(e: importExportInfo): FunctionSignature {
     const f = this.program.instancesByName.get(e.function) as Func;
     const d = f.declaration as FunctionDeclaration;
-    if (!this.funcMetadata.has(e.name))
-      throw new Error(
-        "Tried to retrieve type data for function " +
-          e.name +
-          ", but could not find any!",
-      );
-    console.log("Getting: " + e.name);
-    const fn = this.funcMetadata.get(e.name);
     const params: Parameter[] = [];
     for (let i = 0; i < f.signature.parameterTypes.length; i++) {
       const _type = f.signature.parameterTypes[i];
-      const paramMeta = fn.parameters.find(
-        (e) => e.name == d.signature.parameters[i].name.text,
-      );
-      if (!paramMeta) continue;
       const name = d.signature.parameters[i].name.text;
       const type = getTypeInfo(_type);
-      const optional = paramMeta.optional;
-      const defaultValue = paramMeta.defaultValue;
       params.push({
         name,
         type,
-        optional,
-        defaultValue,
       });
     }
     return new FunctionSignature(
