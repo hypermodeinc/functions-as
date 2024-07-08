@@ -47,7 +47,6 @@ export class HypermodeMetadata {
   writeToModule(module: binaryen.Module) {
     const encoder = new TextEncoder();
     const json = JSON.stringify(this);
-    console.log("Metadata: ", JSON.stringify(this, null, 2));
     module.addCustomSection("hypermode_meta", encoder.encode(json));
   }
 

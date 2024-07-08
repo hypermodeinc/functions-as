@@ -19,8 +19,8 @@ import {
   SourceKind,
   StringLiteralExpression,
   Token,
-  Tokenizer
-} from "assemblyscript";
+  Tokenizer,
+} from "assemblyscript/dist/assemblyscript.js";
 import { Parameter } from "./types.js";
 import { toString } from "visitor-as/dist/utils.js";
 class OptionalParam {
@@ -136,15 +136,17 @@ export class MultiParamGen {
                   name: "UNINITIALIZED_VALUE",
                   path: "UNINITIALIZED_VALUE",
                 },
-                optional: param.parameterKind === ParameterKind.Optional ? true : false,
+                optional: param.initializer ? true : false,
               },
-              defaultValue: param.parameterKind === ParameterKind.Optional ? defaultValue : null,
+              defaultValue: param.initializer ? defaultValue : null,
             });
           }
           this.opt_fns.set(name, params);
 
           if (
-            node.signature.parameters.filter((v) => v.parameterKind === ParameterKind.Optional).length >= 2
+            node.signature.parameters.find(
+              (v) => v.parameterKind === ParameterKind.Optional,
+            )
           ) {
             let body: BlockStatement;
             if (node.body.kind != NodeKind.Block) {
@@ -171,9 +173,9 @@ export class MultiParamGen {
               ),
             );
             let first = true;
-            for (let i = 1; i < node.signature.parameters.length; i++) {
+            for (let i = 0; i < node.signature.parameters.length; i++) {
               const param = node.signature.parameters[i];
-              if (!param.initializer) continue;
+              if (param.parameterKind != ParameterKind.Optional) continue;
               const stmt = Node.createIfStatement(
                 Node.createBinaryExpression(
                   Token.Equals_Equals,
@@ -203,7 +205,7 @@ export class MultiParamGen {
                     ),
                     node.range,
                   ),
-                  newIntegerLiteral(0, node.range),
+                  newIntegerLiteral(1, node.range),
                   node.range,
                 ),
                 Node.createExpressionStatement(
@@ -226,7 +228,6 @@ export class MultiParamGen {
               if (param.initializer) param.initializer = null;
             }
           }
-          console.log(toString(node))
         }
         if (node.body == null) {
           let name = node.name.text;
@@ -321,9 +322,9 @@ export class MultiParamGen {
                   name: "UNINITIALIZED_VALUE",
                   path: "UNINITIALIZED_VALUE",
                 },
-                optional: param.parameterKind === ParameterKind.Optional ? true : false,
+                optional: param.initializer ? true : false,
               },
-              defaultValue: param.parameterKind === ParameterKind.Optional ? defaultValue : null,
+              defaultValue: param.initializer ? defaultValue : null,
             });
             param.parameterKind = ParameterKind.Default;
             if (param.initializer) param.initializer = null;
