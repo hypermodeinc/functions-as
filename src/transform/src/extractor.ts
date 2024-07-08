@@ -17,6 +17,7 @@ import {
   typeMap,
 } from "./types.js";
 import HypermodeTransform from "./index.js";
+import { MultiParamGen } from "./multiparam.js";
 
 export class Extractor {
   binaryen: typeof binaryen;
@@ -187,10 +188,13 @@ export class Extractor {
     for (let i = 0; i < f.signature.parameterTypes.length; i++) {
       const _type = f.signature.parameterTypes[i];
       const name = d.signature.parameters[i].name.text;
+      if (name == "__SUPPLIED_PARAMS") continue;
       const type = getTypeInfo(_type);
+      const optional = MultiParamGen.SN.opt_fns.get(e.name).find((e) => e.param.name == name)?.param.optional || false;
       params.push({
         name,
         type,
+        optional
       });
     }
     return new FunctionSignature(

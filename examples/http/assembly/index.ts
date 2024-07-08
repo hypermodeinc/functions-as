@@ -26,11 +26,11 @@ export function getRandomQuote(): Quote {
 }
 
 // This function makes a request to an API that returns an image, and returns the image data.
-export function getRandomImage(width: i32, height: i32): Image {
+export function getRandomImage(width: i32, height: i32, a:i32 = 1): Image {
   const url = `https://picsum.photos/${width}/${height}`;
   const response = http.fetch(url);
   const contentType = response.headers.get("Content-Type")!;
-
+store<i32>(1, a)
   return {
     contentType,
     data: response.body,
@@ -93,4 +93,10 @@ export function createGithubIssue(
 
   // The response will contain the issue data, including the URL of the issue on GitHub.
   return response.json<Issue>();
+}
+
+export function foo(bar: i32 = 0, boa: boolean = true, baz: string = "hello"): void {
+  console.log("bar: " + bar.toString());
+  console.log("baz: " + baz);
+  if (isDefined(__SUPPLIED_PARAMS)) console.log("mask: " + __SUPPLIED_PARAMS.toString(1))
 }

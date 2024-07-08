@@ -13,17 +13,16 @@ export class FunctionSignature {
   ) {}
 
   toString() {
-    const optionalParams = MultiParamGen.SN?.optionalParams.get(this.name);
+    const optionalParams = MultiParamGen.SN?.opt_fns.get(this.name);
     let params = "";
     for (let i = 0; i < this.parameters.length; i++) {
       const param = this.parameters[i]!;
-      const { optional, defaultValue } = optionalParams[i] || {
-        optional: false,
+      const { defaultValue } = optionalParams[i] || {
         defaultValue: null,
       };
       if (param.name.startsWith("_")) continue;
       params += `${param.name}: ${param.type.name}`;
-      if (optional) params += ` = ${defaultValue}`;
+      if (param.optional) params += ` = ${defaultValue}`;
       params += ", ";
     }
     return `${this.name}(${params.endsWith(", ") ? params.slice(0, params.length - 2) : params}): ${this.returnType.name}`;
@@ -69,6 +68,7 @@ export interface TypeInfo {
 export interface Parameter {
   name: string;
   type: TypeInfo;
+  optional: boolean;
 }
 
 interface Field {

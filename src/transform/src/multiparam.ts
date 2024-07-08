@@ -19,18 +19,18 @@ import {
   SourceKind,
   StringLiteralExpression,
   Token,
-  Tokenizer,
+  Tokenizer
 } from "assemblyscript";
 import { Parameter } from "./types.js";
+import { toString } from "visitor-as/dist/utils.js";
 class OptionalParam {
   param: Parameter;
-  optional: boolean = false;
   defaultValue: string | null = null;
 }
 
 export class MultiParamGen {
   static SN: MultiParamGen = new MultiParamGen();
-  public optionalParams = new Map<string, OptionalParam[]>();
+  public opt_fns = new Map<string, OptionalParam[]>();
   constructor() {}
   static init(): MultiParamGen {
     if (!MultiParamGen.SN) MultiParamGen.SN = new MultiParamGen();
@@ -70,8 +70,16 @@ export class MultiParamGen {
                 defaultValue = (
                   param.initializer as IntegerLiteralExpression
                 ).value.toString();
-                if (defaultValue.length > 5)
-                  defaultValue = defaultValue.slice(0, 5) + "...";
+                if (defaultValue.endsWith("0")) {
+                  param.parameterKind = ParameterKind.Default;
+                }
+                if (defaultValue.length > 6)
+                  defaultValue = defaultValue.slice(0, 3) + "...";
+              } else if (param.initializer.kind === NodeKind.True) {
+                defaultValue = "true";
+              } else if (param.initializer.kind === NodeKind.False) {
+                defaultValue = "false";
+                param.parameterKind = ParameterKind.Default;
               } else if (param.initializer.kind === NodeKind.New) {
                 if (!(param.initializer as NewExpression).args.length) {
                   defaultValue = "{}";
@@ -101,7 +109,7 @@ export class MultiParamGen {
                   '"' +
                   (param.initializer as StringLiteralExpression).value +
                   '"';
-                if (defaultValue.length > 3)
+                if (defaultValue.length > 8)
                   defaultValue = defaultValue.slice(0, 4) + '..."';
               } else if (
                 param.initializer.kind === NodeKind.Literal &&
@@ -118,6 +126,7 @@ export class MultiParamGen {
                 }
               } else if (param.initializer.kind === NodeKind.Null) {
                 defaultValue = "null";
+                param.parameterKind = ParameterKind.Default;
               }
             }
             params.push({
@@ -127,15 +136,15 @@ export class MultiParamGen {
                   name: "UNINITIALIZED_VALUE",
                   path: "UNINITIALIZED_VALUE",
                 },
+                optional: param.parameterKind === ParameterKind.Optional ? true : false,
               },
-              optional: param.initializer ? true : false,
-              defaultValue: param.initializer ? defaultValue : null,
+              defaultValue: param.parameterKind === ParameterKind.Optional ? defaultValue : null,
             });
           }
-          this.optionalParams.set(name, params);
+          this.opt_fns.set(name, params);
 
           if (
-            node.signature.parameters.filter((v) => v.initializer).length >= 2
+            node.signature.parameters.filter((v) => v.parameterKind === ParameterKind.Optional).length >= 2
           ) {
             let body: BlockStatement;
             if (node.body.kind != NodeKind.Block) {
@@ -213,9 +222,11 @@ export class MultiParamGen {
                 node.range,
               );
               body.statements.unshift(stmt);
+              param.parameterKind = ParameterKind.Default;
               if (param.initializer) param.initializer = null;
             }
           }
+          console.log(toString(node))
         }
         if (node.body == null) {
           let name = node.name.text;
@@ -244,8 +255,16 @@ export class MultiParamGen {
                 defaultValue = (
                   param.initializer as IntegerLiteralExpression
                 ).value.toString();
-                if (defaultValue.length > 3)
+                if (defaultValue.endsWith("0")) {
+                  param.parameterKind = ParameterKind.Default;
+                }
+                if (defaultValue.length > 6)
                   defaultValue = defaultValue.slice(0, 3) + "...";
+              } else if (param.initializer.kind === NodeKind.True) {
+                defaultValue = "true";
+              } else if (param.initializer.kind === NodeKind.False) {
+                defaultValue = "false";
+                param.parameterKind = ParameterKind.Default;
               } else if (param.initializer.kind === NodeKind.New) {
                 if (!(param.initializer as NewExpression).args.length) {
                   defaultValue = "{}";
@@ -275,7 +294,7 @@ export class MultiParamGen {
                   '"' +
                   (param.initializer as StringLiteralExpression).value +
                   '"';
-                if (defaultValue.length > 3)
+                if (defaultValue.length > 8)
                   defaultValue = defaultValue.slice(0, 4) + '..."';
               } else if (
                 param.initializer.kind === NodeKind.Literal &&
@@ -292,6 +311,7 @@ export class MultiParamGen {
                 }
               } else if (param.initializer.kind === NodeKind.Null) {
                 defaultValue = "null";
+                param.parameterKind = ParameterKind.Default;
               }
             }
             params.push({
@@ -301,12 +321,14 @@ export class MultiParamGen {
                   name: "UNINITIALIZED_VALUE",
                   path: "UNINITIALIZED_VALUE",
                 },
+                optional: param.parameterKind === ParameterKind.Optional ? true : false,
               },
-              optional: param.initializer ? true : false,
-              defaultValue: param.initializer ? defaultValue : null,
+              defaultValue: param.parameterKind === ParameterKind.Optional ? defaultValue : null,
             });
+            param.parameterKind = ParameterKind.Default;
+            if (param.initializer) param.initializer = null;
           }
-          this.optionalParams.set(name, params);
+          this.opt_fns.set(name, params);
         }
       }
     }
