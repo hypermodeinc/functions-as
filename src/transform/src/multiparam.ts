@@ -22,7 +22,6 @@ import {
   Tokenizer,
 } from "assemblyscript/dist/assemblyscript.js";
 import { Parameter } from "./types.js";
-import { toString } from "visitor-as/dist/utils.js";
 class OptionalParam {
   param: Parameter;
   defaultValue: string | null = null;

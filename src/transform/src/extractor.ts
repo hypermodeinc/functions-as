@@ -190,11 +190,13 @@ export class Extractor {
       const name = d.signature.parameters[i].name.text;
       if (name == "__SUPPLIED_PARAMS") continue;
       const type = getTypeInfo(_type);
-      const optional = MultiParamGen.SN.opt_fns.get(e.name).find((e) => e.param.name == name)?.param.optional || false;
+      const optional =
+        MultiParamGen.SN.opt_fns.get(e.name).find((e) => e.param.name == name)
+          ?.param.optional || false;
       params.push({
         name,
         type,
-        optional
+        optional,
       });
     }
     return new FunctionSignature(
