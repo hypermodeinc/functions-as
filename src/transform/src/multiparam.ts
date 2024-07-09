@@ -88,6 +88,9 @@ export class MultiParamGen {
               ).value.toString();
             }
           }
+          if (node.signature.parameters.length > 63) {
+            throw new Error("Functions exceeding 64 parameters not allowed!");
+          }
           const params: OptionalParam[] = [];
           for (const param of node.signature.parameters) {
             let defaultValue = "...";
