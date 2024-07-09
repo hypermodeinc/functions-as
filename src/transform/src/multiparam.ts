@@ -103,19 +103,12 @@ export class MultiParamGen {
                 defaultValue = (
                   param.initializer as IntegerLiteralExpression
                 ).value.toString();
-                if (
-                  defaultValue.startsWith("0") &&
-                  defaultValue.endsWith("0")
-                ) {
-                  param.parameterKind = ParameterKind.Default;
-                }
                 if (defaultValue.length > 6)
                   defaultValue = defaultValue.slice(0, 3) + "...";
               } else if (param.initializer.kind === NodeKind.True) {
                 defaultValue = "true";
               } else if (param.initializer.kind === NodeKind.False) {
                 defaultValue = "false";
-                param.parameterKind = ParameterKind.Default;
               } else if (param.initializer.kind === NodeKind.New) {
                 if (!(param.initializer as NewExpression).args.length) {
                   defaultValue = "{}";
@@ -162,7 +155,6 @@ export class MultiParamGen {
                 }
               } else if (param.initializer.kind === NodeKind.Null) {
                 defaultValue = "null";
-                param.parameterKind = ParameterKind.Default;
               }
             }
             params.push({
@@ -260,7 +252,6 @@ export class MultiParamGen {
                 node.range,
               );
               body.statements.unshift(stmt);
-              param.parameterKind = ParameterKind.Default;
               if (param.initializer) param.initializer = null;
             }
           }
@@ -292,19 +283,12 @@ export class MultiParamGen {
                 defaultValue = (
                   param.initializer as IntegerLiteralExpression
                 ).value.toString();
-                if (
-                  defaultValue.startsWith("0") &&
-                  defaultValue.endsWith("0")
-                ) {
-                  param.parameterKind = ParameterKind.Default;
-                }
                 if (defaultValue.length > 6)
                   defaultValue = defaultValue.slice(0, 3) + "...";
               } else if (param.initializer.kind === NodeKind.True) {
                 defaultValue = "true";
               } else if (param.initializer.kind === NodeKind.False) {
                 defaultValue = "false";
-                param.parameterKind = ParameterKind.Default;
               } else if (param.initializer.kind === NodeKind.New) {
                 if (!(param.initializer as NewExpression).args.length) {
                   defaultValue = "{}";
@@ -351,7 +335,6 @@ export class MultiParamGen {
                 }
               } else if (param.initializer.kind === NodeKind.Null) {
                 defaultValue = "null";
-                param.parameterKind = ParameterKind.Default;
               }
             }
             params.push({
@@ -365,7 +348,6 @@ export class MultiParamGen {
               },
               defaultValue: param.initializer ? defaultValue : null,
             });
-            param.parameterKind = ParameterKind.Default;
             if (param.initializer) param.initializer = null;
           }
           this.opt_fns.set(name, params);
