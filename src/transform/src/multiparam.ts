@@ -13,6 +13,7 @@ import {
   NodeKind,
   ObjectLiteralExpression,
   ParameterKind,
+  ParameterNode,
   Parser,
   Range,
   Source,
@@ -93,70 +94,7 @@ export class MultiParamGen {
           }
           const params: OptionalParam[] = [];
           for (const param of node.signature.parameters) {
-            let defaultValue = "...";
-            if (param.initializer) {
-              if (
-                isNumberType(
-                  (param.type as unknown as NamedTypeNode).name.identifier.text,
-                )
-              ) {
-                defaultValue = (
-                  param.initializer as IntegerLiteralExpression
-                ).value.toString();
-                if (defaultValue.length > 6)
-                  defaultValue = defaultValue.slice(0, 3) + "...";
-              } else if (param.initializer.kind === NodeKind.True) {
-                defaultValue = "true";
-              } else if (param.initializer.kind === NodeKind.False) {
-                defaultValue = "false";
-              } else if (param.initializer.kind === NodeKind.New) {
-                if (!(param.initializer as NewExpression).args.length) {
-                  defaultValue = "{}";
-                } else {
-                  defaultValue = "{...}";
-                }
-              } else if (
-                param.initializer.kind === NodeKind.Literal &&
-                (param.initializer as LiteralExpression).literalKind ==
-                  LiteralKind.Object
-              ) {
-                if (
-                  !(param.initializer as ObjectLiteralExpression).values
-                    .length &&
-                  !(param.initializer as ObjectLiteralExpression).names.length
-                ) {
-                  defaultValue = "[]";
-                } else {
-                  defaultValue = "[...]";
-                }
-              } else if (
-                param.initializer.kind === NodeKind.Literal &&
-                (param.initializer as LiteralExpression).literalKind ==
-                  LiteralKind.String
-              ) {
-                defaultValue =
-                  '"' +
-                  (param.initializer as StringLiteralExpression).value +
-                  '"';
-                if (defaultValue.length > 8)
-                  defaultValue = defaultValue.slice(0, 4) + '..."';
-              } else if (
-                param.initializer.kind === NodeKind.Literal &&
-                (param.initializer as LiteralExpression).literalKind ==
-                  LiteralKind.Array
-              ) {
-                if (
-                  !(param.initializer as ArrayLiteralExpression)
-                    .elementExpressions.length
-                ) {
-                  defaultValue = "[]";
-                } else {
-                  defaultValue = "[...]";
-                }
-              } else if (param.initializer.kind === NodeKind.Null) {
-                defaultValue = "null";
-              }
-            }
+            const defaultValue = getDefaultValue(param);
             params.push({
               param: {
                 name: param.name.text,
@@ -273,70 +211,7 @@ export class MultiParamGen {
           }
           const params: OptionalParam[] = [];
           for (const param of node.signature.parameters) {
-            let defaultValue = "...";
-            if (param.initializer) {
-              if (
-                isNumberType(
-                  (param.type as unknown as NamedTypeNode).name.identifier.text,
-                )
-              ) {
-                defaultValue = (
-                  param.initializer as IntegerLiteralExpression
-                ).value.toString();
-                if (defaultValue.length > 6)
-                  defaultValue = defaultValue.slice(0, 3) + "...";
-              } else if (param.initializer.kind === NodeKind.True) {
-                defaultValue = "true";
-              } else if (param.initializer.kind === NodeKind.False) {
-                defaultValue = "false";
-              } else if (param.initializer.kind === NodeKind.New) {
-                if (!(param.initializer as NewExpression).args.length) {
-                  defaultValue = "{}";
-                } else {
-                  defaultValue = "{...}";
-                }
-              } else if (
-                param.initializer.kind === NodeKind.Literal &&
-                (param.initializer as LiteralExpression).literalKind ==
-                  LiteralKind.Object
-              ) {
-                if (
-                  !(param.initializer as ObjectLiteralExpression).values
-                    .length &&
-                  !(param.initializer as ObjectLiteralExpression).names.length
-                ) {
-                  defaultValue = "[]";
-                } else {
-                  defaultValue = "[...]";
-                }
-              } else if (
-                param.initializer.kind === NodeKind.Literal &&
-                (param.initializer as LiteralExpression).literalKind ==
-                  LiteralKind.String
-              ) {
-                defaultValue =
-                  '"' +
-                  (param.initializer as StringLiteralExpression).value +
-                  '"';
-                if (defaultValue.length > 8)
-                  defaultValue = defaultValue.slice(0, 4) + '..."';
-              } else if (
-                param.initializer.kind === NodeKind.Literal &&
-                (param.initializer as LiteralExpression).literalKind ==
-                  LiteralKind.Array
-              ) {
-                if (
-                  !(param.initializer as ArrayLiteralExpression)
-                    .elementExpressions.length
-                ) {
-                  defaultValue = "[]";
-                } else {
-                  defaultValue = "[...]";
-                }
-              } else if (param.initializer.kind === NodeKind.Null) {
-                defaultValue = "null";
-              }
-            }
+            const defaultValue = getDefaultValue(param);
             params.push({
               param: {
                 name: param.name.text,
@@ -355,6 +230,69 @@ export class MultiParamGen {
       }
     }
   }
+}
+
+function getDefaultValue(param: ParameterNode): string | null {
+  if (!param.initializer) {
+    return null;
+  }
+
+  let defaultValue = "...";
+
+  if (
+    isNumberType((param.type as unknown as NamedTypeNode).name.identifier.text)
+  ) {
+    defaultValue = (
+      param.initializer as IntegerLiteralExpression
+    ).value.toString();
+    if (defaultValue.length > 6)
+      defaultValue = defaultValue.slice(0, 3) + "...";
+  } else if (param.initializer.kind === NodeKind.True) {
+    defaultValue = "true";
+  } else if (param.initializer.kind === NodeKind.False) {
+    defaultValue = "false";
+  } else if (param.initializer.kind === NodeKind.New) {
+    if (!(param.initializer as NewExpression).args.length) {
+      defaultValue = "{}";
+    } else {
+      defaultValue = "{...}";
+    }
+  } else if (
+    param.initializer.kind === NodeKind.Literal &&
+    (param.initializer as LiteralExpression).literalKind == LiteralKind.Object
+  ) {
+    if (
+      !(param.initializer as ObjectLiteralExpression).values.length &&
+      !(param.initializer as ObjectLiteralExpression).names.length
+    ) {
+      defaultValue = "[]";
+    } else {
+      defaultValue = "[...]";
+    }
+  } else if (
+    param.initializer.kind === NodeKind.Literal &&
+    (param.initializer as LiteralExpression).literalKind == LiteralKind.String
+  ) {
+    defaultValue =
+      '"' + (param.initializer as StringLiteralExpression).value + '"';
+    if (defaultValue.length > 8)
+      defaultValue = defaultValue.slice(0, 4) + '..."';
+  } else if (
+    param.initializer.kind === NodeKind.Literal &&
+    (param.initializer as LiteralExpression).literalKind == LiteralKind.Array
+  ) {
+    if (
+      !(param.initializer as ArrayLiteralExpression).elementExpressions.length
+    ) {
+      defaultValue = "[]";
+    } else {
+      defaultValue = "[...]";
+    }
+  } else if (param.initializer.kind === NodeKind.Null) {
+    defaultValue = "null";
+  }
+
+  return defaultValue;
 }
 
 function isNumberType(tp: string): boolean {
