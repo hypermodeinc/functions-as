@@ -1,4 +1,4 @@
-import binaryen from "assemblyscript/binaryen";
+import binaryen from "assemblyscript/lib/binaryen.js";
 import {
   Class,
   ElementKind,
@@ -7,7 +7,7 @@ import {
   Program,
   Property,
   Type,
-} from "assemblyscript";
+} from "assemblyscript/dist/assemblyscript.js";
 import {
   FunctionSignature,
   Parameter,

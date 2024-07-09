@@ -1,9 +1,9 @@
-import { Transform } from "assemblyscript/transform";
+import { Transform } from "assemblyscript/dist/transform.js";
 import { createWriteStream } from "fs";
 import { HypermodeMetadata } from "./metadata.js";
 import { Extractor } from "./extractor.js";
-import binaryen from "assemblyscript/binaryen";
-import { Parser, Range, Source } from "assemblyscript";
+import binaryen from "assemblyscript/lib/binaryen.js";
+import { Parser, Range, Source } from "assemblyscript/dist/assemblyscript.js";
 import { MultiParamGen } from "./multiparam.js";
 export default class HypermodeTransform extends Transform {
   afterParse(parser: Parser) {
