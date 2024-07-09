@@ -102,9 +102,9 @@ export class MultiParamGen {
                   name: "UNINITIALIZED_VALUE",
                   path: "UNINITIALIZED_VALUE",
                 },
-                optional: param.initializer ? true : false,
+                optional: !!param.initializer,
               },
-              defaultValue: param.initializer ? defaultValue : null,
+              defaultValue,
             });
           }
           this.opt_fns.set(name, params);
@@ -219,9 +219,9 @@ export class MultiParamGen {
                   name: "UNINITIALIZED_VALUE",
                   path: "UNINITIALIZED_VALUE",
                 },
-                optional: param.initializer ? true : false,
+                optional: !!param.initializer,
               },
-              defaultValue: param.initializer ? defaultValue : null,
+              defaultValue,
             });
             if (param.initializer) param.initializer = null;
           }
