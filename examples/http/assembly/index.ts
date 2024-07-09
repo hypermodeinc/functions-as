@@ -30,6 +30,7 @@ export function getRandomImage(width: i32, height: i32): Image {
   const url = `https://picsum.photos/${width}/${height}`;
   const response = http.fetch(url);
   const contentType = response.headers.get("Content-Type")!;
+
   return {
     contentType,
     data: response.body,
@@ -42,9 +43,12 @@ export function getRandomImage(width: i32, height: i32): Image {
     To use it, you must add a GitHub personal access token to your Hypermode secrets.
     Create a fine-grained token at https://github.com/settings/tokens?type=beta with access
     to write issues to the repository you want to use.
+
     NOTE: Do not pass the Authorization header when creating the request in code.
     That would be a security risk, as the token could be exposed in the source code repository.
+
     Instead, configure the headers in the hypermode.json manifest as follows:
+
     "hosts": {
       "github": {
         "baseUrl": "https://api.github.com/",
@@ -53,6 +57,7 @@ export function getRandomImage(width: i32, height: i32): Image {
         }
       }
     }
+
     The Hypermode Runtime will retrieve the token from your secrets and add it to the request.
     To set the secret, after committing the changes to your code and manifest file, go to the
     Hypermode Console UI, find the "github" host and add your token to the AUTH_TOKEN secret.
