@@ -1,4 +1,6 @@
 # Change Log
+## Unreleased
+- Allow parameters to be supplied in non sequential order [#122](https://github.com/hypermodeAI/functions-as/pull/122)
 
 ## 2024-06-26 - Version 0.9.2
 
