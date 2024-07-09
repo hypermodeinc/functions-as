@@ -2,12 +2,12 @@ import {
   ArrayLiteralExpression,
   BlockStatement,
   CommonFlags,
+  FloatLiteralExpression,
   FunctionDeclaration,
   IdentifierExpression,
   IntegerLiteralExpression,
   LiteralExpression,
   LiteralKind,
-  NamedTypeNode,
   NewExpression,
   Node,
   NodeKind,
@@ -237,80 +237,47 @@ function getDefaultValue(param: ParameterNode): string | null {
     return null;
   }
 
-  let defaultValue = "...";
-
-  if (
-    isNumberType((param.type as unknown as NamedTypeNode).name.identifier.text)
-  ) {
-    defaultValue = (
-      param.initializer as IntegerLiteralExpression
-    ).value.toString();
-    if (defaultValue.length > 6)
-      defaultValue = defaultValue.slice(0, 3) + "...";
-  } else if (param.initializer.kind === NodeKind.True) {
-    defaultValue = "true";
-  } else if (param.initializer.kind === NodeKind.False) {
-    defaultValue = "false";
-  } else if (param.initializer.kind === NodeKind.New) {
-    if (!(param.initializer as NewExpression).args.length) {
-      defaultValue = "{}";
-    } else {
-      defaultValue = "{...}";
+  switch (param.initializer.kind) {
+    case NodeKind.Null:
+      return "null";
+    case NodeKind.True:
+      return "true";
+    case NodeKind.False:
+      return "false";
+    case NodeKind.New:
+      if ((param.initializer as NewExpression).args.length) {
+        return "{...}";
+      } else {
+        return "{}";
+      }
+    case NodeKind.Literal: {
+      const literal = param.initializer as LiteralExpression;
+      switch (literal.literalKind) {
+        case LiteralKind.String:
+          return (literal as StringLiteralExpression).value;
+        case LiteralKind.Integer:
+          return (literal as IntegerLiteralExpression).value.toString();
+        case LiteralKind.Float:
+          return (literal as FloatLiteralExpression).value.toString();
+        case LiteralKind.Array:
+          if ((literal as ArrayLiteralExpression).elementExpressions.length) {
+            return "[...]";
+          } else {
+            return "[]";
+          }
+        case LiteralKind.Object: {
+          const objLiteral = literal as ObjectLiteralExpression;
+          if (objLiteral.values.length || objLiteral.names.length) {
+            return "{...}";
+          } else {
+            return "{}";
+          }
+        }
+      }
     }
-  } else if (
-    param.initializer.kind === NodeKind.Literal &&
-    (param.initializer as LiteralExpression).literalKind == LiteralKind.Object
-  ) {
-    if (
-      !(param.initializer as ObjectLiteralExpression).values.length &&
-      !(param.initializer as ObjectLiteralExpression).names.length
-    ) {
-      defaultValue = "[]";
-    } else {
-      defaultValue = "[...]";
-    }
-  } else if (
-    param.initializer.kind === NodeKind.Literal &&
-    (param.initializer as LiteralExpression).literalKind == LiteralKind.String
-  ) {
-    defaultValue =
-      '"' + (param.initializer as StringLiteralExpression).value + '"';
-    if (defaultValue.length > 8)
-      defaultValue = defaultValue.slice(0, 4) + '..."';
-  } else if (
-    param.initializer.kind === NodeKind.Literal &&
-    (param.initializer as LiteralExpression).literalKind == LiteralKind.Array
-  ) {
-    if (
-      !(param.initializer as ArrayLiteralExpression).elementExpressions.length
-    ) {
-      defaultValue = "[]";
-    } else {
-      defaultValue = "[...]";
-    }
-  } else if (param.initializer.kind === NodeKind.Null) {
-    defaultValue = "null";
   }
 
-  return defaultValue;
-}
-
-function isNumberType(tp: string): boolean {
-  switch (tp) {
-    case "u8":
-    case "u16":
-    case "u32":
-    case "u64":
-    case "i8":
-    case "i16":
-    case "i32":
-    case "i64":
-    case "f32":
-    case "f64":
-      return true;
-    default:
-      return false;
-  }
+  return "...";
 }
 
 const parser = new Parser();
