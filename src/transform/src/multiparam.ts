@@ -42,19 +42,21 @@ class OptionalParam {
  *
  * ```js
  * fn createVec(x: i32, y: i32, z: i32, __SUPPLIED_PARAMS: u64) {
- *  if ((__SUPPLIED_PARAMS & 1) == 1) x = 1;
- *  if (((__SUPPLIED_PARAMS >> 1) & 1) == 1) y = 2;
- *  if (((__SUPPLIED_PARAMS >> 2) & 1) == 1) z = 3;
+ *  if ((__SUPPLIED_PARAMS & 1) == 0) x = 1;
+ *  if (((__SUPPLIED_PARAMS >> 1) & 1) == 0) y = 2;
+ *  if (((__SUPPLIED_PARAMS >> 2) & 1) == 0) z = 3;
  * }
  * ```
  *
  * This works by using bitwise operations to construct a mask (__SUPPLIED_PARAMS) on the runtime-side
  *
- * `0b001` means that z was not defined, so z = 3
+ * `0b110` means that z was not defined, so z = 3
  *
- * `0b111` means that no params were defined, so x = 1, y = 2, z = 3
+ * `0b000` means that no params were defined, so x = 1, y = 2, z = 3
  *
- * `0b101` means that x and z were not defined, so z = 1 and z = 3
+ * `0b010` means that x and z were not defined, so z = 1 and z = 3
+ *
+ * Note that the mask is Little Endian so the order would be reversed
  */
 export class MultiParamGen {
   static SN: MultiParamGen = new MultiParamGen();
@@ -90,80 +92,71 @@ export class MultiParamGen {
           for (const param of node.signature.parameters) {
             let defaultValue = "...";
             if (param.initializer) {
-              switch (param.initializer.kind) {
-                case NodeKind.True:
-                  defaultValue = "true";
-                  break;
-
-                case NodeKind.False:
-                  defaultValue = "false";
+              if (
+                isNumberType(
+                  (param.type as unknown as NamedTypeNode).name.identifier.text,
+                )
+              ) {
+                defaultValue = (
+                  param.initializer as IntegerLiteralExpression
+                ).value.toString();
+                if (defaultValue.endsWith("0")) {
                   param.parameterKind = ParameterKind.Default;
-                  break;
-
-                case NodeKind.New:
-                  defaultValue = !(param.initializer as NewExpression).args
-                    .length
-                    ? "{}"
-                    : "{...}";
-                  break;
-
-                case NodeKind.Literal:
-                  switch (
-                    (param.initializer as LiteralExpression).literalKind
-                  ) {
-                    case LiteralKind.Object:
-                      defaultValue =
-                        !(param.initializer as ObjectLiteralExpression).values
-                          .length &&
-                        !(param.initializer as ObjectLiteralExpression).names
-                          .length
-                          ? "[]"
-                          : "[...]";
-                      break;
-
-                    case LiteralKind.String:
-                      defaultValue =
-                        '"' +
-                        (param.initializer as StringLiteralExpression).value +
-                        '"';
-                      if (defaultValue.length > 8) {
-                        defaultValue = defaultValue.slice(0, 4) + '..."';
-                      }
-                      break;
-
-                    case LiteralKind.Array:
-                      defaultValue = !(
-                        param.initializer as ArrayLiteralExpression
-                      ).elementExpressions.length
-                        ? "[]"
-                        : "[...]";
-                      break;
-                  }
-                  break;
-
-                case NodeKind.Null:
-                  defaultValue = "null";
-                  param.parameterKind = ParameterKind.Default;
-                  break;
-
-                default:
-                  if (
-                    isNumberType(
-                      (param.type as unknown as NamedTypeNode).name.identifier
-                        .text,
-                    )
-                  ) {
-                    defaultValue = (
-                      param.initializer as IntegerLiteralExpression
-                    ).value.toString();
-                    if (defaultValue.endsWith("0")) {
-                      param.parameterKind = ParameterKind.Default;
-                    }
-                    if (defaultValue.length > 6) {
-                      defaultValue = defaultValue.slice(0, 3) + "...";
-                    }
-                  }
-                  break;
+                }
+                if (defaultValue.length > 6)
+                  defaultValue = defaultValue.slice(0, 3) + "...";
+              } else if (param.initializer.kind === NodeKind.True) {
+                defaultValue = "true";
+              } else if (param.initializer.kind === NodeKind.False) {
+                defaultValue = "false";
+                param.parameterKind = ParameterKind.Default;
+              } else if (param.initializer.kind === NodeKind.New) {
+                if (!(param.initializer as NewExpression).args.length) {
+                  defaultValue = "{}";
+                } else {
+                  defaultValue = "{...}";
+                }
+              } else if (
+                param.initializer.kind === NodeKind.Literal &&
+                (param.initializer as LiteralExpression).literalKind ==
+                  LiteralKind.Object
+              ) {
+                if (
+                  !(param.initializer as ObjectLiteralExpression).values
+                    .length &&
+                  !(param.initializer as ObjectLiteralExpression).names.length
+                ) {
+                  defaultValue = "[]";
+                } else {
+                  defaultValue = "[...]";
+                }
+              } else if (
+                param.initializer.kind === NodeKind.Literal &&
+                (param.initializer as LiteralExpression).literalKind ==
+                  LiteralKind.String
+              ) {
+                defaultValue =
+                  '"' +
+                  (param.initializer as StringLiteralExpression).value +
+                  '"';
+                if (defaultValue.length > 8)
+                  defaultValue = defaultValue.slice(0, 4) + '..."';
+              } else if (
+                param.initializer.kind === NodeKind.Literal &&
+                (param.initializer as LiteralExpression).literalKind ==
+                  LiteralKind.Array
+              ) {
+                if (
+                  !(param.initializer as ArrayLiteralExpression)
+                    .elementExpressions.length
+                ) {
+                  defaultValue = "[]";
+                } else {
+                  defaultValue = "[...]";
+                }
+              } else if (param.initializer.kind === NodeKind.Null) {
+                defaultValue = "null";
+                param.parameterKind = ParameterKind.Default;
               }
             }
             params.push({
@@ -242,7 +235,7 @@ export class MultiParamGen {
                     ),
                     node.range,
                   ),
-                  newIntegerLiteral(1, node.range),
+                  newIntegerLiteral(0, node.range),
                   node.range,
                 ),
                 Node.createExpressionStatement(
@@ -285,80 +278,71 @@ export class MultiParamGen {
           for (const param of node.signature.parameters) {
             let defaultValue = "...";
             if (param.initializer) {
-              switch (param.initializer.kind) {
-                case NodeKind.True:
-                  defaultValue = "true";
-                  break;
-
-                case NodeKind.False:
-                  defaultValue = "false";
+              if (
+                isNumberType(
+                  (param.type as unknown as NamedTypeNode).name.identifier.text,
+                )
+              ) {
+                defaultValue = (
+                  param.initializer as IntegerLiteralExpression
+                ).value.toString();
+                if (defaultValue.endsWith("0")) {
                   param.parameterKind = ParameterKind.Default;
-                  break;
-
-                case NodeKind.New:
-                  defaultValue = !(param.initializer as NewExpression).args
-                    .length
-                    ? "{}"
-                    : "{...}";
-                  break;
-
-                case NodeKind.Literal:
-                  switch (
-                    (param.initializer as LiteralExpression).literalKind
-                  ) {
-                    case LiteralKind.Object:
-                      defaultValue =
-                        !(param.initializer as ObjectLiteralExpression).values
-                          .length &&
-                        !(param.initializer as ObjectLiteralExpression).names
-                          .length
-                          ? "[]"
-                          : "[...]";
-                      break;
-
-                    case LiteralKind.String:
-                      defaultValue =
-                        '"' +
-                        (param.initializer as StringLiteralExpression).value +
-                        '"';
-                      if (defaultValue.length > 8) {
-                        defaultValue = defaultValue.slice(0, 4) + '..."';
-                      }
-                      break;
-
-                    case LiteralKind.Array:
-                      defaultValue = !(
-                        param.initializer as ArrayLiteralExpression
-                      ).elementExpressions.length
-                        ? "[]"
-                        : "[...]";
-                      break;
-                  }
-                  break;
-
-                case NodeKind.Null:
-                  defaultValue = "null";
-                  param.parameterKind = ParameterKind.Default;
-                  break;
-
-                default:
-                  if (
-                    isNumberType(
-                      (param.type as unknown as NamedTypeNode).name.identifier
-                        .text,
-                    )
-                  ) {
-                    defaultValue = (
-                      param.initializer as IntegerLiteralExpression
-                    ).value.toString();
-                    if (defaultValue.endsWith("0")) {
-                      param.parameterKind = ParameterKind.Default;
-                    }
-                    if (defaultValue.length > 6) {
-                      defaultValue = defaultValue.slice(0, 3) + "...";
-                    }
-                  }
-                  break;
+                }
+                if (defaultValue.length > 6)
+                  defaultValue = defaultValue.slice(0, 3) + "...";
+              } else if (param.initializer.kind === NodeKind.True) {
+                defaultValue = "true";
+              } else if (param.initializer.kind === NodeKind.False) {
+                defaultValue = "false";
+                param.parameterKind = ParameterKind.Default;
+              } else if (param.initializer.kind === NodeKind.New) {
+                if (!(param.initializer as NewExpression).args.length) {
+                  defaultValue = "{}";
+                } else {
+                  defaultValue = "{...}";
+                }
+              } else if (
+                param.initializer.kind === NodeKind.Literal &&
+                (param.initializer as LiteralExpression).literalKind ==
+                  LiteralKind.Object
+              ) {
+                if (
+                  !(param.initializer as ObjectLiteralExpression).values
+                    .length &&
+                  !(param.initializer as ObjectLiteralExpression).names.length
+                ) {
+                  defaultValue = "[]";
+                } else {
+                  defaultValue = "[...]";
+                }
+              } else if (
+                param.initializer.kind === NodeKind.Literal &&
+                (param.initializer as LiteralExpression).literalKind ==
+                  LiteralKind.String
+              ) {
+                defaultValue =
+                  '"' +
+                  (param.initializer as StringLiteralExpression).value +
+                  '"';
+                if (defaultValue.length > 8)
+                  defaultValue = defaultValue.slice(0, 4) + '..."';
+              } else if (
+                param.initializer.kind === NodeKind.Literal &&
+                (param.initializer as LiteralExpression).literalKind ==
+                  LiteralKind.Array
+              ) {
+                if (
+                  !(param.initializer as ArrayLiteralExpression)
+                    .elementExpressions.length
+                ) {
+                  defaultValue = "[]";
+                } else {
+                  defaultValue = "[...]";
+                }
+              } else if (param.initializer.kind === NodeKind.Null) {
+                defaultValue = "null";
+                param.parameterKind = ParameterKind.Default;
               }
             }
             params.push({
