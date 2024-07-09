@@ -50,11 +50,11 @@ class OptionalParam {
  *
  * This works by using bitwise operations to construct a mask (__SUPPLIED_PARAMS) on the runtime-side
  *
- * `0b011` (`0b110`) means that z was not defined, so z = 3
+ * `0b011` means that z was not defined, so z = 3
  *
- * `0b000` (`0b000`) means that no params were defined, so x = 1, y = 2, z = 3
+ * `0b000` means that no params were defined, so x = 1, y = 2, z = 3
  *
- * `0b010` (`0b010`) means that x and z were not defined, so z = 1 and z = 3
+ * `0b010` means that x and z were not defined, so z = 1 and z = 3
  *
  * Note that the mask is Little Endian so the order would be reversed
  */
