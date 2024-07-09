@@ -103,7 +103,7 @@ export class MultiParamGen {
                 defaultValue = (
                   param.initializer as IntegerLiteralExpression
                 ).value.toString();
-                if (defaultValue.endsWith("0")) {
+                if (defaultValue.startsWith("0") && defaultValue.endsWith("0")) {
                   param.parameterKind = ParameterKind.Default;
                 }
                 if (defaultValue.length > 6)
@@ -289,7 +289,7 @@ export class MultiParamGen {
                 defaultValue = (
                   param.initializer as IntegerLiteralExpression
                 ).value.toString();
-                if (defaultValue.endsWith("0")) {
+                if (defaultValue.startsWith("0") && defaultValue.endsWith("0")) {
                   param.parameterKind = ParameterKind.Default;
                 }
                 if (defaultValue.length > 6)
