@@ -1,3 +1,5 @@
+import { MultiParamGen } from "./multiparam.js";
+
 export class ProgramInfo {
   functions: FunctionSignature[];
   types: TypeDefinition[];
@@ -11,10 +13,19 @@ export class FunctionSignature {
   ) {}
 
   toString() {
-    const params = this.parameters
-      .map((p) => `${p.name}: ${p.type.name}`)
-      .join(", ");
-    return `${this.name}(${params}): ${this.returnType.name}`;
+    const optionalParams = MultiParamGen.SN?.opt_fns.get(this.name);
+    let params = "";
+    for (let i = 0; i < this.parameters.length; i++) {
+      const param = this.parameters[i]!;
+      const { defaultValue } = optionalParams[i] || {
+        defaultValue: null,
+      };
+      if (param.name.startsWith("_")) continue;
+      params += `${param.name}: ${param.type.name}`;
+      if (param.optional) params += ` = ${defaultValue}`;
+      params += ", ";
+    }
+    return `${this.name}(${params.endsWith(", ") ? params.slice(0, params.length - 2) : params}): ${this.returnType.name}`;
   }
 }
 
@@ -54,9 +65,10 @@ export interface TypeInfo {
   path: string;
 }
 
-interface Parameter {
+export interface Parameter {
   name: string;
   type: TypeInfo;
+  optional: boolean;
 }
 
 interface Field {

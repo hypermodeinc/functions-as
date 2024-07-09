@@ -1,5 +1,9 @@
 # Change Log
 
+## Unreleased
+
+- Support optional parameters [#122](https://github.com/hypermodeAI/functions-as/pull/122)
+
 ## 2024-06-26 - Version 0.9.2
 
 - Move/rename GraphQL types to `graphql` namespace [#118](https://github.com/hypermodeAI/functions-as/pull/118)

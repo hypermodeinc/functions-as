@@ -1,4 +1,3 @@
-import { Transform } from "assemblyscript/dist/transform.js";
 import binaryen from "assemblyscript/lib/binaryen.js";
 import {
   Class,
@@ -11,18 +10,22 @@ import {
 } from "assemblyscript/dist/assemblyscript.js";
 import {
   FunctionSignature,
+  Parameter,
   ProgramInfo,
   TypeDefinition,
   TypeInfo,
   typeMap,
 } from "./types.js";
+import HypermodeTransform from "./index.js";
+import { MultiParamGen } from "./multiparam.js";
 
 export class Extractor {
   binaryen: typeof binaryen;
   module: binaryen.Module;
   program: Program;
+  transform: HypermodeTransform;
 
-  constructor(transform: Transform, module: binaryen.Module) {
+  constructor(transform: HypermodeTransform, module: binaryen.Module) {
     this.program = transform.program;
     this.binaryen = transform.binaryen;
     this.module = module;
@@ -181,12 +184,24 @@ export class Extractor {
   private convertToFunctionSignature(e: importExportInfo): FunctionSignature {
     const f = this.program.instancesByName.get(e.function) as Func;
     const d = f.declaration as FunctionDeclaration;
+    const params: Parameter[] = [];
+    for (let i = 0; i < f.signature.parameterTypes.length; i++) {
+      const _type = f.signature.parameterTypes[i];
+      const name = d.signature.parameters[i].name.text;
+      if (name == "__SUPPLIED_PARAMS") continue;
+      const type = getTypeInfo(_type);
+      const optional =
+        MultiParamGen.SN.opt_fns.get(e.name).find((e) => e.param.name == name)
+          ?.param.optional || false;
+      params.push({
+        name,
+        type,
+        optional,
+      });
+    }
     return new FunctionSignature(
       e.name,
-      f.signature.parameterTypes.map((t, i) => ({
-        name: d.signature.parameters[i].name.text,
-        type: getTypeInfo(t),
-      })),
+      params,
       getTypeInfo(f.signature.returnType),
     );
   }
