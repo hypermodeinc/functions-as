@@ -68,6 +68,11 @@ export class MultiParamGen {
     return MultiParamGen.SN;
   }
   visitSource(source: Source) {
+    const paramsFieldName = "__SUPPLIED_PARAMS";
+    const uninitializedValue = "UNINITIALIZED_VALUE";
+
+    // TODO: this could be further refactored to reduce code duplication
+
     for (const stmt of source.statements) {
       if (stmt.kind === NodeKind.FunctionDeclaration) {
         const node = stmt as FunctionDeclaration;
@@ -99,8 +104,8 @@ export class MultiParamGen {
               param: {
                 name: param.name.text,
                 type: {
-                  name: "UNINITIALIZED_VALUE",
-                  path: "UNINITIALIZED_VALUE",
+                  name: uninitializedValue,
+                  path: uninitializedValue,
                 },
                 optional: !!param.initializer,
               },
@@ -124,7 +129,7 @@ export class MultiParamGen {
               Node.createParameter(
                 ParameterKind.Default,
                 Node.createIdentifierExpression(
-                  "__SUPPLIED_PARAMS",
+                  paramsFieldName,
                   node.range,
                   false,
                 ),
@@ -151,14 +156,14 @@ export class MultiParamGen {
                       first
                         ? ((first = false),
                           Node.createIdentifierExpression(
-                            "__SUPPLIED_PARAMS",
+                            paramsFieldName,
                             node.range,
                           ))
                         : Node.createParenthesizedExpression(
                             Node.createBinaryExpression(
                               Token.GreaterThan_GreaterThan,
                               Node.createIdentifierExpression(
-                                "__SUPPLIED_PARAMS",
+                                paramsFieldName,
                                 node.range,
                               ),
                               newIntegerLiteral(i, node.range),
@@ -216,8 +221,8 @@ export class MultiParamGen {
               param: {
                 name: param.name.text,
                 type: {
-                  name: "UNINITIALIZED_VALUE",
-                  path: "UNINITIALIZED_VALUE",
+                  name: uninitializedValue,
+                  path: uninitializedValue,
                 },
                 optional: !!param.initializer,
               },
