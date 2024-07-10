@@ -1,5 +1,9 @@
 # Change Log
 
+## UNRELEASED
+
+- Fix transform error when reexporting function from another file [#129](https://github.com/hypermodeAI/functions-as/pull/129)
+
 ## 2024-07-09 - Version 0.9.3
 
 - Support optional parameters [#122](https://github.com/hypermodeAI/functions-as/pull/122)
