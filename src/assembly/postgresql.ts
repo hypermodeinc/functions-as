@@ -173,7 +173,7 @@ export function queryScalar<T>(
   statement: string,
   params: Params = new Params(),
 ): ScalarResponse<T> {
-  var response = query<T[]>(hostName, statement, params);
+  const response = query<T[]>(hostName, statement, params);
 
   if (response.rows.length == 0 || response.rows[0].length == 0) {
     throw new Error("No results returned from query.");
