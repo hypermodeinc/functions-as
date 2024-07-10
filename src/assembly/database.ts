@@ -121,7 +121,7 @@ export function query<T>(
 
   const results: QueryResponse<T> = {
     error: response.error,
-    rows: JSON.parse<T[]>(response.resultJson),
+    rows: response.resultJson ? JSON.parse<T[]>(response.resultJson) : [],
     rowsAffected: response.rowsAffected,
   };
 
