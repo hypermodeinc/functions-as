@@ -165,7 +165,7 @@ export class MultiParamGen {
     }
     for (const stmt of node.statements) {
       if (stmt.kind === NodeKind.FunctionDeclaration) {
-        this.visitFunctionDeclaration(stmt as FunctionDeclaration)
+        this.visitFunctionDeclaration(stmt as FunctionDeclaration);
       }
     }
   }
