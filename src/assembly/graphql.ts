@@ -1,5 +1,7 @@
-import * as utils from "./utils";
 import { JSON } from "json-as";
+import * as utils from "./utils";
+import { NamedParams as Variables } from "./database";
+export { Variables };
 
 // @ts-expect-error: decorator
 @external("hypermode", "executeGQL")
@@ -25,28 +27,6 @@ export function execute<TData>(
     console.error("GraphQL API Errors:" + JSON.stringify(results.errors));
   }
   return results;
-}
-
-export class Variables {
-  private data: Map<string, string> = new Map<string, string>();
-
-  public set<T>(name: string, value: T): void {
-    this.data.set(name, JSON.stringify(value));
-  }
-
-  public toJSON(): string {
-    const segments: string[] = [];
-    const keys = this.data.keys();
-    const values = this.data.values();
-
-    for (let i = 0; i < this.data.size; i++) {
-      const key = JSON.stringify(keys[i]);
-      const value = values[i]; // already in JSON
-      segments.push(`${key}:${value}`);
-    }
-
-    return `{${segments.join(",")}}`;
-  }
 }
 
 

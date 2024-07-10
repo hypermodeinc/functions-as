@@ -1,21 +1,37 @@
-import * as utils from "./utils";
-import { JSON } from "json-as";
+import * as db from "./database";
+import {
+  PositionalParams as Params,
+  Response,
+  QueryResponse,
+  ScalarResponse,
+} from "./database";
 
-const datasourceType = "postgresql";
+export { Params, Response, QueryResponse, ScalarResponse };
 
-// @ts-expect-error: decorator
-@external("hypermode", "databaseQuery")
-declare function databaseQuery(
+const dbType = "postgresql";
+
+export function execute(
   hostName: string,
-  dbType: string,
   statement: string,
-  paramsJson: string,
-): hostResponse;
+  params: Params = new Params(),
+): Response {
+  return db.execute(hostName, dbType, statement, params);
+}
 
-class hostResponse {
-  error!: string;
-  resultJson!: string;
-  rowsAffected!: u32;
+export function query<T>(
+  hostName: string,
+  statement: string,
+  params: Params = new Params(),
+): QueryResponse<T> {
+  return db.query<T>(hostName, dbType, statement, params);
+}
+
+export function queryScalar<T>(
+  hostName: string,
+  statement: string,
+  params: Params = new Params(),
+): ScalarResponse<T> {
+  return db.queryScalar<T>(hostName, dbType, statement, params);
 }
 
 export class Point {
@@ -82,106 +98,4 @@ export class Point {
     this.y = p.y;
     return true;
   }
-}
-
-export class Params {
-  private data: string[] = [];
-
-  public push<T>(val: T): void {
-    this.data.push(JSON.stringify(val));
-  }
-
-  public toJSON(): string {
-    return `[${this.data.join(",")}]`;
-  }
-}
-
-export class Response {
-  error: string | null = null;
-  rowsAffected: u32 = 0;
-}
-
-export class QueryResponse<T> extends Response {
-  rows!: T[];
-}
-
-export class ScalarResponse<T> extends Response {
-  value!: T;
-}
-
-export function execute(
-  hostName: string,
-  statement: string,
-  params: Params = new Params(),
-): Response {
-  const paramsJson = params.toJSON();
-  const response = databaseQuery(
-    hostName,
-    datasourceType,
-    statement.trim(),
-    paramsJson,
-  );
-
-  if (utils.resultIsInvalid(response)) {
-    throw new Error("Error performing PostgreSQL query.");
-  }
-
-  if (response.error) {
-    console.error("PostgreSQL Error: " + response.error);
-  }
-
-  const results: Response = {
-    error: response.error,
-    rowsAffected: response.rowsAffected,
-  };
-
-  return results;
-}
-
-export function query<T>(
-  hostName: string,
-  statement: string,
-  params: Params = new Params(),
-): QueryResponse<T> {
-  const paramsJson = params.toJSON();
-  const response = databaseQuery(
-    hostName,
-    datasourceType,
-    statement.trim(),
-    paramsJson,
-  );
-
-  if (utils.resultIsInvalid(response)) {
-    throw new Error("Error performing PostgreSQL query.");
-  }
-
-  if (response.error) {
-    console.error("PostgreSQL Error: " + response.error);
-  }
-
-  const results: QueryResponse<T> = {
-    error: response.error,
-    rows: JSON.parse<T[]>(response.resultJson),
-    rowsAffected: response.rowsAffected,
-  };
-
-  return results;
-}
-
-export function queryScalar<T>(
-  hostName: string,
-  statement: string,
-  params: Params = new Params(),
-): ScalarResponse<T> {
-  const response = query<T[]>(hostName, statement, params);
-
-  if (response.rows.length == 0 || response.rows[0].length == 0) {
-    throw new Error("No results returned from query.");
-  }
-
-  return <ScalarResponse<T>>{
-    error: response.error,
-    value: response.rows[0][0],
-    rowsAffected: response.rowsAffected,
-  };
 }
