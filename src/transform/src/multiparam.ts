@@ -21,8 +21,11 @@ import {
   StringLiteralExpression,
   Token,
   Tokenizer,
+  ExportStatement
 } from "assemblyscript/dist/assemblyscript.js";
 import { Parameter } from "./types.js";
+import { BaseVisitor } from "visitor-as/dist/index.js";
+
 class OptionalParam {
   param: Parameter;
   defaultValue: string | null = null;
@@ -59,181 +62,102 @@ class OptionalParam {
  *
  * Note that the mask is Little Endian so the order would be reversed
  */
-export class MultiParamGen {
+export class MultiParamGen extends BaseVisitor {
   static SN: MultiParamGen = new MultiParamGen();
-  public opt_fns = new Map<string, OptionalParam[]>();
-  constructor() {}
+  public required_fns: string[] = [];
+  public optional_fns = new Map<string, OptionalParam[]>();
   static init(): MultiParamGen {
     if (!MultiParamGen.SN) MultiParamGen.SN = new MultiParamGen();
     return MultiParamGen.SN;
   }
-  visitSource(source: Source) {
-    const paramsFieldName = "__SUPPLIED_PARAMS";
-    const uninitializedValue = "UNINITIALIZED_VALUE";
-
-    // TODO: this could be further refactored to reduce code duplication
-
-    for (const stmt of source.statements) {
-      if (stmt.kind === NodeKind.FunctionDeclaration) {
-        const node = stmt as FunctionDeclaration;
-        if (
-          node.flags === CommonFlags.Export &&
-          source.sourceKind === SourceKind.UserEntry
-        ) {
-          let name = node.name.text;
-          if (!node.body && node.decorators?.length) {
-            const decorator = node.decorators.find(
-              (e) => (e.name as IdentifierExpression).text === "external",
-            );
-            if (
-              decorator.args.length > 1 &&
-              decorator.args[1].kind === NodeKind.Literal
-            ) {
-              name = (
-                decorator.args[1] as StringLiteralExpression
-              ).value.toString();
-            }
-          }
-          if (node.signature.parameters.length > 63) {
-            throw new Error("Functions exceeding 64 parameters not allowed!");
-          }
-          const params: OptionalParam[] = [];
-          for (const param of node.signature.parameters) {
-            const defaultValue = getDefaultValue(param);
-            params.push({
-              param: {
-                name: param.name.text,
-                type: {
-                  name: uninitializedValue,
-                  path: uninitializedValue,
-                },
-                optional: !!param.initializer,
-              },
-              defaultValue,
-            });
-          }
-          this.opt_fns.set(name, params);
-
-          if (
-            node.signature.parameters.find(
-              (v) => v.parameterKind === ParameterKind.Optional,
-            )
-          ) {
-            let body: BlockStatement;
-            if (node.body.kind != NodeKind.Block) {
-              body = Node.createBlockStatement([node.body], node.range);
-            } else {
-              body = node.body as BlockStatement;
-            }
-            node.signature.parameters.push(
-              Node.createParameter(
-                ParameterKind.Default,
-                Node.createIdentifierExpression(
-                  paramsFieldName,
-                  node.range,
-                  false,
-                ),
-                Node.createNamedType(
-                  Node.createSimpleTypeName("u64", node.range),
-                  [],
-                  false,
-                  node.range,
-                ),
-                null,
-                node.range,
-              ),
-            );
-            let first = true;
-            for (let i = 0; i < node.signature.parameters.length; i++) {
-              const param = node.signature.parameters[i];
-              if (param.parameterKind != ParameterKind.Optional) continue;
-              const stmt = Node.createIfStatement(
-                Node.createBinaryExpression(
-                  Token.Equals_Equals,
-                  Node.createParenthesizedExpression(
-                    Node.createBinaryExpression(
-                      Token.Ampersand,
-                      first
-                        ? ((first = false),
-                          Node.createIdentifierExpression(
-                            paramsFieldName,
-                            node.range,
-                          ))
-                        : Node.createParenthesizedExpression(
-                            Node.createBinaryExpression(
-                              Token.GreaterThan_GreaterThan,
-                              Node.createIdentifierExpression(
-                                paramsFieldName,
-                                node.range,
-                              ),
-                              newIntegerLiteral(i, node.range),
-                              node.range,
-                            ),
-                            node.range,
-                          ),
-                      newIntegerLiteral(1, node.range),
-                      node.range,
-                    ),
-                    node.range,
-                  ),
-                  newIntegerLiteral(0, node.range),
-                  node.range,
-                ),
-                Node.createExpressionStatement(
-                  Node.createBinaryExpression(
-                    Token.Equals,
-                    Node.createIdentifierExpression(
-                      param.name.text,
-                      node.range,
-                      false,
-                    ),
-                    param.initializer,
-                    node.range,
-                  ),
-                ),
-                null,
-                node.range,
-              );
-              body.statements.unshift(stmt);
-              if (param.initializer) param.initializer = null;
-            }
-          }
-        }
-        if (node.body == null) {
-          let name = node.name.text;
-          if (!node.body && node.decorators?.length) {
-            const decorator = node.decorators.find(
-              (e) => (e.name as IdentifierExpression).text === "external",
-            );
-            if (
-              decorator.args.length > 1 &&
-              decorator.args[1].kind === NodeKind.Literal
-            ) {
-              name = (
-                decorator.args[1] as StringLiteralExpression
-              ).value.toString();
-            }
-          }
-          const params: OptionalParam[] = [];
-          for (const param of node.signature.parameters) {
-            const defaultValue = getDefaultValue(param);
-            params.push({
-              param: {
-                name: param.name.text,
-                type: {
-                  name: uninitializedValue,
-                  path: uninitializedValue,
-                },
-                optional: !!param.initializer,
-              },
-              defaultValue,
-            });
-            if (param.initializer) param.initializer = null;
-          }
-          this.opt_fns.set(name, params);
-        }
+  visitExportStatement(node: ExportStatement): void {
+    const source = node.range.source;
+    if (source.sourceKind != SourceKind.UserEntry) return;
+    for (const member of node.members) {
+      const name = member.localName.text;
+      this.required_fns.push(name);
+    }
+  }
+  visitFunctionDeclaration(node: FunctionDeclaration) {
+    const source = node.range.source;
+    if (node.flags != CommonFlags.Export) return;
+    let name = node.name.text;
+    if (!node.body && node.decorators?.length) {
+      const decorator = node.decorators.find(
+        (e) => (e.name as IdentifierExpression).text === "external",
+      );
+      if (
+        decorator.args.length > 1 &&
+        decorator.args[1].kind === NodeKind.Literal
+      ) {
+        name = (decorator.args[1] as StringLiteralExpression).value.toString();
       }
     }
+    if (
+      source.sourceKind != SourceKind.UserEntry &&
+      !this.required_fns.includes(name)
+    )
+      return;
+    if (node.signature.parameters.length > 63) {
+      throw new Error("Functions exceeding 64 parameters not allowed!");
+    }
+    const params: OptionalParam[] = [];
+    for (const param of node.signature.parameters) {
+      const defaultValue = getDefaultValue(param);
+      params.push({
+        param: {
+          name: param.name.text,
+          type: {
+            name: "UNINITIALIZED_VALUE",
+            path: "UNINITIALIZED_VALUE",
+          },
+          optional: !!param.initializer,
+        },
+        defaultValue,
+      });
+    }
+
+    this.optional_fns.set(name, params);
+
+    initDefaultValues(node);
+
+    if (node.body == null) {
+      let name = node.name.text;
+      if (!node.body && node.decorators?.length) {
+        const decorator = node.decorators.find(
+          (e) => (e.name as IdentifierExpression).text === "external",
+        );
+        if (
+          decorator.args.length > 1 &&
+          decorator.args[1].kind === NodeKind.Literal
+        ) {
+          name = (
+            decorator.args[1] as StringLiteralExpression
+          ).value.toString();
+        }
+      }
+      const params: OptionalParam[] = [];
+      for (const param of node.signature.parameters) {
+        const defaultValue = getDefaultValue(param);
+        params.push({
+          param: {
+            name: param.name.text,
+            type: {
+              name: "UNINITIALIZED_VALUE",
+              path: "UNINITIALIZED_VALUE",
+            },
+            optional: !!param.initializer,
+          },
+          defaultValue,
+        });
+        if (param.initializer) param.initializer = null;
+      }
+      this.optional_fns.set(name, params);
+    }
+  }
+  visitSource(node: Source) {
+    if (node.isLibrary) return;
+    super.visitSource(node);
   }
 }
 
@@ -300,4 +224,83 @@ function newIntegerLiteral(
   const int = parser.parseExpression(tokenizer) as IntegerLiteralExpression;
   int.range = range;
   return int;
+}
+
+function initDefaultValues(node: FunctionDeclaration) {
+  if (
+    node.signature.parameters.find(
+      (v) => v.parameterKind === ParameterKind.Optional,
+    )
+  ) {
+    let body: BlockStatement;
+    if (node.body.kind != NodeKind.Block) {
+      body = Node.createBlockStatement([node.body], node.range);
+    } else {
+      body = node.body as BlockStatement;
+    }
+    node.signature.parameters.push(
+      Node.createParameter(
+        ParameterKind.Default,
+        Node.createIdentifierExpression("__SUPPLIED_PARAMS", node.range, false),
+        Node.createNamedType(
+          Node.createSimpleTypeName("u64", node.range),
+          [],
+          false,
+          node.range,
+        ),
+        null,
+        node.range,
+      ),
+    );
+    let first = true;
+    for (let i = 0; i < node.signature.parameters.length; i++) {
+      const param = node.signature.parameters[i];
+      if (param.parameterKind != ParameterKind.Optional) continue;
+      const stmt = Node.createIfStatement(
+        Node.createBinaryExpression(
+          Token.Equals_Equals,
+          Node.createParenthesizedExpression(
+            Node.createBinaryExpression(
+              Token.Ampersand,
+              first
+                ? ((first = false),
+                  Node.createIdentifierExpression(
+                    "__SUPPLIED_PARAMS",
+                    node.range,
+                  ))
+                : Node.createParenthesizedExpression(
+                    Node.createBinaryExpression(
+                      Token.GreaterThan_GreaterThan,
+                      Node.createIdentifierExpression(
+                        "__SUPPLIED_PARAMS",
+                        node.range,
+                      ),
+                      newIntegerLiteral(i, node.range),
+                      node.range,
+                    ),
+                    node.range,
+                  ),
+              newIntegerLiteral(1, node.range),
+              node.range,
+            ),
+            node.range,
+          ),
+          newIntegerLiteral(0, node.range),
+          node.range,
+        ),
+        Node.createExpressionStatement(
+          Node.createBinaryExpression(
+            Token.Equals,
+            Node.createIdentifierExpression(param.name.text, node.range, false),
+            param.initializer,
+            node.range,
+          ),
+        ),
+        null,
+        node.range,
+      );
+      body.statements.unshift(stmt);
+      if (param.initializer) param.initializer = null;
+    }
+  }
 }

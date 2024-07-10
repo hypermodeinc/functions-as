@@ -13,7 +13,7 @@ export class FunctionSignature {
   ) {}
 
   toString() {
-    const optionalParams = MultiParamGen.SN?.opt_fns.get(this.name);
+    const optionalParams = MultiParamGen.SN?.optional_fns.get(this.name);
     let params = "";
     for (let i = 0; i < this.parameters.length; i++) {
       const param = this.parameters[i]!;
