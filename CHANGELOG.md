@@ -1,6 +1,15 @@
 # Change Log
 
-## UNRELEASED
+## 2024-07-10 - Version 0.9.4
+
+- Fix transform error when reexporting function from another file [#129](https://github.com/hypermodeAI/functions-as/pull/129)
+
+## 2024-07-09 - Version 0.9.3
+
+- Support optional parameters [#122](https://github.com/hypermodeAI/functions-as/pull/122)
+- Fix capture of nullable types [#126](https://github.com/hypermodeAI/functions-as/pull/126)
+
+## 2024-06-26 - Version 0.9.2
 
 - Move/rename GraphQL types to `graphql` namespace [#118](https://github.com/hypermodeAI/functions-as/pull/118)
 
