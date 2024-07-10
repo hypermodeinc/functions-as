@@ -1,8 +1,9 @@
 # Change Log
 
-## Unreleased
+## UNRELEASED
 
 - Support optional parameters [#122](https://github.com/hypermodeAI/functions-as/pull/122)
+- Fix capture of nullable types [#126](https://github.com/hypermodeAI/functions-as/pull/126)
 
 ## 2024-06-26 - Version 0.9.2
 

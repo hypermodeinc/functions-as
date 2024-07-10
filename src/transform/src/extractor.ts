@@ -61,7 +61,8 @@ export class Extractor {
         .concat(hostFunctions)
         .flatMap((f) =>
           f.parameters.map((p) => p.type.path).concat(f.returnType.path),
-        ),
+        )
+        .map((p) => p.replace(/\|null$/, "")),
     );
 
     const typesUsed = new Map<string, TypeDefinition>();
