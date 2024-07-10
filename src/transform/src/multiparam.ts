@@ -21,7 +21,7 @@ import {
   StringLiteralExpression,
   Token,
   Tokenizer,
-  ExportStatement
+  ExportStatement,
 } from "assemblyscript/dist/assemblyscript.js";
 import { Parameter } from "./types.js";
 import { BaseVisitor } from "visitor-as/dist/index.js";
@@ -62,7 +62,7 @@ class OptionalParam {
  *
  * Note that the mask is Little Endian so the order would be reversed
  */
-export class MultiParamGen extends BaseVisitor {
+export class MultiParamGen {
   static SN: MultiParamGen = new MultiParamGen();
   public required_fns: string[] = [];
   public optional_fns = new Map<string, OptionalParam[]>();
@@ -80,7 +80,6 @@ export class MultiParamGen extends BaseVisitor {
   }
   visitFunctionDeclaration(node: FunctionDeclaration) {
     const source = node.range.source;
-    if (node.flags != CommonFlags.Export) return;
     let name = node.name.text;
     if (!node.body && node.decorators?.length) {
       const decorator = node.decorators.find(
@@ -97,6 +96,8 @@ export class MultiParamGen extends BaseVisitor {
       source.sourceKind != SourceKind.UserEntry &&
       !this.required_fns.includes(name)
     )
+      return;
+    if (node.flags != CommonFlags.Export && !this.required_fns.includes(name))
       return;
     if (node.signature.parameters.length > 63) {
       throw new Error("Functions exceeding 64 parameters not allowed!");
@@ -157,7 +158,16 @@ export class MultiParamGen extends BaseVisitor {
   }
   visitSource(node: Source) {
     if (node.isLibrary) return;
-    super.visitSource(node);
+    for (const stmt of node.statements) {
+      if (stmt.kind === NodeKind.Export) {
+        this.visitExportStatement(stmt as ExportStatement);
+      }
+    }
+    for (const stmt of node.statements) {
+      if (stmt.kind === NodeKind.FunctionDeclaration) {
+        this.visitFunctionDeclaration(stmt as FunctionDeclaration)
+      }
+    }
   }
 }
 
