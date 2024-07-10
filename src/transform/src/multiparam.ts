@@ -24,7 +24,6 @@ import {
   ExportStatement,
 } from "assemblyscript/dist/assemblyscript.js";
 import { Parameter } from "./types.js";
-import { BaseVisitor } from "visitor-as/dist/index.js";
 
 class OptionalParam {
   param: Parameter;
