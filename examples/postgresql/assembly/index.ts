@@ -13,7 +13,7 @@ class Person {
 }
 
 export function getAllPeople(): Person[] {
-  const query = "select * from people";
+  const query = "select * from people order by id";
   const response = postgresql.query<Person>(host, query);
   return response.rows;
 }
@@ -57,25 +57,28 @@ export function addPerson(name: string, age: i32): Person {
   return <Person>{ id, name, age };
 }
 
-export function updatePersonHomeLocation(
-  id: string,
-  lat: f64,
-  lon: f64,
-): string {
+export function updatePersonHome(
+  id: i32,
+  longitude: f64,
+  latitude: f64,
+): Person | null {
   const query = `update people set home = point($1, $2) where id = $3`;
 
   const params = new postgresql.Params();
-  params.push(lat);
-  params.push(lon);
+  params.push(longitude);
+  params.push(latitude);
   params.push(id);
 
   const response = postgresql.execute(host, query, params);
 
   if (response.rowsAffected != 1) {
-    throw new Error("Failed to update person.");
+    console.error(
+      `Failed to update person with id ${id}. The record may not exist.`,
+    );
+    return null;
   }
 
-  return "success";
+  return getPerson(id);
 }
 
 export function deletePerson(id: i32): string {
@@ -87,7 +90,10 @@ export function deletePerson(id: i32): string {
   const response = postgresql.execute(host, query, params);
 
   if (response.rowsAffected != 1) {
-    throw new Error("Failed to delete person.");
+    console.error(
+      `Failed to delete person with id ${id}. The record may not exist.`,
+    );
+    return "failure";
   }
 
   return "success";
