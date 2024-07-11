@@ -8,7 +8,10 @@
     "show": false
   },
   "buildOptions": {
-    "args": [],
+    "args": [
+      "--config", "./node_modules/@hypermode/functions-as/plugin.asconfig.json",
+      "--exportRuntime"
+    ],
     "wasi": false,
     "parallel": true,
     "verbose": true
