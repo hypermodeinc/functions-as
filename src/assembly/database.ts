@@ -134,15 +134,15 @@ export function queryScalar<T>(
   statement: string,
   params: Params,
 ): ScalarResponse<T> {
-  const response = query<T[]>(hostName, dbType, statement, params);
+  const response = query<Map<string, T>>(hostName, dbType, statement, params);
 
-  if (response.rows.length == 0 || response.rows[0].length == 0) {
+  if (response.rows.length == 0 || response.rows[0].size == 0) {
     throw new Error("No results returned from query.");
   }
 
   return <ScalarResponse<T>>{
     error: response.error,
-    value: response.rows[0][0],
+    value: response.rows[0].values()[0],
     rowsAffected: response.rowsAffected,
   };
 }
