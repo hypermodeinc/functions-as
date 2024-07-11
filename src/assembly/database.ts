@@ -11,8 +11,8 @@ declare function databaseQuery(
 ): HostQueryResponse;
 
 class HostQueryResponse {
-  error!: string;
-  resultJson!: string;
+  error!: string | null;
+  resultJson!: string | null;
   rowsAffected!: u32;
 }
 
@@ -86,7 +86,7 @@ export function execute(
   }
 
   if (response.error) {
-    console.error("Database Error: " + response.error);
+    console.error("Database Error: " + response.error!);
   }
 
   const results: Response = {
@@ -116,12 +116,12 @@ export function query<T>(
   }
 
   if (response.error) {
-    console.error("Database Error: " + response.error);
+    console.error("Database Error: " + response.error!);
   }
 
   const results: QueryResponse<T> = {
     error: response.error,
-    rows: response.resultJson ? JSON.parse<T[]>(response.resultJson) : [],
+    rows: response.resultJson ? JSON.parse<T[]>(response.resultJson!) : [],
     rowsAffected: response.rowsAffected,
   };
 
