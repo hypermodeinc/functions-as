@@ -192,8 +192,9 @@ export class Extractor {
       if (name == "__SUPPLIED_PARAMS") continue;
       const type = getTypeInfo(_type);
       const optional =
-        MultiParamGen.SN.opt_fns.get(e.name).find((e) => e.param.name == name)
-          ?.param.optional || false;
+        MultiParamGen.SN.optional_fns
+          .get(e.name)
+          ?.find((e) => e.param.name == name)?.param.optional || false;
       params.push({
         name,
         type,
