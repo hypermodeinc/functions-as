@@ -1,5 +1,9 @@
 # Change Log
 
+## UNRELEASED
+
+- Add functions and example for accessing PostgreSQL [#119](https://github.com/hypermodeAI/functions-as/pull/119)
+
 ## 2024-07-10 - Version 0.9.4
 
 - Fix transform error when reexporting function from another file [#129](https://github.com/hypermodeAI/functions-as/pull/129)
