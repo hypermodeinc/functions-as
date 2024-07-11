@@ -1,8 +1,4 @@
-import {
-  expect,
-  run,
-  it,
-} from "as-test";
+import { expect, run, it } from "as-test";
 
 import { inference } from "../inference";
 
