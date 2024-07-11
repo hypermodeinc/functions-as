@@ -3,16 +3,13 @@ import { postgresql } from "@hypermode/functions-as";
 // The name of the PostgreSQL host, as specified in the hypermode.json manifest
 const host = "my-database";
 
+
+@json
 class Person {
   id: i32 = 0;
   name!: string;
   age!: i32;
-  home!: Location | null;
-}
-
-class Location {
-  lat!: f64;
-  lon!: f64;
+  home!: postgresql.Location | null;
 }
 
 export function getAllPeople(): Person[] {
