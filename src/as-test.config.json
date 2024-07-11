@@ -16,7 +16,7 @@
   "runOptions": {
     "runtime": {
       "name": "node",
-      "run": "node ./tests/index.js"
+      "run": "node ./build/index.js"
     }
   }
 }
