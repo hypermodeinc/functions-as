@@ -1,7 +1,6 @@
 {
   "name": "classification-example",
   "private": true,
-  "version": "1.0.0",
   "description": "Hypermode Functions Classification Example",
   "author": "Hypermode, Inc.",
   "license": "MIT",

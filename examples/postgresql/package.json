@@ -1,7 +1,6 @@
 {
   "name": "postgresql-example",
   "private": true,
-  "version": "1.0.0",
   "description": "Hypermode Functions Example using PostgreSQL database",
   "author": "Hypermode, Inc.",
   "license": "MIT",

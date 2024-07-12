@@ -1,7 +1,6 @@
 {
   "name": "graphql-example",
   "private": true,
-  "version": "1.0.0",
   "description": "Hypermode Functions GraphQL Example",
   "author": "Hypermode, Inc.",
   "license": "MIT",
