@@ -3,6 +3,7 @@
 ## UNRELEASED
 
 - Add functions and example for accessing PostgreSQL [#119](https://github.com/hypermodeAI/functions-as/pull/119)
+- Make plugin version optional [#133](https://github.com/hypermodeAI/functions-as/pull/133)
 
 ## 2024-07-10 - Version 0.9.4
 
