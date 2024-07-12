@@ -147,6 +147,16 @@ function getHypermodeInfo(): string {
 function getPluginInfo(): string {
   const pluginName = process.env.npm_package_name;
   const pluginVersion = process.env.npm_package_version;
+
+  if (!pluginName) {
+    throw new Error("Missing name in package.json");
+  }
+
+  if (!pluginVersion) {
+    // versionless plugins are allowed
+    return pluginName;
+  }
+
   return `${pluginName}@${pluginVersion}`;
 }
 
