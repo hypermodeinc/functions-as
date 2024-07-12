@@ -1,7 +1,6 @@
 {
   "name": "embedding-example",
   "private": true,
-  "version": "1.0.0",
   "description": "Hypermode Functions Embedding Example",
   "author": "Hypermode, Inc.",
   "license": "MIT",

@@ -14,7 +14,7 @@ export class HypermodeMetadata {
   buildId: string;
   buildTs: string;
   plugin: string;
-  library: string;
+  sdk: string;
   gitRepo?: string;
   gitCommit?: string;
   functions: FunctionSignature[] = [];
@@ -26,7 +26,7 @@ export class HypermodeMetadata {
     m.buildId = new Xid().toString();
     m.buildTs = new Date().toISOString();
     m.plugin = getPluginInfo();
-    m.library = getHypermodeInfo();
+    m.sdk = getSdkInfo();
 
     if (isGitRepo()) {
       m.gitRepo = getGitRepo();
@@ -104,8 +104,8 @@ export class HypermodeMetadata {
 
     writeHeader("Plugin Metadata:");
     writeTable([
-      ["Plugin Name", this.plugin],
-      ["Library", this.library],
+      ["Name", this.plugin],
+      ["SDK", this.sdk],
       ["Build ID", this.buildId],
       ["Build Timestamp", this.buildTs],
       this.gitRepo ? ["Git Repo", this.gitRepo] : undefined,
@@ -132,7 +132,7 @@ export class HypermodeMetadata {
   }
 }
 
-function getHypermodeInfo(): string {
+function getSdkInfo(): string {
   const filePath = path.join(
     path.dirname(fileURLToPath(import.meta.url)),
     "..",
@@ -141,12 +141,22 @@ function getHypermodeInfo(): string {
   );
   const json = readFileSync(filePath).toString();
   const lib = JSON.parse(json);
-  return `${lib.name}@${lib.version}`;
+  return `${lib.name.split("/")[1]}@${lib.version}`;
 }
 
 function getPluginInfo(): string {
   const pluginName = process.env.npm_package_name;
   const pluginVersion = process.env.npm_package_version;
+
+  if (!pluginName) {
+    throw new Error("Missing name in package.json");
+  }
+
+  if (!pluginVersion) {
+    // versionless plugins are allowed
+    return pluginName;
+  }
+
   return `${pluginName}@${pluginVersion}`;
 }
 

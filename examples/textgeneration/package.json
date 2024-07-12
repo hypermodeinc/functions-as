@@ -1,7 +1,6 @@
 {
   "name": "text-generation-example",
   "private": true,
-  "version": "1.0.0",
   "description": "Hypermode Functions Text Generation Example",
   "author": "Hypermode, Inc.",
   "license": "MIT",

@@ -1,7 +1,6 @@
 {
   "name": "collection-example",
   "private": true,
-  "version": "1.0.0",
   "description": "Hypermode Functions Collection Example",
   "author": "Hypermode, Inc.",
   "license": "MIT",
