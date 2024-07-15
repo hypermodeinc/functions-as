@@ -121,7 +121,10 @@ export class MultiParamGen {
     const exportedName = getExportedName(name, source);
     this.optional_fns.set(exportedName, params);
 
-    if (node.flags == CommonFlags.Export || node.flags == CommonFlags.ModuleExport) {
+    if (
+      node.flags == CommonFlags.Export ||
+      node.flags == CommonFlags.ModuleExport
+    ) {
       if (name != exportedName) {
         this.optional_fns.set(name, params);
       }
@@ -153,7 +156,10 @@ export class MultiParamGen {
           for (const node of (stmt as ImportStatement).declarations) {
             const source = node.range.source;
             if (source.sourceKind != SourceKind.UserEntry) return;
-            const foreignName = getRealName(node.foreignName.text, this.sources.find(src => src.internalPath == internalPath));
+            const foreignName = getRealName(
+              node.foreignName.text,
+              this.sources.find((src) => src.internalPath == internalPath),
+            );
             const localName = node.name.text;
             const exported = isExported(localName, source);
             if (!exported) return;
@@ -390,7 +396,9 @@ function isExported(name: string, source: Source): boolean {
 }
 
 function getExportedName(name: string, source: Source): string {
-  const exists = MultiParamGen.SN.exported_fns.find(v => v.foreignName == name);
+  const exists = MultiParamGen.SN.exported_fns.find(
+    (v) => v.foreignName == name,
+  );
   if (exists) return exists.exportedName;
   let i = source.statements.length - 1;
   while (i >= 0) {
