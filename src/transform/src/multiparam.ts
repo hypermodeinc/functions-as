@@ -140,13 +140,20 @@ export class MultiParamGen {
           const foreignName = node.name.text;
           const internalPath = source.internalPath;
           const exported = isExported(foreignName, source);
+          const exportedName = getExportedName(foreignName, source);
           if (exported) {
             if (this.foreign_fns.has(internalPath)) {
-              this.foreign_fns.get(foreignName).push(new NameMeta(foreignName));
+              this.foreign_fns
+                .get(foreignName)
+                ?.push(new NameMeta(foreignName));
             } else {
               this.foreign_fns.set(internalPath, [new NameMeta(foreignName)]);
             }
           }
+          this.exported_fns.push(
+            new NameMeta(foreignName, foreignName, exportedName),
+          );
+          console.log(this.exported_fns);
         }
       }
     } else if (source.sourceKind === SourceKind.UserEntry) {
@@ -410,7 +417,7 @@ function getExportedName(name: string, source: Source): string {
         for (const member of node.members) {
           const localName = member.localName.text;
           const exportedName = member.exportedName.text;
-          if (name === localName) return localName || exportedName;
+          if (name === localName) return exportedName || localName;
         }
       }
     }
@@ -420,7 +427,7 @@ function getExportedName(name: string, source: Source): string {
 }
 
 function getRealName(name: string, source: Source): string {
-  if (!source.statements) return name;
+  if (!source || !source?.statements) return name;
   for (const stmt of source.statements) {
     if (stmt.kind === NodeKind.Export) {
       const node = stmt as ExportStatement;
