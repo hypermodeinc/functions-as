@@ -147,7 +147,9 @@ export class MultiParamGen {
                 .get(foreignName)
                 ?.push(new NameMeta(foreignName, foreignName, exportedName));
             } else {
-              this.foreign_fns.set(internalPath, [new NameMeta(foreignName, foreignName, exportedName)]);
+              this.foreign_fns.set(internalPath, [
+                new NameMeta(foreignName, foreignName, exportedName),
+              ]);
             }
           }
           this.exported_fns.push(
