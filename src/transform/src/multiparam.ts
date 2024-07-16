@@ -255,8 +255,10 @@ function getDefaultValue(param: ParameterNode): string | null {
     case NodeKind.Literal: {
       const literal = param.initializer as LiteralExpression;
       switch (literal.literalKind) {
-        case LiteralKind.String:
-          return (literal as StringLiteralExpression).value;
+        case LiteralKind.String: {
+          const value = (literal as StringLiteralExpression).value;
+          return JSON.stringify(value);
+        }
         case LiteralKind.Integer:
           return (literal as IntegerLiteralExpression).value.toString();
         case LiteralKind.Float:
