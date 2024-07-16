@@ -17,3 +17,18 @@ export abstract class connection {
     return graphql.execute<TData>(hostName, statement, variables);
   }
 }
+
+/**
+ * @deprecated Import `graphql`, and use `graphql.Variables` instead.
+ */
+export class QueryVariables {
+  private qv = new graphql.Variables();
+
+  public set<T>(name: string, value: T): void {
+    this.qv.set(name, value);
+  }
+
+  public toJSON(): string {
+    return this.qv.toJSON();
+  }
+}
