@@ -1,6 +1,6 @@
 # Change Log
 
-## UNRELEASED
+## 2024-07-15 - Version 0.10.0
 
 - Add functions and example for accessing PostgreSQL [#119](https://github.com/hypermodeAI/functions-as/pull/119)
 - Make plugin version optional [#133](https://github.com/hypermodeAI/functions-as/pull/133)
