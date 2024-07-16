@@ -22,7 +22,7 @@ export abstract class connection {
  * @deprecated Import `graphql`, and use `graphql.Variables` instead.
  */
 export class QueryVariables {
-  private qv = new graphql.Variables();
+  private qv: graphql.Variables = new graphql.Variables();
 
   public set<T>(name: string, value: T): void {
     this.qv.set(name, value);
