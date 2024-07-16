@@ -1,12 +1,16 @@
 # Change Log
 
+## UNRELEASED
+
+- Actual fix of compatibility with older QueryVariables API [#140](https://github.com/hypermodeAI/functions-as/pull/140)
+
 ## 2024-07-15 - Version 0.10.2
 
 - No changes (re-publish of 0.10.1 to fix npm packaging issue)
 
 ## 2024-07-15 - Version 0.10.1
 
-- Fix compatibility with older QueryVariables API [#137](https://github.com/hypermodeAI/functions-as/pull/137)
+- Attempted fix compatibility with older QueryVariables API [#137](https://github.com/hypermodeAI/functions-as/pull/137)
 
 ## 2024-07-15 - Version 0.10.0
 
