@@ -4,7 +4,6 @@ import {
   CommonFlags,
   FloatLiteralExpression,
   FunctionDeclaration,
-  IdentifierExpression,
   IntegerLiteralExpression,
   LiteralExpression,
   LiteralKind,
@@ -22,12 +21,27 @@ import {
   Token,
   Tokenizer,
   ExportStatement,
+  ImportStatement,
 } from "assemblyscript/dist/assemblyscript.js";
 import { Parameter } from "./types.js";
-
 class OptionalParam {
   param: Parameter;
   defaultValue: string | null = null;
+}
+
+class NameMeta {
+  localName: string | null;
+  foreignName: string | null;
+  exportedName: string | null;
+  constructor(
+    localName: string | null = null,
+    foreignName: string | null = null,
+    exportedName: string | null = null,
+  ) {
+    this.localName = localName;
+    this.foreignName = foreignName;
+    this.exportedName = exportedName;
+  }
 }
 
 /**
@@ -63,40 +77,27 @@ class OptionalParam {
  */
 export class MultiParamGen {
   static SN: MultiParamGen = new MultiParamGen();
-  public required_fns: string[] = [];
+  public sources: Source[] = [];
+  public foreign_fns = new Map<string, NameMeta[]>();
+  public foreign_files = new Set<string>();
+
+  public exported_fns: NameMeta[] = [];
   public optional_fns = new Map<string, OptionalParam[]>();
   static init(): MultiParamGen {
     if (!MultiParamGen.SN) MultiParamGen.SN = new MultiParamGen();
     return MultiParamGen.SN;
   }
-  visitExportStatement(node: ExportStatement): void {
-    const source = node.range.source;
-    if (source.sourceKind != SourceKind.UserEntry) return;
-    for (const member of node.members) {
-      const name = member.localName.text;
-      this.required_fns.push(name);
-    }
-  }
   visitFunctionDeclaration(node: FunctionDeclaration) {
     const source = node.range.source;
-    let name = node.name.text;
-    if (!node.body && node.decorators?.length) {
-      const decorator = node.decorators.find(
-        (e) => (e.name as IdentifierExpression).text === "external",
-      );
-      if (
-        decorator.args.length > 1 &&
-        decorator.args[1].kind === NodeKind.Literal
-      ) {
-        name = (decorator.args[1] as StringLiteralExpression).value.toString();
-      }
-    }
+    const name = node.name.text;
+    const exported = isExported(name, source);
+    if (!exported) return;
     if (
       source.sourceKind != SourceKind.UserEntry &&
-      !this.required_fns.includes(name)
+      !this.foreign_fns
+        .get(source.internalPath)
+        ?.find((v) => v.foreignName == name)
     )
-      return;
-    if (node.flags != CommonFlags.Export && !this.required_fns.includes(name))
       return;
     if (node.signature.parameters.length > 63) {
       throw new Error("Functions exceeding 64 parameters not allowed!");
@@ -117,52 +118,117 @@ export class MultiParamGen {
       });
     }
 
-    this.optional_fns.set(name, params);
+    const exportedName = getExportedName(name, source);
+    this.optional_fns.set(exportedName, params);
+
+    if (
+      node.flags == CommonFlags.Export ||
+      node.flags == CommonFlags.ModuleExport
+    ) {
+      if (name != exportedName) {
+        this.optional_fns.set(name, params);
+      }
+    }
 
     initDefaultValues(node);
-
-    if (node.body == null) {
-      let name = node.name.text;
-      if (!node.body && node.decorators?.length) {
-        const decorator = node.decorators.find(
-          (e) => (e.name as IdentifierExpression).text === "external",
-        );
-        if (
-          decorator.args.length > 1 &&
-          decorator.args[1].kind === NodeKind.Literal
-        ) {
-          name = (
-            decorator.args[1] as StringLiteralExpression
-          ).value.toString();
+  }
+  visitSource(source: Source) {
+    if (this.foreign_files.has(source.internalPath)) {
+      for (const stmt of source.statements) {
+        if (stmt.kind === NodeKind.FunctionDeclaration) {
+          const node = stmt as FunctionDeclaration;
+          const foreignName = node.name.text;
+          const internalPath = source.internalPath;
+          const exported = isExported(foreignName, source);
+          const exportedName = getExportedName(foreignName, source);
+          if (exported) {
+            if (this.foreign_fns.has(internalPath)) {
+              this.foreign_fns
+                .get(foreignName)
+                ?.push(new NameMeta(foreignName, foreignName, exportedName));
+            } else {
+              this.foreign_fns.set(internalPath, [
+                new NameMeta(foreignName, foreignName, exportedName),
+              ]);
+            }
+          }
+          this.exported_fns.push(
+            new NameMeta(foreignName, foreignName, exportedName),
+          );
+          console.log(this.exported_fns);
         }
       }
-      const params: OptionalParam[] = [];
-      for (const param of node.signature.parameters) {
-        const defaultValue = getDefaultValue(param);
-        params.push({
-          param: {
-            name: param.name.text,
-            type: {
-              name: "UNINITIALIZED_VALUE",
-              path: "UNINITIALIZED_VALUE",
-            },
-            optional: !!param.initializer,
-          },
-          defaultValue,
-        });
-        if (param.initializer) param.initializer = null;
-      }
-      this.optional_fns.set(name, params);
     }
-  }
-  visitSource(node: Source) {
-    if (node.isLibrary) return;
-    for (const stmt of node.statements) {
-      if (stmt.kind === NodeKind.Export) {
-        this.visitExportStatement(stmt as ExportStatement);
+    if (source.sourceKind === SourceKind.UserEntry) {
+      for (const stmt of source.statements) {
+        if (stmt.kind === NodeKind.Import) {
+          const internalPath = (stmt as ImportStatement).internalPath;
+          for (const node of (stmt as ImportStatement).declarations) {
+            const source = node.range.source;
+            if (source.sourceKind != SourceKind.UserEntry) return;
+            const foreignName = getRealName(
+              node.foreignName.text,
+              this.sources.find((src) => src.internalPath == internalPath),
+            );
+            const localName = node.name.text;
+            const exported = isExported(localName, source);
+            if (!exported) return;
+            if (this.foreign_fns.has(internalPath)) {
+              this.foreign_fns
+                .get(internalPath)
+                .push(new NameMeta(localName, foreignName));
+            } else {
+              this.foreign_fns.set(internalPath, [
+                new NameMeta(localName, foreignName),
+              ]);
+            }
+          }
+        } else if (stmt.kind === NodeKind.Export) {
+          const node = stmt as ExportStatement;
+          const internalPath = node.internalPath;
+          if (internalPath) {
+            if (node.members?.length) {
+              if (!this.foreign_fns.has(internalPath)) {
+                this.foreign_fns.set(internalPath, []);
+              }
+              const foreign_fns = this.foreign_fns.get(internalPath);
+              for (const member of node.members) {
+                const localName = member.localName.text;
+                const exportedName = member.exportedName.text;
+                const exists = foreign_fns.find(
+                  (v) => v.localName == localName,
+                );
+                if (exists) {
+                  exists.exportedName = exportedName;
+                } else {
+                  foreign_fns.push(
+                    new NameMeta(localName, localName, exportedName),
+                  );
+                }
+              }
+            } else {
+              this.foreign_files.add(internalPath);
+            }
+          } else {
+            if (!node.members?.length) continue;
+            for (const member of node.members) {
+              const localName = member.localName.text;
+              let foreignName: string = localName;
+              for (const v of this.foreign_fns.values()) {
+                for (const value of v) {
+                  if (value.localName === localName)
+                    foreignName = value.foreignName;
+                }
+              }
+              const exportedName = member.exportedName.text;
+              const meta = new NameMeta(localName, foreignName, exportedName);
+              this.exported_fns.push(meta);
+            }
+          }
+        }
       }
     }
-    for (const stmt of node.statements) {
+    for (const stmt of source.statements) {
       if (stmt.kind === NodeKind.FunctionDeclaration) {
         this.visitFunctionDeclaration(stmt as FunctionDeclaration);
       }
@@ -314,4 +380,70 @@ function initDefaultValues(node: FunctionDeclaration) {
       if (param.initializer) param.initializer = null;
     }
   }
+}
+
+function isExported(name: string, source: Source): boolean {
+  let i = source.statements.length - 1;
+  while (i >= 0) {
+    const stmt = source.statements[i];
+    if (stmt.kind === NodeKind.FunctionDeclaration) {
+      const node = stmt as FunctionDeclaration;
+      return (
+        node.flags === CommonFlags.Export ||
+        node.flags === CommonFlags.ModuleExport
+      );
+    } else if (stmt.kind === NodeKind.Export) {
+      const node = stmt as ExportStatement;
+      // export { ... } from "..."
+      if (node.members) {
+        for (const member of node.members) {
+          const localName = member.localName.text;
+          if (name === localName) return true;
+        }
+      }
+    }
+    i--;
+  }
+  return false;
+}
+
+function getExportedName(name: string, source: Source): string {
+  const exists = MultiParamGen.SN.exported_fns.find(
+    (v) => v.foreignName == name,
+  );
+  if (exists) return exists.exportedName;
+  let i = source.statements.length - 1;
+  while (i >= 0) {
+    const stmt = source.statements[i];
+    if (stmt.kind === NodeKind.Export) {
+      const node = stmt as ExportStatement;
+      // export { ... } from "..."
+      if (node.members) {
+        for (const member of node.members) {
+          const localName = member.localName.text;
+          const exportedName = member.exportedName.text;
+          if (name === localName) return exportedName || localName;
+        }
+      }
+    }
+    i--;
+  }
+  return name;
+}
+
+function getRealName(name: string, source: Source): string {
+  if (!source || !source?.statements) return name;
+  for (const stmt of source.statements) {
+    if (stmt.kind === NodeKind.Export) {
+      const node = stmt as ExportStatement;
+      if (node.members) {
+        for (const member of node.members) {
+          const localName = member.localName.text;
+          const exportedName = member.exportedName.text;
+          if (name === exportedName) return localName;
+        }
+      }
+    }
+  }
+  return name;
 }

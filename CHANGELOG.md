@@ -5,6 +5,7 @@
 - Add functions and example for accessing PostgreSQL [#119](https://github.com/hypermodeAI/functions-as/pull/119)
 - Make plugin version optional [#133](https://github.com/hypermodeAI/functions-as/pull/133)
 - Fix transform display of optional string literal [#134](https://github.com/hypermodeAI/functions-as/pull/134)
+- Fix exporting imported functions or exporting as an alias does not work [#135](https://github.com/hypermodeAI/functions-as/pull/135)
 
 ## 2024-07-10 - Version 0.9.4
 
