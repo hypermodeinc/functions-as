@@ -145,9 +145,9 @@ export class MultiParamGen {
             if (this.foreign_fns.has(internalPath)) {
               this.foreign_fns
                 .get(foreignName)
-                ?.push(new NameMeta(foreignName));
+                ?.push(new NameMeta(foreignName, foreignName, exportedName));
             } else {
-              this.foreign_fns.set(internalPath, [new NameMeta(foreignName)]);
+              this.foreign_fns.set(internalPath, [new NameMeta(foreignName, foreignName, exportedName)]);
             }
           }
           this.exported_fns.push(
@@ -156,7 +156,8 @@ export class MultiParamGen {
           console.log(this.exported_fns);
         }
       }
-    } else if (source.sourceKind === SourceKind.UserEntry) {
+    }
+    if (source.sourceKind === SourceKind.UserEntry) {
       for (const stmt of source.statements) {
         if (stmt.kind === NodeKind.Import) {
           const internalPath = (stmt as ImportStatement).internalPath;
