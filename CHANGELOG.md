@@ -1,6 +1,6 @@
 # Change Log
 
-## UNRELEASED
+## 2024-07-16 - Version 0.10.3
 
 - Actual fix of compatibility with older QueryVariables API [#140](https://github.com/hypermodeAI/functions-as/pull/140)
 
