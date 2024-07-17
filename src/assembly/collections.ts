@@ -71,11 +71,13 @@ export class CollectionSearchResultObject {
   key: string;
   text: string;
   distance: f64;
+  score: f64;
 
-  constructor(key: string, text: string, distance: f64) {
+  constructor(key: string, text: string, distance: f64, score: f64) {
     this.key = key;
     this.text = text;
     this.distance = distance;
+    this.score = score;
   }
 }
 
@@ -341,19 +343,19 @@ export function computeDistance(
 ): CollectionSearchResultObject {
   if (collection.length == 0) {
     console.error("Collection is empty.");
-    return new CollectionSearchResultObject("", "", 0.0);
+    return new CollectionSearchResultObject("", "", 0.0, 0.0);
   }
   if (searchMethod.length == 0) {
     console.error("Search method is empty.");
-    return new CollectionSearchResultObject("", "", 0.0);
+    return new CollectionSearchResultObject("", "", 0.0, 0.0);
   }
   if (key1.length == 0) {
     console.error("Key1 is empty.");
-    return new CollectionSearchResultObject("", "", 0.0);
+    return new CollectionSearchResultObject("", "", 0.0, 0.0);
   }
   if (key2.length == 0) {
     console.error("Key2 is empty.");
-    return new CollectionSearchResultObject("", "", 0.0);
+    return new CollectionSearchResultObject("", "", 0.0, 0.0);
   }
   return hostComputeDistance(collection, searchMethod, key1, key2);
 }
