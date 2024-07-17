@@ -36,6 +36,4 @@ it("can generate a list of objects", () => {
   expect(result[1].get("input")).toBe("sentence");
 });
 
-run({
-  log: false,
-});
+run();

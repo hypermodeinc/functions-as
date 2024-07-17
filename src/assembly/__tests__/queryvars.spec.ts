@@ -1,4 +1,4 @@
-import { expect, it } from "as-test";
+import { expect, it, run } from "as-test";
 import { graphql } from "..";
 
 it("can serialize", () => {
@@ -24,3 +24,5 @@ class Foo {
   b!: i32;
   c!: i32;
 }
+
+run();
