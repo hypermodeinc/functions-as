@@ -1,7 +1,7 @@
 {
-  "name": "embedding-example",
+  "name": "postgresql-example",
   "private": true,
-  "description": "Hypermode Functions Embedding Example",
+  "description": "Hypermode Functions Example using PostgreSQL database",
   "author": "Hypermode, Inc.",
   "license": "MIT",
   "type": "module",
@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "@hypermode/functions-as": "../../src",
-    "@hypermode/models-as": "^0.2.1",
     "json-as": "^0.9.13"
   },
   "devDependencies": {

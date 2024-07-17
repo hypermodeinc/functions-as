@@ -9,11 +9,26 @@ export abstract class connection {
   /**
    * @deprecated Use `graphql.execute` instead.
    */
-  static invokeGraphqlApi<TData>(
+  static invokeGraphqlApi<T>(
     hostName: string,
     statement: string,
-    variables = new graphql.Variables(),
-  ): graphql.Response<TData> {
-    return graphql.execute<TData>(hostName, statement, variables);
+    variables: QueryVariables = new QueryVariables(),
+  ): GQLResponse<T> {
+    const r = graphql.execute<T>(hostName, statement, variables);
+    return <GQLResponse<T>>{
+      errors: r.errors,
+      data: r.data,
+    };
   }
 }
+
+/**
+ * @deprecated Import `graphql`, and use `graphql.Variables` instead.
+ */
+export class QueryVariables extends graphql.Variables {}
+
+/**
+ * @deprecated Import `graphql`, and use `graphql.Response` instead.
+ */
+@json
+export class GQLResponse<T> extends graphql.Response<T> {}

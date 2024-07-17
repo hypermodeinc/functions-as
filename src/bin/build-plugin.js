@@ -14,8 +14,8 @@ if (!npmPath) {
   process.exit(1);
 }
 
-if (!pkg || !ver) {
-  console.error("A package name and version must be defined in package.json.");
+if (!pkg) {
+  console.error("A package name must be defined in package.json.");
   process.exit(1);
 }
 

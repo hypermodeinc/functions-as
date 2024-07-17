@@ -21,7 +21,7 @@ export default class HypermodeTransform extends Transform {
           return 0;
         }
       });
-
+    mpgen.sources = sources;
     for (const source of sources) {
       mpgen.visitSource(source);
     }

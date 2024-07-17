@@ -1,5 +1,24 @@
 # Change Log
 
+## 2024-07-16 - Version 0.10.3
+
+- Actual fix of compatibility with older QueryVariables API [#140](https://github.com/hypermodeAI/functions-as/pull/140)
+
+## 2024-07-15 - Version 0.10.2
+
+- No changes (re-publish of 0.10.1 to fix npm packaging issue)
+
+## 2024-07-15 - Version 0.10.1
+
+- Attempted fix compatibility with older QueryVariables API [#137](https://github.com/hypermodeAI/functions-as/pull/137)
+
+## 2024-07-15 - Version 0.10.0
+
+- Add functions and example for accessing PostgreSQL [#119](https://github.com/hypermodeAI/functions-as/pull/119)
+- Make plugin version optional [#133](https://github.com/hypermodeAI/functions-as/pull/133)
+- Fix transform display of optional string literal [#134](https://github.com/hypermodeAI/functions-as/pull/134)
+- Fix exporting imported functions or exporting as an alias does not work [#135](https://github.com/hypermodeAI/functions-as/pull/135)
+
 ## 2024-07-10 - Version 0.9.4
 
 - Fix transform error when reexporting function from another file [#129](https://github.com/hypermodeAI/functions-as/pull/129)
