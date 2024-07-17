@@ -70,12 +70,12 @@ export class CollectionSearchResult extends CollectionResult {
 export class CollectionSearchResultObject {
   key: string;
   text: string;
-  score: f64;
+  distance: f64;
 
-  constructor(key: string, text: string, score: f64) {
+  constructor(key: string, text: string, distance: f64) {
     this.key = key;
     this.text = text;
-    this.score = score;
+    this.distance = distance;
   }
 }
 
@@ -112,8 +112,8 @@ declare function hostRecomputeSearchMethod(
 ): SearchMethodMutationResult;
 
 // @ts-expect-error: decorator
-@external("hypermode", "computeSimilarity")
-declare function hostComputeSimilarity(
+@external("hypermode", "computeDistance")
+declare function hostComputeDistance(
   collection: string,
   searchMethod: string,
   key1: string,
@@ -333,7 +333,7 @@ export function recomputeSearchMethod(
   return result;
 }
 
-export function computeSimilarity(
+export function computeDistance(
   collection: string,
   searchMethod: string,
   key1: string,
@@ -355,7 +355,7 @@ export function computeSimilarity(
     console.error("Key2 is empty.");
     return new CollectionSearchResultObject("", "", 0.0);
   }
-  return hostComputeSimilarity(collection, searchMethod, key1, key2);
+  return hostComputeDistance(collection, searchMethod, key1, key2);
 }
 
 export function getText(collection: string, key: string): string {
