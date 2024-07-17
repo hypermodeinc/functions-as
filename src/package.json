@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "test": "ast run",
-    "pretest": "tsc -p ./tests && ast build",
+    "pretest": "ast build && tsc -p ./tests",
     "build:transform": "tsc -p ./transform",
     "prepare": "npm run build:transform",
     "pretty": "prettier --write .",
