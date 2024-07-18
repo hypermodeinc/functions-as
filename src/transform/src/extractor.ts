@@ -277,7 +277,7 @@ export function getLiteral(node: Expression | null): string {
           return (_node as FloatLiteralExpression).value.toString();
         }
         case LiteralKind.String: {
-          return (_node as StringLiteralExpression).value;
+          return '"' + (_node as StringLiteralExpression).value + '"';
         }
         case LiteralKind.Array: {
           let out = "[";
