@@ -1,4 +1,3 @@
-import { literalToString } from "./extractor.js";
 export class ProgramInfo {
   functions: FunctionSignature[];
   types: TypeDefinition[];
@@ -15,7 +14,7 @@ export class FunctionSignature {
     let params = "";
     for (let i = 0; i < this.parameters.length; i++) {
       const param = this.parameters[i]!;
-      const defaultValue = literalToString(param.defaultValue);
+      const defaultValue = param.defaultValue;
       params += `${param.name}: ${param.type.name}`;
       if (defaultValue) params += ` = ${defaultValue}`;
       params += ", ";
@@ -60,11 +59,10 @@ export interface TypeInfo {
   path: string;
 }
 
-export type literalType = string | literalType[];
 export interface Parameter {
   name: string;
   type: TypeInfo;
-  defaultValue: literalType;
+  defaultValue: string;
 }
 
 interface Field {

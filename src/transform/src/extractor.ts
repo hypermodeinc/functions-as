@@ -18,7 +18,6 @@ import {
 } from "assemblyscript/dist/assemblyscript.js";
 import {
   FunctionSignature,
-  literalType,
   Parameter,
   ProgramInfo,
   TypeDefinition,
@@ -256,7 +255,7 @@ export function getTypeInfo(t: Type): TypeInfo {
   return { name, path };
 }
 
-export function getLiteral(node: Expression | null): literalType {
+export function getLiteral(node: Expression | null): string | null {
   if (!node) return null;
   switch (node.kind) {
     case NodeKind.True: {
@@ -281,12 +280,14 @@ export function getLiteral(node: Expression | null): literalType {
           return (_node as StringLiteralExpression).value;
         }
         case LiteralKind.Array: {
-          const out: literalType[] = [];
+          let out = "[";
           const literals = (_node as ArrayLiteralExpression).elementExpressions;
-          for (let i = 0; i < literals.length; i++) {
+          for (let i = 0; i < literals.length - 1; i++) {
             const lit = getLiteral(literals[i]);
-            if (lit) out.push(lit);
+            if (lit) out += lit + ",";
           }
+          const lit = getLiteral(literals[literals.length - 1]);
+          if (lit) out += lit + "]";
           return out;
         }
       }
