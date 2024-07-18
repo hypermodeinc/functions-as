@@ -255,8 +255,8 @@ export function getTypeInfo(t: Type): TypeInfo {
   return { name, path };
 }
 
-export function getLiteral(node: Expression | null): string | null {
-  if (!node) return null;
+export function getLiteral(node: Expression | null): string {
+  if (!node) return "";
   switch (node.kind) {
     case NodeKind.True: {
       return "true";
@@ -293,7 +293,7 @@ export function getLiteral(node: Expression | null): string | null {
       }
     }
   }
-  return null;
+  return "";
 }
 
 export function literalToString(literal: literalType): string {
