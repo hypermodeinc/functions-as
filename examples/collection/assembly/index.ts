@@ -43,12 +43,12 @@ export function getProduct(key: string): string {
   return collections.getText(myProducts, key);
 }
 
-export function computeSimilarityBetweenProducts(
+export function computeDistanceBetweenProducts(
   key1: string,
   key2: string,
 ): f64 {
-  return collections.computeSimilarity(myProducts, "searchMethod1", key1, key2)
-    .score;
+  return collections.computeDistance(myProducts, "searchMethod1", key1, key2)
+    .distance;
 }
 
 export function searchProducts(

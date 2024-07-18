@@ -70,11 +70,13 @@ export class CollectionSearchResult extends CollectionResult {
 export class CollectionSearchResultObject {
   key: string;
   text: string;
+  distance: f64;
   score: f64;
 
-  constructor(key: string, text: string, score: f64) {
+  constructor(key: string, text: string, distance: f64, score: f64) {
     this.key = key;
     this.text = text;
+    this.distance = distance;
     this.score = score;
   }
 }
@@ -112,8 +114,8 @@ declare function hostRecomputeSearchMethod(
 ): SearchMethodMutationResult;
 
 // @ts-expect-error: decorator
-@external("hypermode", "computeSimilarity")
-declare function hostComputeSimilarity(
+@external("hypermode", "computeDistance")
+declare function hostComputeDistance(
   collection: string,
   searchMethod: string,
   key1: string,
@@ -333,7 +335,19 @@ export function recomputeSearchMethod(
   return result;
 }
 
+/**
+ * @deprecated Use `collections.computeDistance` instead.
+ */
 export function computeSimilarity(
+  collection: string,
+  searchMethod: string,
+  key1: string,
+  key2: string,
+): CollectionSearchResultObject {
+  return computeDistance(collection, searchMethod, key1, key2);
+}
+
+export function computeDistance(
   collection: string,
   searchMethod: string,
   key1: string,
@@ -341,21 +355,21 @@ export function computeSimilarity(
 ): CollectionSearchResultObject {
   if (collection.length == 0) {
     console.error("Collection is empty.");
-    return new CollectionSearchResultObject("", "", 0.0);
+    return new CollectionSearchResultObject("", "", 0.0, 0.0);
   }
   if (searchMethod.length == 0) {
     console.error("Search method is empty.");
-    return new CollectionSearchResultObject("", "", 0.0);
+    return new CollectionSearchResultObject("", "", 0.0, 0.0);
   }
   if (key1.length == 0) {
     console.error("Key1 is empty.");
-    return new CollectionSearchResultObject("", "", 0.0);
+    return new CollectionSearchResultObject("", "", 0.0, 0.0);
   }
   if (key2.length == 0) {
     console.error("Key2 is empty.");
-    return new CollectionSearchResultObject("", "", 0.0);
+    return new CollectionSearchResultObject("", "", 0.0, 0.0);
   }
-  return hostComputeSimilarity(collection, searchMethod, key1, key2);
+  return hostComputeDistance(collection, searchMethod, key1, key2);
 }
 
 export function getText(collection: string, key: string): string {
