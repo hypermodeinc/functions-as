@@ -295,17 +295,3 @@ export function getLiteral(node: Expression | null): string {
   }
   return "";
 }
-
-export function literalToString(literal: literalType): string {
-  if (literal instanceof Array) {
-    let out = "[";
-    for (let i = 0; i < literal.length - 1; i++) {
-      const lit = literalToString(literal[i]);
-      if (lit) out += lit + ",";
-    }
-    const lit = literalToString(literal[literal.length - 1]);
-    if (lit) out += lit;
-    return out + "]";
-  }
-  return literal as string;
-}
