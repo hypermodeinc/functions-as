@@ -335,6 +335,18 @@ export function recomputeSearchMethod(
   return result;
 }
 
+/**
+ * @deprecated Use `collections.computeDistance` instead.
+ */
+export function computeSimilarity(
+  collection: string,
+  searchMethod: string,
+  key1: string,
+  key2: string,
+): CollectionSearchResultObject {
+  return computeDistance(collection, searchMethod, key1, key2);
+}
+
 export function computeDistance(
   collection: string,
   searchMethod: string,
