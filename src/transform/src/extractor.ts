@@ -1,15 +1,24 @@
 import binaryen from "assemblyscript/lib/binaryen.js";
 import {
+  ArrayLiteralExpression,
   Class,
   ElementKind,
+  Expression,
+  FloatLiteralExpression,
   Function as Func,
   FunctionDeclaration,
+  IntegerLiteralExpression,
+  LiteralExpression,
+  LiteralKind,
+  NodeKind,
   Program,
   Property,
+  StringLiteralExpression,
   Type,
 } from "assemblyscript/dist/assemblyscript.js";
 import {
   FunctionSignature,
+  literalType,
   Parameter,
   ProgramInfo,
   TypeDefinition,
@@ -17,7 +26,6 @@ import {
   typeMap,
 } from "./types.js";
 import HypermodeTransform from "./index.js";
-import { MultiParamGen } from "./multiparam.js";
 
 export class Extractor {
   binaryen: typeof binaryen;
@@ -187,18 +195,15 @@ export class Extractor {
     const d = f.declaration as FunctionDeclaration;
     const params: Parameter[] = [];
     for (let i = 0; i < f.signature.parameterTypes.length; i++) {
+      const param = d.signature.parameters[i];
       const _type = f.signature.parameterTypes[i];
-      const name = d.signature.parameters[i].name.text;
-      if (name == "__SUPPLIED_PARAMS") continue;
+      const name = param.name.text;
       const type = getTypeInfo(_type);
-      const optional =
-        MultiParamGen.SN.optional_fns
-          .get(e.name)
-          ?.find((e) => e.param.name == name)?.param.optional || false;
+      const defaultValue = getLiteral(param.initializer);
       params.push({
         name,
         type,
-        optional,
+        defaultValue,
       });
     }
     return new FunctionSignature(
@@ -249,4 +254,57 @@ export function getTypeInfo(t: Type): TypeInfo {
   }
 
   return { name, path };
+}
+
+export function getLiteral(node: Expression | null): literalType {
+  if (!node) return null;
+  switch (node.kind) {
+    case NodeKind.True: {
+      return "true";
+    }
+    case NodeKind.False: {
+      return "false";
+    }
+    case NodeKind.Null: {
+      return "null";
+    }
+    case NodeKind.Literal: {
+      const _node = node as LiteralExpression;
+      switch (_node.literalKind) {
+        case LiteralKind.Integer: {
+          return i64_to_string((_node as IntegerLiteralExpression).value);
+        }
+        case LiteralKind.Float: {
+          return (_node as FloatLiteralExpression).value.toString();
+        }
+        case LiteralKind.String: {
+          return (_node as StringLiteralExpression).value;
+        }
+        case LiteralKind.Array: {
+          const out: literalType[] = [];
+          const literals = (_node as ArrayLiteralExpression).elementExpressions;
+          for (let i = 0; i < literals.length; i++) {
+            const lit = getLiteral(literals[i]);
+            if (lit) out.push(lit);
+          }
+          return out;
+        }
+      }
+    }
+  }
+  return null;
+}
+
+export function literalToString(literal: literalType): string {
+  if (literal instanceof Array) {
+    let out = "[";
+    for (let i = 0; i < literal.length - 1; i++) {
+      const lit = literalToString(literal[i]);
+      if (lit) out += lit + ",";
+    }
+    const lit = literalToString(literal[literal.length - 1]);
+    if (lit) out += lit;
+    return out + "]";
+  }
+  return literal as string;
 }

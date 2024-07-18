@@ -1,5 +1,4 @@
-import { MultiParamGen } from "./multiparam.js";
-
+import { literalToString } from "./extractor.js";
 export class ProgramInfo {
   functions: FunctionSignature[];
   types: TypeDefinition[];
@@ -13,16 +12,12 @@ export class FunctionSignature {
   ) {}
 
   toString() {
-    const optionalParams = MultiParamGen.SN?.optional_fns.get(this.name);
     let params = "";
     for (let i = 0; i < this.parameters.length; i++) {
       const param = this.parameters[i]!;
-      const { defaultValue } = (optionalParams && optionalParams[i]) || {
-        defaultValue: null,
-      };
-      if (param.name.startsWith("_")) continue;
+      const defaultValue = literalToString(param.defaultValue);
       params += `${param.name}: ${param.type.name}`;
-      if (param.optional) params += ` = ${defaultValue}`;
+      if (defaultValue) params += ` = ${defaultValue}`;
       params += ", ";
     }
     return `${this.name}(${params.endsWith(", ") ? params.slice(0, params.length - 2) : params}): ${this.returnType.name}`;
@@ -65,10 +60,11 @@ export interface TypeInfo {
   path: string;
 }
 
+export type literalType = string | literalType[];
 export interface Parameter {
   name: string;
   type: TypeInfo;
-  optional: boolean;
+  defaultValue: literalType;
 }
 
 interface Field {
