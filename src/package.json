@@ -6,10 +6,10 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
+    "test": "ast run",
+    "pretest": "ast build && tsc -p ./tests",
     "build:transform": "tsc -p ./transform",
     "prepare": "npm run build:transform",
-    "pretest": "node ./bin/pretest.js",
-    "test": "asp --verbose",
     "pretty": "prettier --write .",
     "pretty:check": "prettier --check .",
     "lint": "eslint --ext .ts .",
@@ -18,13 +18,14 @@
   "dependencies": {
     "@assemblyscript/wasi-shim": "^0.1.0",
     "@hypermode/models-as": "^0.2.1",
-    "json-as": "^0.9.13",
+    "json-as": "^0.9.14",
     "xid-ts": "^1.1.0"
   },
   "devDependencies": {
     "@types/node": "^20.14.10",
     "@typescript-eslint/eslint-plugin": "^7.16.1",
     "@typescript-eslint/parser": "^7.16.1",
+    "as-test": "^0.3.1",
     "assemblyscript": "^0.27.29",
     "assemblyscript-prettier": "^3.0.1",
     "eslint": "^8.57.0",
