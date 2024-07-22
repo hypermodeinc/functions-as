@@ -202,7 +202,7 @@ export class Extractor {
       params.push({
         name,
         type,
-        defaultValue,
+        default: defaultValue,
       });
     }
     return new FunctionSignature(

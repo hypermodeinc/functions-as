@@ -14,7 +14,7 @@ export class FunctionSignature {
     let params = "";
     for (let i = 0; i < this.parameters.length; i++) {
       const param = this.parameters[i]!;
-      const defaultValue = param.defaultValue;
+      const defaultValue = param.default;
       params += `${param.name}: ${param.type.name}`;
       if (defaultValue) params += ` = ${defaultValue}`;
       params += ", ";
@@ -62,7 +62,7 @@ export interface TypeInfo {
 export interface Parameter {
   name: string;
   type: TypeInfo;
-  defaultValue: string;
+  default: string;
 }
 
 interface Field {
