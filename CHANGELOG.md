@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Result object scoring name changed to distance [#143](https://github.com/hypermodeAI/functions-as/pull/143)
+- Collect default values for optional parameters instead of rewriting with supplied_params [#144](https://github.com/hypermodeAI/functions-as/pull/144)
 
 ## 2024-07-16 - Version 0.10.3
 
