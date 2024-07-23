@@ -18,6 +18,7 @@ import {
 } from "assemblyscript/dist/assemblyscript.js";
 import {
   FunctionSignature,
+  JsonLiteral,
   Parameter,
   ProgramInfo,
   TypeDefinition,
@@ -255,39 +256,37 @@ export function getTypeInfo(t: Type): TypeInfo {
   return { name, path };
 }
 
-export function getLiteral(node: Expression | null): string {
-  if (!node) return "";
+export function getLiteral(node: Expression | null): JsonLiteral {
+  if (!node) return undefined;
   switch (node.kind) {
     case NodeKind.True: {
-      return "true";
+      return true;
     }
     case NodeKind.False: {
-      return "false";
+      return false;
     }
     case NodeKind.Null: {
-      return "null";
+      return null;
     }
     case NodeKind.Literal: {
       const _node = node as LiteralExpression;
       switch (_node.literalKind) {
         case LiteralKind.Integer: {
-          return i64_to_string((_node as IntegerLiteralExpression).value);
+          return i64_to_f64((_node as IntegerLiteralExpression).value);
         }
         case LiteralKind.Float: {
-          return (_node as FloatLiteralExpression).value.toString();
+          return (_node as FloatLiteralExpression).value;
         }
         case LiteralKind.String: {
-          return '"' + (_node as StringLiteralExpression).value + '"';
+          return (_node as StringLiteralExpression).value;
         }
         case LiteralKind.Array: {
-          let out = "[";
+          const out = [];
           const literals = (_node as ArrayLiteralExpression).elementExpressions;
           for (let i = 0; i < literals.length; i++) {
-            if (i > 0) out += ",";
             const lit = getLiteral(literals[i]);
-            if (lit) out += lit;
+            out.push(lit);
           }
-          out += "]";
           return out;
         }
       }

@@ -59,10 +59,18 @@ export interface TypeInfo {
   path: string;
 }
 
+export type JsonLiteral =
+  | null
+  | boolean
+  | number
+  | string
+  | Array<JsonLiteral>
+  | { [key: string]: JsonLiteral };
+
 export interface Parameter {
   name: string;
   type: TypeInfo;
-  default: string;
+  default?: JsonLiteral;
 }
 
 interface Field {
