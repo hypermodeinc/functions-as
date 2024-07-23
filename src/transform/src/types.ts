@@ -16,7 +16,9 @@ export class FunctionSignature {
       const param = this.parameters[i]!;
       const defaultValue = param.default;
       params += `${param.name}: ${param.type.name}`;
-      if (defaultValue) params += ` = ${defaultValue}`;
+      if (defaultValue !== undefined) {
+        params += ` = ${JSON.stringify(defaultValue)}`;
+      }
       params += ", ";
     }
     return `${this.name}(${params.endsWith(", ") ? params.slice(0, params.length - 2) : params}): ${this.returnType.name}`;
