@@ -46,7 +46,7 @@ export class HypermodeMetadata {
 
   writeToModule(module: binaryen.Module) {
     const encoder = new TextEncoder();
-    const json = JSON.stringify(this, this.jsonReplacer);
+    const json = JSON.stringify(this);
     module.addCustomSection("hypermode_meta", encoder.encode(json));
   }
 
@@ -126,29 +126,9 @@ export class HypermodeMetadata {
 
     if (process.env.HYPERMODE_DEBUG) {
       writeHeader("Metadata JSON:");
-      stream.write(JSON.stringify(this, this.jsonReplacer, 2));
+      stream.write(JSON.stringify(this, undefined, 2));
       stream.write("\n\n");
     }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  jsonReplacer(key: string, value: any) {
-    // Omit nulls
-    if (value === null) {
-      return undefined;
-    }
-
-    // Omit empty arrays
-    if (Array.isArray(value) && value.length === 0) {
-      return undefined;
-    }
-
-    // Omit empty strings
-    if (typeof value === "string" && !value) {
-      return undefined;
-    }
-
-    return value;
   }
 }
 
