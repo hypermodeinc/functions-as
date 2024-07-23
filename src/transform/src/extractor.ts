@@ -282,12 +282,12 @@ export function getLiteral(node: Expression | null): string {
         case LiteralKind.Array: {
           let out = "[";
           const literals = (_node as ArrayLiteralExpression).elementExpressions;
-          for (let i = 0; i < literals.length - 1; i++) {
+          for (let i = 0; i < literals.length; i++) {
+            if (i > 0) out += ",";
             const lit = getLiteral(literals[i]);
-            if (lit) out += lit + ",";
+            if (lit) out += lit;
           }
-          const lit = getLiteral(literals[literals.length - 1]);
-          if (lit) out += lit + "]";
+          out += "]";
           return out;
         }
       }
