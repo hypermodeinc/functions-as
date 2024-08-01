@@ -10,6 +10,6 @@ export default tseslint.config(
   aseslint.config,
   {
     // generated
-    ignores: ["transform/lib/**"],
+    ignores: ["transform/lib/**", "build/**"],
   },
 );
