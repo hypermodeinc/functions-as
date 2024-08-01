@@ -1,5 +1,9 @@
 # Change Log
 
+## 2024-08-01 - Version 0.10.5
+
+- Upgrade linters and include config in npm package [#152](https://github.com/hypermodeAI/functions-as/pull/152)
+
 ## 2024-07-23 - Version 0.10.4
 
 - Result object scoring name changed to distance [#143](https://github.com/hypermodeAI/functions-as/pull/143)
