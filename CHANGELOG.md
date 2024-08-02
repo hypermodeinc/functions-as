@@ -1,5 +1,9 @@
 # Change Log
 
+## UNRELEASED
+
+- add zero shot classification support for collections [#156](https://github.com/hypermodeAI/functions-as/pull/156)
+
 ## 2024-08-01 - Version 0.10.5
 
 - Upgrade linters and include config in npm package [#152](https://github.com/hypermodeAI/functions-as/pull/152)
