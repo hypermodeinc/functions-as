@@ -81,12 +81,50 @@ export class CollectionSearchResultObject {
   }
 }
 
+export class CollectionClassificationResult extends CollectionResult {
+  searchMethod: string;
+  label: string;
+  labelsResult: string[];
+  cluster: CollectionClassificationResultObject[];
+
+  constructor(
+    collection: string,
+    status: CollectionStatus,
+    error: string,
+    searchMethod: string,
+    label: string,
+    labelsResult: string[],
+    cluster: CollectionClassificationResultObject[],
+  ) {
+    super(collection, status, error);
+    this.searchMethod = searchMethod;
+    this.label = label;
+    this.labelsResult = labelsResult;
+    this.cluster = cluster;
+  }
+}
+
+export class CollectionClassificationResultObject {
+  key: string;
+  label: string;
+  distance: f64;
+  score: f64;
+
+  constructor(key: string, label: string, distance: f64, score: f64) {
+    this.key = key;
+    this.label = label;
+    this.distance = distance;
+    this.score = score;
+  }
+}
+
 // @ts-expect-error: decorator
 @external("hypermode", "upsertToCollection")
 declare function hostUpsertToCollection(
   collection: string,
-  key: string[],
-  text: string[],
+  keys: string[],
+  texts: string[],
+  labels: string[],
 ): CollectionMutationResult;
 
 // @ts-expect-error: decorator
@@ -105,6 +143,14 @@ declare function hostSearchCollection(
   limit: i32,
   returnText: bool,
 ): CollectionSearchResult;
+
+// @ts-expect-error: decorator
+@external("hypermode", "zsClassifyCollection")
+declare function hostZSClassifyCollection(
+  collection: string,
+  searchMethod: string,
+  text: string,
+): CollectionClassificationResult;
 
 // @ts-expect-error: decorator
 @external("hypermode", "recomputeSearchMethod")
@@ -140,6 +186,7 @@ export function upsertBatch(
   collection: string,
   keys: string[] | null,
   texts: string[],
+  labels: string[] = [],
 ): CollectionMutationResult {
   if (collection.length == 0) {
     console.error("Collection is empty.");
@@ -163,7 +210,8 @@ export function upsertBatch(
   if (keys != null) {
     keysArr = keys;
   }
-  const result = hostUpsertToCollection(collection, keysArr, texts);
+
+  const result = hostUpsertToCollection(collection, keysArr, texts, labels);
   if (utils.resultIsInvalid(result)) {
     console.error("Error upserting to Text index.");
     return new CollectionMutationResult(
@@ -182,6 +230,7 @@ export function upsert(
   collection: string,
   key: string | null,
   text: string,
+  label: string = "",
 ): CollectionMutationResult {
   if (collection.length == 0) {
     console.error("Collection is empty.");
@@ -208,7 +257,12 @@ export function upsert(
 
   const texts: string[] = [text];
 
-  const result = hostUpsertToCollection(collection, keys, texts);
+  const labels: string[] = [];
+  if (label !== "") {
+    labels.push(label);
+  }
+
+  const result = hostUpsertToCollection(collection, keys, texts, labels);
   if (utils.resultIsInvalid(result)) {
     console.error("Error upserting to Text index.");
     return new CollectionMutationResult(
@@ -291,6 +345,41 @@ export function search(
       CollectionStatus.Error,
       "Error searching Text index.",
       searchMethod,
+      [],
+    );
+  }
+  return result;
+}
+
+// fetch embedders for collection & search method, run text through it and
+// classify Text index for similar Texts, return the result keys
+export function zsClassify(
+  collection: string,
+  searchMethod: string,
+  text: string,
+): CollectionClassificationResult {
+  if (text.length == 0) {
+    console.error("Text is empty.");
+    return new CollectionClassificationResult(
+      collection,
+      CollectionStatus.Error,
+      "Text is empty.",
+      searchMethod,
+      "",
+      [],
+      [],
+    );
+  }
+  const result = hostZSClassifyCollection(collection, searchMethod, text);
+  if (utils.resultIsInvalid(result)) {
+    console.error("Error classifying Text index.");
+    return new CollectionClassificationResult(
+      collection,
+      CollectionStatus.Error,
+      "Error classifying Text index.",
+      searchMethod,
+      "",
+      [],
       [],
     );
   }
