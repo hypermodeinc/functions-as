@@ -83,8 +83,7 @@ export class CollectionSearchResultObject {
 
 export class CollectionClassificationResult extends CollectionResult {
   searchMethod: string;
-  label: string;
-  labelsResult: string[];
+  labelsResult: CollectionClassificationLabelObject[];
   cluster: CollectionClassificationResultObject[];
 
   constructor(
@@ -92,39 +91,47 @@ export class CollectionClassificationResult extends CollectionResult {
     status: CollectionStatus,
     error: string,
     searchMethod: string,
-    label: string,
-    labelsResult: string[],
+    labelsResult: CollectionClassificationLabelObject[],
     cluster: CollectionClassificationResultObject[],
   ) {
     super(collection, status, error);
     this.searchMethod = searchMethod;
-    this.label = label;
     this.labelsResult = labelsResult;
     this.cluster = cluster;
   }
 }
 
+export class CollectionClassificationLabelObject {
+  label: string;
+  confidence: f64;
+
+  constructor(label: string, confidence: f64) {
+    this.label = label;
+    this.confidence = confidence;
+  }
+}
+
 export class CollectionClassificationResultObject {
   key: string;
-  label: string;
+  labels: string[];
   distance: f64;
   score: f64;
 
-  constructor(key: string, label: string, distance: f64, score: f64) {
+  constructor(key: string, labels: string[], distance: f64, score: f64) {
     this.key = key;
-    this.label = label;
+    this.labels = labels;
     this.distance = distance;
     this.score = score;
   }
 }
 
 // @ts-expect-error: decorator
-@external("hypermode", "upsertToCollection")
+@external("hypermode", "upsertToCollection_v2")
 declare function hostUpsertToCollection(
   collection: string,
   keys: string[],
   texts: string[],
-  labels: string[],
+  labels: string[][],
 ): CollectionMutationResult;
 
 // @ts-expect-error: decorator
@@ -145,8 +152,8 @@ declare function hostSearchCollection(
 ): CollectionSearchResult;
 
 // @ts-expect-error: decorator
-@external("hypermode", "zsClassifyCollection")
-declare function hostZSClassifyCollection(
+@external("hypermode", "nnClassifyCollection")
+declare function hostNnClassifyCollection(
   collection: string,
   searchMethod: string,
   text: string,
@@ -186,7 +193,7 @@ export function upsertBatch(
   collection: string,
   keys: string[] | null,
   texts: string[],
-  labels: string[] = [],
+  labelsArr: string[][] = [],
 ): CollectionMutationResult {
   if (collection.length == 0) {
     console.error("Collection is empty.");
@@ -211,7 +218,7 @@ export function upsertBatch(
     keysArr = keys;
   }
 
-  const result = hostUpsertToCollection(collection, keysArr, texts, labels);
+  const result = hostUpsertToCollection(collection, keysArr, texts, labelsArr);
   if (utils.resultIsInvalid(result)) {
     console.error("Error upserting to Text index.");
     return new CollectionMutationResult(
@@ -230,7 +237,7 @@ export function upsert(
   collection: string,
   key: string | null,
   text: string,
-  label: string = "",
+  labels: string[] = [],
 ): CollectionMutationResult {
   if (collection.length == 0) {
     console.error("Collection is empty.");
@@ -257,12 +264,12 @@ export function upsert(
 
   const texts: string[] = [text];
 
-  const labels: string[] = [];
-  if (label !== "") {
-    labels.push(label);
+  const labelsArr: string[][] = [];
+  if (labels != null) {
+    labelsArr.push(labels);
   }
 
-  const result = hostUpsertToCollection(collection, keys, texts, labels);
+  const result = hostUpsertToCollection(collection, keys, texts, labelsArr);
   if (utils.resultIsInvalid(result)) {
     console.error("Error upserting to Text index.");
     return new CollectionMutationResult(
@@ -353,7 +360,7 @@ export function search(
 
 // fetch embedders for collection & search method, run text through it and
 // classify Text index for similar Texts, return the result keys
-export function zsClassify(
+export function nnClassify(
   collection: string,
   searchMethod: string,
   text: string,
@@ -365,12 +372,11 @@ export function zsClassify(
       CollectionStatus.Error,
       "Text is empty.",
       searchMethod,
-      "",
       [],
       [],
     );
   }
-  const result = hostZSClassifyCollection(collection, searchMethod, text);
+  const result = hostNnClassifyCollection(collection, searchMethod, text);
   if (utils.resultIsInvalid(result)) {
     console.error("Error classifying Text index.");
     return new CollectionClassificationResult(
@@ -378,7 +384,6 @@ export function zsClassify(
       CollectionStatus.Error,
       "Error classifying Text index.",
       searchMethod,
-      "",
       [],
       [],
     );
