@@ -264,10 +264,7 @@ export function upsert(
 
   const texts: string[] = [text];
 
-  const labelsArr: string[][] = [];
-  if (labels != null) {
-    labelsArr.push(labels);
-  }
+  const labelsArr: string[][] = [labels];
 
   const result = hostUpsertToCollection(collection, keys, texts, labelsArr);
   if (utils.resultIsInvalid(result)) {
