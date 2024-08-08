@@ -30,7 +30,6 @@
     "eslint": "^9.8.0",
     "prettier": "^3.3.3",
     "semver": "^7.6.3",
-    "sync-fetch": "^0.5.2",
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.0.1",
     "visitor-as": "^0.11.4"

@@ -17,9 +17,13 @@ mockImport("hypermode.log", (level: string, message: string): void => {
 
 mockImport("hypermode.httpFetch", (req: Request): Response => {
   const res = instantiate<Response>();
-  const txt = "{\"x\":1,\"y\":2,\"z\":3}";
+  const txt = '{"x":1,"y":2,"z":3}';
   const len = String.UTF8.byteLength(txt);
-  store<ArrayBuffer>(changetype<usize>(res), new ArrayBuffer(len), offsetof<Response>("body"))
+  store<ArrayBuffer>(
+    changetype<usize>(res),
+    new ArrayBuffer(len),
+    offsetof<Response>("body"),
+  );
   String.UTF8.encodeUnsafe(
     changetype<usize>(txt),
     len,
@@ -38,7 +42,7 @@ it("can parse a json payload", () => {
   const res = http.fetch("");
   log(res.text());
   expect(JSON.stringify(res.json<Vec3>())).toBe(res.text());
-  expect(JSON.stringify(res.json<Vec3>())).toBe("{\"x\":1,\"y\":2,\"z\":3}");
+  expect(JSON.stringify(res.json<Vec3>())).toBe('{"x":1,"y":2,"z":3}');
 });
 
 it("can receive the status", () => {
@@ -47,6 +51,7 @@ it("can receive the status", () => {
 });
 
 run();
+
 
 @json
 class Vec3 {
