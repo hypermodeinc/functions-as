@@ -15,6 +15,7 @@ mockImport("hypermode.log", (level: string, message: string): void => {
   }
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 mockImport("hypermode.httpFetch", (req: Request): Response => {
   const res = instantiate<Response>();
   const txt = '{"x":1,"y":2,"z":3}';
