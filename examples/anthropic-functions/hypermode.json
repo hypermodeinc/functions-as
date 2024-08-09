@@ -18,7 +18,11 @@
       }
     },
     "stocks": {
-      "baseUrl": "https://www.alphavantage.co/"
+      "baseUrl": "https://www.alphavantage.co/",
+      "queryParameters": {
+        // Get a free API key from https://www.alphavantage.co/support/#api-key
+        "apikey": "{{API_KEY}}"
+      }
     }
   }
 }

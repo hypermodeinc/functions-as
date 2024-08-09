@@ -5,11 +5,9 @@ import {
   AnthropicMessagesModel,
   Message,
   UserMessage,
-  Metadata,
-  ToolChoiceAny,
-  ToolChoiceAuto,
   ToolChoiceTool,
 } from "@hypermode/models-as/models/anthropic/messages";
+
 
 @json
 class StockPriceInput {
@@ -21,22 +19,25 @@ const modelName: string = "text-generator";
 
 export function getStockPrice(company: string, useTools: bool): string {
   const model = models.getModel<AnthropicMessagesModel>(modelName);
-  const messages: Message[] = [new UserMessage(`what is the stock price of ${company}?`)]
+  const messages: Message[] = [
+    new UserMessage(`what is the stock price of ${company}?`),
+  ];
   const input = model.createInput(messages);
   // For Anthropic, system is passed as parameter to the invoke, not as a message
-  input.system = "If you don't know the answer, talk as if you are malfunctioning.";
+  input.system =
+    "You are a helpful assistant. Do not answer if you do not have up-to-date information.";
 
-  // optional parameters
-  input.temperature = 0.5;
-  input.maxTokens = 200;
-  
+  // Optional parameters
+  input.temperature = 1;
+  input.maxTokens = 100;
+
   if (useTools) {
     input.tools = [
       {
         name: "stock_price",
         inputSchema: `{"type":"object","properties":{"symbol":{"type":"string","description":"The stock symbol"}},"required":["symbol"]}`,
         description: "gets the stock price of a symbol",
-      }
+      },
     ];
     input.toolChoice = ToolChoiceTool("stock_price");
   }
@@ -47,45 +48,52 @@ export function getStockPrice(company: string, useTools: bool): string {
   if (output.content.length !== 1) {
     throw new Error("Unexpected output content length");
   }
-  // if tools are not used, the output will be a text block
+  // If tools are not used, the output will be a text block
   if (output.content[0].type === "text") {
     return output.content[0].text!.trim();
   }
   if (output.content[0].type !== "tool_use") {
-    throw new Error(`Unexpected content type: ${(output.content[0]).type}`);
+    throw new Error(`Unexpected content type: ${output.content[0].type}`);
   }
 
   const toolUse = output.content[0];
-  const toolName = toolUse.name!;
   const inputs = toolUse.input!;
 
-  // TODO: replace with parsedInput.symbol when json bug is fixed
-  const hack = inputs.slice(10, -1)
-  // const parsedInput = JSON.parse<StockPriceInput>(inputs);;
-  const stockPrice = callStockPriceApi(hack);
-
-  return `The stock price of ${hack} is $${stockPrice.GlobalQuote.price}`;
+  const parsedInput = JSON.parse<StockPriceInput>(inputs);
+  const symbol = parsedInput.symbol;
+  const stockPrice = callStockPriceApi(symbol);
+  return `The stock price of ${symbol} is $${stockPrice.GlobalQuote.price}`;
 }
+
 
 @json
 class StockPriceAPIResponse {
+
   @alias("Global Quote")
-  GlobalQuote!: GlobalQuote
+  GlobalQuote!: GlobalQuote;
 }
+
 
 @json
 class GlobalQuote {
+
   @alias("01. symbol")
   symbol!: string;
+
+
   @alias("05. price")
   price!: string;
 }
 
 function callStockPriceApi(symbol: string): StockPriceAPIResponse {
-  const req = new http.Request(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=TODO`);
-  const resp = http.fetch(req)
+  const req = new http.Request(
+    `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}`,
+  );
+  const resp = http.fetch(req);
   if (!resp.ok) {
-    throw new Error(`Failed to fetch stock price. Received: ${resp.status} ${resp.statusText}`);
+    throw new Error(
+      `Failed to fetch stock price. Received: ${resp.status} ${resp.statusText}`,
+    );
   }
 
   console.log(`response: ${resp.text()}`);
