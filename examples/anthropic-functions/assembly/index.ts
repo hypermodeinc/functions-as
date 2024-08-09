@@ -96,6 +96,5 @@ function callStockPriceApi(symbol: string): StockPriceAPIResponse {
     );
   }
 
-  console.log(`response: ${resp.text()}`);
   return resp.json<StockPriceAPIResponse>();
 }
