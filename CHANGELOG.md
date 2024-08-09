@@ -4,6 +4,7 @@
 
 - Add nearest neighbor classification support for collections [#156](https://github.com/hypermodeAI/functions-as/pull/156)
 - Add namespace support for collections [#158](https://github.com/hypermodeAI/functions-as/pull/158)
+- Add getNamespaces host function to collections [#160](https://github.com/hypermodeAI/functions-as/pull/160)
 
 ## 2024-08-01 - Version 0.10.5
 
