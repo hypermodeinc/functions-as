@@ -196,6 +196,10 @@ declare function hostGetTextsFromCollection(
   namespace: string,
 ): Map<string, string>;
 
+// @ts-expect-error: decorator
+@external("hypermode", "getNamespacesFromCollection")
+declare function hostGetNamespacesFromCollection(collection: string): string[];
+
 // add batch upsert
 export function upsertBatch(
   collection: string,
@@ -522,4 +526,12 @@ export function getTexts(
     return new Map<string, string>();
   }
   return hostGetTextsFromCollection(collection, namespace);
+}
+
+export function getNamespaces(collection: string): string[] {
+  if (collection.length == 0) {
+    console.error("Collection is empty.");
+    return [];
+  }
+  return hostGetNamespacesFromCollection(collection);
 }
