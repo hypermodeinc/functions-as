@@ -1,8 +1,19 @@
 # Change Log
 
-## Unreleased
+## UNRELEASED
+
+- Add nearest neighbor classification support for collections [#156](https://github.com/hypermodeAI/functions-as/pull/156)
+- Add namespace support for collections [#158](https://github.com/hypermodeAI/functions-as/pull/158)
+- Add getNamespaces host function to collections [#160](https://github.com/hypermodeAI/functions-as/pull/160)
+
+## 2024-08-01 - Version 0.10.5
+
+- Upgrade linters and include config in npm package [#152](https://github.com/hypermodeAI/functions-as/pull/152)
+
+## 2024-07-23 - Version 0.10.4
 
 - Result object scoring name changed to distance [#143](https://github.com/hypermodeAI/functions-as/pull/143)
+- Collect default values for optional parameters instead of rewriting with supplied_params [#144](https://github.com/hypermodeAI/functions-as/pull/144) [#146](https://github.com/hypermodeAI/functions-as/pull/146)
 
 ## 2024-07-16 - Version 0.10.3
 

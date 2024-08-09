@@ -165,7 +165,7 @@ function isGitRepo(): boolean {
     // This will throw if not in a git repo, or if git is not installed.
     execSync("git rev-parse --is-inside-work-tree", { stdio: "ignore" });
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 }
