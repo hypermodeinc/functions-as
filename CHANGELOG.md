@@ -6,6 +6,7 @@
 - Add namespace support for collections [#158](https://github.com/hypermodeAI/functions-as/pull/158)
 - Add getNamespaces host function to collections [#160](https://github.com/hypermodeAI/functions-as/pull/160)
 - Add cross namespace search support to collections [#161](https://github.com/hypermodeAI/functions-as/pull/161)
+- Update collections example [#162](https://github.com/hypermodeAI/functions-as/pull/162)
 
 ## 2024-08-01 - Version 0.10.5
 
