@@ -1,6 +1,6 @@
 # Change Log
 
-## UNRELEASED
+## 2024-08-12 - Version 0.11.0
 
 - Add nearest neighbor classification support for collections [#156](https://github.com/hypermodeAI/functions-as/pull/156)
 - Add namespace support for collections [#158](https://github.com/hypermodeAI/functions-as/pull/158)
