@@ -3,12 +3,16 @@ import { graphql } from "..";
 import { JSON } from "json-as";
 
 let returnData: string = "";
-mockImport("hypermode.executeGQL", (hostName: string, statement: string, variables: string): string => {
+mockImport(
+  "hypermode.executeGQL",
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  (hostName: string, statement: string, variables: string): string => {
     return returnData;
-});
+  },
+);
 
 it("should execute graphql query", () => {
-    const statement = `
+  const statement = `
     query {
       people: queryPerson {
         id
@@ -18,7 +22,7 @@ it("should execute graphql query", () => {
     }
   `;
 
-  returnData = "{\"data\":{\"people\":[]}}";
+  returnData = '{"data":{"people":[]}}';
 
   const response = graphql.execute<PeopleData>("dgraph", statement);
   expect(!response.data).toBe(false);
@@ -26,7 +30,7 @@ it("should execute graphql query", () => {
 });
 
 it("should query people", () => {
-    const query = `
+  const query = `
     query {
       people: queryPerson {
         id
@@ -39,10 +43,10 @@ it("should query people", () => {
   const _person: Person = {
     id: "0xb8",
     firstName: "Jairus",
-    lastName: "Tanaka"
-  }
+    lastName: "Tanaka",
+  };
 
-  returnData = "{\"data\":{\"people\":[" + JSON.stringify(_person) + "]}}";
+  returnData = '{"data":{"people":[' + JSON.stringify(_person) + "]}}";
 
   const response = graphql.execute<PeopleData>("dgraph", query);
   expect(!response.data).toBe(false);
@@ -82,6 +86,7 @@ it("should query people w/ variables", () => {
 
 run();
 
+
 @json
 class Person {
   id: string | null = null;
@@ -93,9 +98,4 @@ class Person {
 @json
 class PeopleData {
   people!: Person[];
-}
-
-@json
-class GQLAggregateValues {
-  count: u32 = 0;
 }
