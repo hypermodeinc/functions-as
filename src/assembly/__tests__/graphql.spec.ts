@@ -26,7 +26,7 @@ it("should execute graphql query", () => {
 });
 
 it("should query people", () => {
-    const statement = `
+    const query = `
     query {
       people: queryPerson {
         id
@@ -44,7 +44,7 @@ it("should query people", () => {
 
   returnData = "{\"data\":{\"people\":[" + JSON.stringify(_person) + "]}}";
 
-  const response = graphql.execute<PeopleData>("dgraph", statement);
+  const response = graphql.execute<PeopleData>("dgraph", query);
   expect(!response.data).toBe(false);
   expect(!response.data!.people).toBe(false);
 
@@ -52,6 +52,32 @@ it("should query people", () => {
   expect(person.id).toBe("0xb8");
   expect(person.firstName).toBe("Jairus");
   expect(person.lastName).toBe("Tanaka");
+});
+
+it("should query people w/ variables", () => {
+  const query = `
+    query queryPeople($firstName: String!, $lastName: String!) {
+      people: queryPerson(
+          first: 1,
+          filter: { firstName: { eq: $firstName }, lastName: { eq: $lastName } }
+      ) {
+          id
+          firstName
+          lastName
+      }
+    }
+  `;
+
+  const vars = new graphql.Variables();
+  vars.set("firstName", "Jairus");
+  vars.set("lastName", "Tanaka");
+
+  const response = graphql.execute<PeopleData>("dgraph", query, vars);
+  expect(!response.data).toBe(false);
+  expect(!response.data!.people).toBe(false);
+
+  const people = response.data!.people;
+  expect(people.length).toBeGreaterThan(0);
 });
 
 run();
@@ -68,19 +94,6 @@ class Person {
 class PeopleData {
   people!: Person[];
 }
-
-
-@json
-class AddPersonPayload {
-  addPerson!: PeopleData;
-}
-
-
-@json
-class AggregatePersonResult {
-  aggregatePerson!: GQLAggregateValues;
-}
-
 
 @json
 class GQLAggregateValues {
