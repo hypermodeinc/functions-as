@@ -17,25 +17,16 @@ export function embed(text: string[]): f32[][] {
 
 export function addProduct(description: string): string[] {
   const response = collections.upsert(myProducts, null, description);
-  if (!response.isSuccessful) {
-    throw new Error(response.error);
-  }
   return response.keys;
 }
 
 export function addProducts(descriptions: string[]): string[] {
   const response = collections.upsertBatch(myProducts, [], descriptions);
-  if (!response.isSuccessful) {
-    throw new Error(response.error);
-  }
   return response.keys;
 }
 
 export function deleteProduct(key: string): string {
   const response = collections.remove(myProducts, key);
-  if (!response.isSuccessful) {
-    throw new Error(response.error);
-  }
   return response.status;
 }
 

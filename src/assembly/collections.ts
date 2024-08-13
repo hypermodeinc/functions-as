@@ -68,12 +68,20 @@ export class CollectionSearchResult extends CollectionResult {
 }
 
 export class CollectionSearchResultObject {
+  namespace: string;
   key: string;
   text: string;
   distance: f64;
   score: f64;
 
-  constructor(key: string, text: string, distance: f64, score: f64) {
+  constructor(
+    namespace: string,
+    key: string,
+    text: string,
+    distance: f64,
+    score: f64,
+  ) {
+    this.namespace = namespace;
     this.key = key;
     this.text = text;
     this.distance = distance;
@@ -129,22 +137,25 @@ export class CollectionClassificationResultObject {
 @external("hypermode", "upsertToCollection_v2")
 declare function hostUpsertToCollection(
   collection: string,
+  namespace: string,
   keys: string[],
   texts: string[],
   labels: string[][],
 ): CollectionMutationResult;
 
 // @ts-expect-error: decorator
-@external("hypermode", "deleteFromCollection")
+@external("hypermode", "deleteFromCollection_v2")
 declare function hostDeleteFromCollection(
   collection: string,
+  namespace: string,
   key: string,
 ): CollectionMutationResult;
 
 // @ts-expect-error: decorator
-@external("hypermode", "searchCollection")
+@external("hypermode", "searchCollection_v2")
 declare function hostSearchCollection(
   collection: string,
+  namespaces: string[],
   searchMethod: string,
   text: string,
   limit: i32,
@@ -152,41 +163,50 @@ declare function hostSearchCollection(
 ): CollectionSearchResult;
 
 // @ts-expect-error: decorator
-@external("hypermode", "nnClassifyCollection")
+@external("hypermode", "nnClassifyCollection_v2")
 declare function hostNnClassifyCollection(
   collection: string,
+  namespace: string,
   searchMethod: string,
   text: string,
 ): CollectionClassificationResult;
 
 // @ts-expect-error: decorator
-@external("hypermode", "recomputeSearchMethod")
+@external("hypermode", "recomputeSearchMethod_v2")
 declare function hostRecomputeSearchMethod(
   collection: string,
+  namespace: string,
   searchMethod: string,
 ): SearchMethodMutationResult;
 
 // @ts-expect-error: decorator
-@external("hypermode", "computeDistance")
+@external("hypermode", "computeDistance_v2")
 declare function hostComputeDistance(
   collection: string,
+  namespace: string,
   searchMethod: string,
   key1: string,
   key2: string,
 ): CollectionSearchResultObject;
 
 // @ts-expect-error: decorator
-@external("hypermode", "getTextFromCollection")
+@external("hypermode", "getTextFromCollection_v2")
 declare function hostGetTextFromCollection(
   collection: string,
+  namespace: string,
   key: string,
 ): string;
 
 // @ts-expect-error: decorator
-@external("hypermode", "getTextsFromCollection")
+@external("hypermode", "getTextsFromCollection_v2")
 declare function hostGetTextsFromCollection(
   collection: string,
+  namespace: string,
 ): Map<string, string>;
+
+// @ts-expect-error: decorator
+@external("hypermode", "getNamespacesFromCollection")
+declare function hostGetNamespacesFromCollection(collection: string): string[];
 
 // add batch upsert
 export function upsertBatch(
@@ -194,6 +214,7 @@ export function upsertBatch(
   keys: string[] | null,
   texts: string[],
   labelsArr: string[][] = [],
+  namespace: string = "",
 ): CollectionMutationResult {
   if (collection.length == 0) {
     console.error("Collection is empty.");
@@ -218,7 +239,13 @@ export function upsertBatch(
     keysArr = keys;
   }
 
-  const result = hostUpsertToCollection(collection, keysArr, texts, labelsArr);
+  const result = hostUpsertToCollection(
+    collection,
+    namespace,
+    keysArr,
+    texts,
+    labelsArr,
+  );
   if (utils.resultIsInvalid(result)) {
     console.error("Error upserting to Text index.");
     return new CollectionMutationResult(
@@ -238,6 +265,7 @@ export function upsert(
   key: string | null,
   text: string,
   labels: string[] = [],
+  namespace: string = "",
 ): CollectionMutationResult {
   if (collection.length == 0) {
     console.error("Collection is empty.");
@@ -266,7 +294,13 @@ export function upsert(
 
   const labelsArr: string[][] = [labels];
 
-  const result = hostUpsertToCollection(collection, keys, texts, labelsArr);
+  const result = hostUpsertToCollection(
+    collection,
+    namespace,
+    keys,
+    texts,
+    labelsArr,
+  );
   if (utils.resultIsInvalid(result)) {
     console.error("Error upserting to Text index.");
     return new CollectionMutationResult(
@@ -283,6 +317,7 @@ export function upsert(
 export function remove(
   collection: string,
   key: string,
+  namespace: string = "",
 ): CollectionMutationResult {
   if (collection.length == 0) {
     console.error("Collection is empty.");
@@ -302,7 +337,7 @@ export function remove(
       "delete",
     );
   }
-  const result = hostDeleteFromCollection(collection, key);
+  const result = hostDeleteFromCollection(collection, namespace, key);
   if (utils.resultIsInvalid(result)) {
     console.error("Error deleting from Text index.");
     return new CollectionMutationResult(
@@ -324,6 +359,7 @@ export function search(
   text: string,
   limit: i32,
   returnText: bool = false,
+  namespaces: string[] = [],
 ): CollectionSearchResult {
   if (text.length == 0) {
     console.error("Text is empty.");
@@ -337,6 +373,7 @@ export function search(
   }
   const result = hostSearchCollection(
     collection,
+    namespaces,
     searchMethod,
     text,
     limit,
@@ -361,6 +398,7 @@ export function nnClassify(
   collection: string,
   searchMethod: string,
   text: string,
+  namespace: string = "",
 ): CollectionClassificationResult {
   if (text.length == 0) {
     console.error("Text is empty.");
@@ -373,7 +411,12 @@ export function nnClassify(
       [],
     );
   }
-  const result = hostNnClassifyCollection(collection, searchMethod, text);
+  const result = hostNnClassifyCollection(
+    collection,
+    namespace,
+    searchMethod,
+    text,
+  );
   if (utils.resultIsInvalid(result)) {
     console.error("Error classifying Text index.");
     return new CollectionClassificationResult(
@@ -391,6 +434,7 @@ export function nnClassify(
 export function recomputeSearchMethod(
   collection: string,
   searchMethod: string,
+  namespace: string = "",
 ): SearchMethodMutationResult {
   if (collection.length == 0) {
     console.error("Collection is empty.");
@@ -412,7 +456,7 @@ export function recomputeSearchMethod(
       searchMethod,
     );
   }
-  const result = hostRecomputeSearchMethod(collection, searchMethod);
+  const result = hostRecomputeSearchMethod(collection, namespace, searchMethod);
   if (utils.resultIsInvalid(result)) {
     console.error("Error recomputing Text index.");
     return new SearchMethodMutationResult(
@@ -434,8 +478,9 @@ export function computeSimilarity(
   searchMethod: string,
   key1: string,
   key2: string,
+  namespace: string = "",
 ): CollectionSearchResultObject {
-  return computeDistance(collection, searchMethod, key1, key2);
+  return computeDistance(collection, searchMethod, key1, key2, namespace);
 }
 
 export function computeDistance(
@@ -443,27 +488,32 @@ export function computeDistance(
   searchMethod: string,
   key1: string,
   key2: string,
+  namespace: string = "",
 ): CollectionSearchResultObject {
   if (collection.length == 0) {
     console.error("Collection is empty.");
-    return new CollectionSearchResultObject("", "", 0.0, 0.0);
+    return new CollectionSearchResultObject("", "", "", 0.0, 0.0);
   }
   if (searchMethod.length == 0) {
     console.error("Search method is empty.");
-    return new CollectionSearchResultObject("", "", 0.0, 0.0);
+    return new CollectionSearchResultObject("", "", "", 0.0, 0.0);
   }
   if (key1.length == 0) {
     console.error("Key1 is empty.");
-    return new CollectionSearchResultObject("", "", 0.0, 0.0);
+    return new CollectionSearchResultObject("", "", "", 0.0, 0.0);
   }
   if (key2.length == 0) {
     console.error("Key2 is empty.");
-    return new CollectionSearchResultObject("", "", 0.0, 0.0);
+    return new CollectionSearchResultObject("", "", "", 0.0, 0.0);
   }
-  return hostComputeDistance(collection, searchMethod, key1, key2);
+  return hostComputeDistance(collection, namespace, searchMethod, key1, key2);
 }
 
-export function getText(collection: string, key: string): string {
+export function getText(
+  collection: string,
+  key: string,
+  namespace: string = "",
+): string {
   if (collection.length == 0) {
     console.error("Collection is empty.");
     return "";
@@ -472,13 +522,24 @@ export function getText(collection: string, key: string): string {
     console.error("Key is empty.");
     return "";
   }
-  return hostGetTextFromCollection(collection, key);
+  return hostGetTextFromCollection(collection, namespace, key);
 }
 
-export function getTexts(collection: string): Map<string, string> {
+export function getTexts(
+  collection: string,
+  namespace: string = "",
+): Map<string, string> {
   if (collection.length == 0) {
     console.error("Collection is empty.");
     return new Map<string, string>();
   }
-  return hostGetTextsFromCollection(collection);
+  return hostGetTextsFromCollection(collection, namespace);
+}
+
+export function getNamespaces(collection: string): string[] {
+  if (collection.length == 0) {
+    console.error("Collection is empty.");
+    return [];
+  }
+  return hostGetNamespacesFromCollection(collection);
 }
