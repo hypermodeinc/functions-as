@@ -15,7 +15,8 @@ declare function hostExecuteDQLQuery(
 @external("hypermode", "executeDQLMutations")
 declare function hostExecuteDQLMutations(
   hostName: string,
-  mutations: string[],
+  setMutations: string[],
+  delMutations: string[],
 ): Map<string, string>;
 
 // @ts-expect-error: decorator
@@ -46,9 +47,10 @@ export function query<TData>(
 
 export function mutate(
   hostName: string,
-  mutations: string[],
+  setMutations: string[] = [],
+  delMutations: string[] = [],
 ): Map<string, string> {
-  return hostExecuteDQLMutations(hostName, mutations);
+  return hostExecuteDQLMutations(hostName, setMutations, delMutations);
 }
 
 export function alterSchema(hostName: string, schema: string): string {

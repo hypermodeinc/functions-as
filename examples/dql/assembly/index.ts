@@ -82,6 +82,14 @@ export function addPerson(
   return dql.mutate(hostName, mutations);
 }
 
+export function deletePerson(uid: string): Map<string, string> {
+  const mutation = `<${uid}> * * .`;
+
+  const mutations: string[] = [mutation];
+
+  return dql.mutate(hostName, [], mutations);
+}
+
 // This function demonstrates what happens when a bad query is executed.
 export function testBadQuery(): Person[] {
   const query = "this is a bad query";
