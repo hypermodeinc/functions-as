@@ -33,7 +33,6 @@ declare function hostDropAll(hostName: string): string;
 export function query<TData>(
   hostName: string,
   query: string = "",
-  mutations: string[] = [],
   variables: Variables = new Variables(),
 ): DQLResponse<TData> {
   const varsJson = variables.toJSON();
