@@ -49,16 +49,16 @@ export function querySpecificPerson(
   const statement = `
   query queryPerson($firstName: string, $lastName: string) {
     people(func: eq(firstName, $firstName)) @filter(eq(lastName, $lastName)) {
-      uid
-      firstName
-      lastName
+        uid
+        firstName
+        lastName
     }
-  }
+}
   `;
 
   const vars = new dql.Variables();
-  vars.set("firstName", firstName);
-  vars.set("lastName", lastName);
+  vars.set("$firstName", firstName);
+  vars.set("$lastName", lastName);
 
   const people = dql.query<PeopleData>(hostName, statement, vars).people;
 
