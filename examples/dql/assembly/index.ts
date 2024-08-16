@@ -38,9 +38,7 @@ export function queryPeople(): Person[] | null {
   }
   `;
 
-  const response = dql.query<PeopleData>(hostName, query);
-  if (!response.data) return [];
-  return response.data!.people;
+  return dql.query<PeopleData>(hostName, query).people;
 }
 
 // This function returns the results of querying for a specific person in the database.
@@ -62,10 +60,8 @@ export function querySpecificPerson(
   vars.set("firstName", firstName);
   vars.set("lastName", lastName);
 
-  const response = dql.query<PeopleData>(hostName, statement, vars);
+  const people = dql.query<PeopleData>(hostName, statement, vars).people;
 
-  if (!response.data) return null;
-  const people = response.data!.people;
   if (people.length === 0) return null;
   return people[0];
 }
@@ -89,7 +85,5 @@ export function addPerson(
 // This function demonstrates what happens when a bad query is executed.
 export function testBadQuery(): Person[] {
   const query = "this is a bad query";
-  const results = dql.query<PeopleData>(hostName, query);
-  if (!results.data) return [];
-  return results.data!.people;
+  return dql.query<PeopleData>(hostName, query).people;
 }

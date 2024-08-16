@@ -34,18 +34,14 @@ export function query<TData>(
   hostName: string,
   query: string = "",
   variables: Variables = new Variables(),
-): DQLResponse<TData> {
+): TData {
   const varsJson = variables.toJSON();
   const response = hostExecuteDQLQuery(hostName, query, varsJson);
   if (utils.resultIsInvalid(response)) {
     throw new Error("Error running DQL query.");
   }
 
-  const results = JSON.parse<DQLResponse<TData>>(response);
-  if (results.errors) {
-    console.error("DQL Errors:" + JSON.stringify(results.errors));
-  }
-  return results;
+  return JSON.parse<TData>(response);
 }
 
 export function mutate(
@@ -80,27 +76,4 @@ export function dropAll(hostName: string): string {
   }
 
   return response;
-}
-
-
-@json
-export class DQLResponse<T> {
-  errors: DQLErrorResult[] | null = null;
-  data: T | null = null;
-  // extensions: Map<string, ???> | null = null;
-}
-
-
-@json
-class DQLErrorResult {
-  message!: string;
-  extensions: Extension | null = null;
-  path: string[] | null = null;
-  // extensions: Map<string, ???> | null = null;
-}
-
-
-@json
-class Extension {
-  code!: string;
 }
