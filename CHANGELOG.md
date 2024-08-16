@@ -1,6 +1,6 @@
 # Change Log
 
-## UNRELEASED
+## 2024-08-13 - Version 0.11.1
 
 - Add dgraph support with host functions [#165](https://github.com/hypermodeAI/functions-as/pull/165)
 
