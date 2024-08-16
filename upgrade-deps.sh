@@ -7,14 +7,14 @@ trap "cd \"${PWD}\"" EXIT
 cd "$(dirname "$0")"
 
 cd src
-# ncu -u -t minor
+ncu -u -t minor
 npm install
 
 cd ../examples
 for example in *; do
   if [ -d "${example}" ]; then
     cd "${example}"
-    # ncu -u -t minor
+    ncu -u -t minor
     npm install
     cd ..
   fi
