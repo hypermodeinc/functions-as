@@ -5,10 +5,10 @@
   },
   "hosts": {
     // This defines the dgraph host that is used by the example functions.
-    // The {{AUTH_TOKEN}} will be replaced by the secret provided in the Hypermode Console.
+    // The {{API_KEY}} will be replaced by the secret provided in the Hypermode Console.
     "dgraph": {
-      "type": "dgraph-cloud",
-      "endpoint": "https://blue-surf-1310250.us-east-1.aws.cloud.dgraph.io/graphql",
+      "type": "dgraph",
+      "grpcTarget": "frozen-mango.grpc.eu-central-1.aws.cloud.dgraph.io:443",
       "key": "{{API_KEY}}"
     }
   }
