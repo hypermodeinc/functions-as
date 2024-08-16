@@ -1,5 +1,9 @@
 # Change Log
 
+## UNRELEASED
+
+- Add dgraph support with host functions [#165](https://github.com/hypermodeAI/functions-as/pull/165)
+
 ## 2024-08-12 - Version 0.11.0
 
 - Add nearest neighbor classification support for collections [#156](https://github.com/hypermodeAI/functions-as/pull/156)

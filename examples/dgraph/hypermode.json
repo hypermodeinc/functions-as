@@ -1,0 +1,15 @@
+{
+  "$schema": "https://manifest.hypermode.com/hypermode.json",
+  "models": {
+    // No models are used by this example, but if you add any, they would go here.
+  },
+  "hosts": {
+    // This defines the dgraph host that is used by the example functions.
+    // The {{AUTH_TOKEN}} will be replaced by the secret provided in the Hypermode Console.
+    "dgraph": {
+      "type": "dgraph-cloud",
+      "endpoint": "https://blue-surf-1310250.us-east-1.aws.cloud.dgraph.io/graphql",
+      "key": "{{API_KEY}}"
+    }
+  }
+}

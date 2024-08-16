@@ -4,6 +4,9 @@ export * from "./inference";
 import * as postgresql from "./postgresql";
 export { postgresql };
 
+import * as dgraph from "./dgraph";
+export { dgraph };
+
 import * as graphql from "./graphql";
 export { graphql };
 
