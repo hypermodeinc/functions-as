@@ -62,7 +62,7 @@ export function querySpecificPerson(
   vars.set("firstName", firstName);
   vars.set("lastName", lastName);
 
-  const response = dql.query<PeopleData>(hostName, statement, [], vars);
+  const response = dql.query<PeopleData>(hostName, statement, vars);
 
   if (!response.data) return null;
   const people = response.data!.people;
