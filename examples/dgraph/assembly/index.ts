@@ -1,15 +1,15 @@
-import { dql } from "@hypermode/functions-as";
+import { dgraph } from "@hypermode/functions-as";
 import { PeopleData, Person } from "./classes";
 
 // This host name should match one defined in the hypermode.json manifest file.
 const hostName: string = "dgraph";
 
 export function dropAll(): string {
-  return dql.dropAll(hostName);
+  return dgraph.dropAll(hostName);
 }
 
 export function dropAttr(attr: string): string {
-  return dql.dropAttr(hostName, attr);
+  return dgraph.dropAttr(hostName, attr);
 }
 
 export function alterSchema(): string {
@@ -23,7 +23,7 @@ export function alterSchema(): string {
       lastName
   }
   `;
-  return dql.alterSchema(hostName, schema);
+  return dgraph.alterSchema(hostName, schema);
 }
 
 // This function returns the results of querying for all people in the database.
@@ -38,7 +38,7 @@ export function queryPeople(): Person[] | null {
   }
   `;
 
-  return dql.query<PeopleData>(hostName, query).people;
+  return dgraph.query<PeopleData>(hostName, query).people;
 }
 
 // This function returns the results of querying for a specific person in the database.
@@ -56,11 +56,11 @@ export function querySpecificPerson(
 }
   `;
 
-  const vars = new dql.Variables();
+  const vars = new dgraph.Variables();
   vars.set("$firstName", firstName);
   vars.set("$lastName", lastName);
 
-  const people = dql.query<PeopleData>(hostName, statement, vars).people;
+  const people = dgraph.query<PeopleData>(hostName, statement, vars).people;
 
   if (people.length === 0) return null;
   return people[0];
@@ -79,7 +79,7 @@ export function addPerson(
 
   const mutations: string[] = [mutation];
 
-  return dql.mutate(hostName, mutations);
+  return dgraph.mutate(hostName, mutations);
 }
 
 export function deletePerson(uid: string): Map<string, string> {
@@ -87,11 +87,11 @@ export function deletePerson(uid: string): Map<string, string> {
 
   const mutations: string[] = [mutation];
 
-  return dql.mutate(hostName, [], mutations);
+  return dgraph.mutate(hostName, [], mutations);
 }
 
 // This function demonstrates what happens when a bad query is executed.
 export function testBadQuery(): Person[] {
   const query = "this is a bad query";
-  return dql.query<PeopleData>(hostName, query).people;
+  return dgraph.query<PeopleData>(hostName, query).people;
 }

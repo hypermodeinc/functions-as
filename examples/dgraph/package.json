@@ -1,7 +1,7 @@
 {
-  "name": "dql-example",
+  "name": "dgraph-example",
   "private": true,
-  "description": "Hypermode Functions DQL Example",
+  "description": "Hypermode Functions Dgraph Example",
   "author": "Hypermode, Inc.",
   "license": "MIT",
   "type": "module",
