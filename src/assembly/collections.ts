@@ -362,7 +362,6 @@ export function search(
   namespaces: string[] = [],
 ): CollectionSearchResult {
   if (text.length == 0) {
-    console.error("Text is empty.");
     return new CollectionSearchResult(
       collection,
       CollectionStatus.Error,
@@ -401,7 +400,6 @@ export function nnClassify(
   namespace: string = "",
 ): CollectionClassificationResult {
   if (text.length == 0) {
-    console.error("Text is empty.");
     return new CollectionClassificationResult(
       collection,
       CollectionStatus.Error,
