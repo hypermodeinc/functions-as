@@ -20,6 +20,15 @@ declare function hostExecuteDQLMutations(
 ): Map<string, string>;
 
 // @ts-expect-error: decorator
+@external("hypermode", "executeDQLUpserts")
+declare function hostExecuteDQLUpserts(
+  hostName: string,
+  query: string,
+  setMutations: string[],
+  delMutations: string[],
+): Map<string, string>;
+
+// @ts-expect-error: decorator
 @external("hypermode", "dgraphAlterSchema")
 declare function hostDgraphAlterSchema(
   hostName: string,
@@ -72,6 +81,25 @@ export function mutate(
   delMutations: string[] = [],
 ): Map<string, string> {
   return hostExecuteDQLMutations(hostName, setMutations, delMutations);
+}
+
+/**
+ *
+ * executes a dql upsert on the dgraph database
+ *
+ * @param hostName - the name of the host
+ * @param query - the upsert query to execute
+ * @param setMutations - the set mutations to execute, written in dql in rdf format
+ * @param delMutations - the delete mutations to execute, written in dql in rdf format
+ * @returns A map of the uids returned, or an empty map if no uids are returned (usually for delete mutations)
+ */
+export function upsert(
+  hostName: string,
+  query: string,
+  setMutations: string[] = [],
+  delMutations: string[] = [],
+): Map<string, string> {
+  return hostExecuteDQLUpserts(hostName, query, setMutations, delMutations);
 }
 
 /**

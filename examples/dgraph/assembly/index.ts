@@ -82,6 +82,22 @@ export function addPerson(
   return dgraph.mutate(hostName, mutations);
 }
 
+export function upsertPerson(
+  nameToChangeFrom: string,
+  nameToChangeTo: string,
+): Map<string, string> {
+  const query = `
+  query {
+    person as var(func: eq(firstName, "${nameToChangeFrom}"))
+  `;
+  const mutation = `
+    uid(person) <firstName> "${nameToChangeTo}" .`;
+
+  const mutations: string[] = [mutation];
+
+  return dgraph.upsert(hostName, query, mutations);
+}
+
 export function deletePerson(uid: string): Map<string, string> {
   const mutation = `<${uid}> * * .`;
 
