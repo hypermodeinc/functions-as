@@ -222,7 +222,7 @@ declare function hostSearchCollectionByVector(
   collection: string,
   namespaces: string[],
   searchMethod: string,
-  vector: string,
+  vector: f32[],
   limit: i32,
   returnText: bool,
 ): CollectionSearchResult;
@@ -413,7 +413,7 @@ export function search(
 export function searchByVector(
   collection: string,
   searchMethod: string,
-  vector: string,
+  vector: f32[],
   limit: i32,
   returnText: bool = false,
   namespaces: string[] = [],
