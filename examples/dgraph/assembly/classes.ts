@@ -17,6 +17,7 @@ export class Person {
   firstName: string = "";
   lastName: string = "";
 
+
   @alias("dgraph.type")
   dType: string[] = [];
 }
