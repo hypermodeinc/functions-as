@@ -3,11 +3,16 @@ export class ProgramInfo {
   types: TypeDefinition[];
 }
 
+export class BasicType {
+  public name?: string;
+  public type: string;
+}
+
 export class FunctionSignature {
   constructor(
     public name: string,
-    public parameters: Parameter[],
-    public returnType: TypeInfo,
+    public parameters?: Parameter[],
+    public results?: BasicType[]
   ) {}
 
   toString() {
@@ -21,7 +26,7 @@ export class FunctionSignature {
       }
       params += ", ";
     }
-    return `${this.name}(${params.endsWith(", ") ? params.slice(0, params.length - 2) : params}): ${this.returnType.name}`;
+    return `${this.name}(${params.endsWith(", ") ? params.slice(0, params.length - 2) : params}): ${this.results[0]?.name}`;
   }
 }
 
@@ -76,7 +81,6 @@ export interface Parameter {
 }
 
 interface Field {
-  offset: number;
   name: string;
   type: TypeInfo;
 }

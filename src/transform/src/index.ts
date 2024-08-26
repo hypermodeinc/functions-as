@@ -10,7 +10,7 @@ export default class HypermodeTransform extends Transform {
     const info = extractor.getProgramInfo();
 
     const m = HypermodeMetadata.generate();
-    m.addFunctions(info.functions);
+    m.addExportFn(info.functions);
     m.addTypes(info.types);
     m.writeToModule(module);
 

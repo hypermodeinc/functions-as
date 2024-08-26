@@ -11,13 +11,15 @@ import { FunctionSignature, TypeDefinition } from "./types.js";
 import writeLogo from "./logo.js";
 
 export class HypermodeMetadata {
+  plugin: string;
+  module: string;
+  sdk: string;
   buildId: string;
   buildTs: string;
-  plugin: string;
-  sdk: string;
   gitRepo?: string;
   gitCommit?: string;
-  functions: FunctionSignature[] = [];
+  fnExports?: FunctionSignature[] = [];
+  fnImports?: FunctionSignature[] = [];
   types: TypeDefinition[] = [];
 
   static generate(): HypermodeMetadata {
@@ -36,8 +38,12 @@ export class HypermodeMetadata {
     return m;
   }
 
-  addFunctions(functions: FunctionSignature[]) {
-    this.functions.push(...functions);
+  addExportFn(functions: FunctionSignature[]) {
+    this.fnExports.push(...functions);
+  }
+
+  addImportFn(functions: FunctionSignature[]) {
+    this.fnImports.push(...functions);
   }
 
   addTypes(types: TypeDefinition[]) {
