@@ -1,23 +1,9 @@
 import { JSON } from "json-as";
 import * as utils from "./utils";
-import { NamedParams as Variables } from "./database";
-export { Variables };
 
 // @ts-expect-error: decorator
-@external("hypermode", "executeDQLQuery")
-declare function hostExecuteDQLQuery(
-  hostName: string,
-  query: string,
-  variables: string,
-): string;
-
-// @ts-expect-error: decorator
-@external("hypermode", "executeDQLMutations")
-declare function hostExecuteDQLMutations(
-  hostName: string,
-  setMutations: string[],
-  delMutations: string[],
-): Map<string, string>;
+@external("hypermode", "executeDQL")
+declare function hostExecuteDQL(hostName: string, request: Request): Response;
 
 // @ts-expect-error: decorator
 @external("hypermode", "dgraphAlterSchema")
@@ -36,42 +22,20 @@ declare function hostDgraphDropAll(hostName: string): string;
 
 /**
  *
- * executes a dql query on the dgraph database
+ * Executes a DQL query or mutation on the Dgraph database.
  *
  * @param hostName - the name of the host
- * @param query - the dql query to execute
- * @param variables - the variables to use in the query
- * @returns The result as a JSON object of type TData, specified by the caller
+ * @param query - the query to execute
+ * @param mutations - the mutations to execute
+ * @returns The response from the Dgraph server
  */
-export function query<TData>(
-  hostName: string,
-  query: string = "",
-  variables: Variables = new Variables(),
-): TData {
-  const varsJson = variables.toJSON();
-  const response = hostExecuteDQLQuery(hostName, query, varsJson);
-  if (utils.resultIsInvalid(response)) {
-    throw new Error("Error running DQL query.");
+export function execute(hostName: string, request: Request): Response {
+  const response = hostExecuteDQL(hostName, request);
+  if (!response) {
+    throw new Error("Error executing DQL.");
   }
 
-  return JSON.parse<TData>(response);
-}
-
-/**
- *
- * executes a dql mutation on the dgraph database
- *
- * @param hostName - the name of the host
- * @param setMutations - the set mutations to execute, written in dql in rdf format
- * @param delMutations - the delete mutations to execute, written in dql in rdf format
- * @returns A map of the uids returned, or an empty map if no uids are returned (usually for delete mutations)
- */
-export function mutate(
-  hostName: string,
-  setMutations: string[] = [],
-  delMutations: string[] = [],
-): Map<string, string> {
-  return hostExecuteDQLMutations(hostName, setMutations, delMutations);
+  return response;
 }
 
 /**
@@ -122,4 +86,95 @@ export function dropAll(hostName: string): string {
   }
 
   return response;
+}
+
+/**
+ *
+ * Represents a Dgraph request.
+ *
+ */
+export class Request {
+  constructor(
+    Query: Query | null = null,
+    Mutations: Mutation[] | null = null,
+    CommitNow: boolean = false,
+  ) {
+    if (Query) {
+      this.query = Query;
+    }
+    if (Mutations) {
+      this.mutations = Mutations;
+    }
+    this.CommitNow = CommitNow;
+  }
+  query: Query = new Query();
+  mutations: Mutation[] = [];
+  CommitNow: boolean = false;
+}
+
+/**
+ *
+ * Represents a Dgraph query.
+ *
+ */
+export class Query {
+  constructor(query: string = "", variables: Variables = new Variables()) {
+    this.query = query;
+    this.variables = variables.toMap();
+  }
+  query: string = "";
+  variables: Map<string, string> = new Map<string, string>();
+}
+
+/**
+ *
+ * Represents a Dgraph mutation.
+ *
+ */
+export class Mutation {
+  constructor(
+    public setJson: string = "",
+    public delJson: string = "",
+    public setNquads: string = "",
+    public delNquads: string = "",
+    public condition: string = "",
+  ) {}
+}
+
+/**
+ *
+ * Represents a Dgraph response.
+ *
+ */
+export class Response {
+  Json: string | null = null;
+  Uids: Map<string, string> | null = null;
+}
+
+export class Variables {
+  private data: Map<string, string> = new Map<string, string>();
+
+  public set<T>(name: string, value: T): void {
+    if (isString<T>()) {
+      this.data.set(name, value as string);
+      return;
+    } else if (isInteger<T>()) {
+      this.data.set(name, JSON.stringify(value));
+      return;
+    } else if (isFloat<T>()) {
+      this.data.set(name, JSON.stringify(value));
+      return;
+    } else if (isBoolean<T>()) {
+      this.data.set(name, JSON.stringify(value));
+      return;
+    } else {
+      throw new Error(
+        "Unsupported variable type in dgraph. Must be string, integer, float, boolean.",
+      );
+    }
+  }
+
+  public toMap(): Map<string, string> {
+    return this.data;
+  }
 }
