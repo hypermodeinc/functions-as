@@ -213,6 +213,7 @@ declare function hostGetNamespacesFromCollection(collection: string): string[];
 declare function hostGetVector(
   collection: string,
   namespace: string,
+  searchMethod: string,
   key: string,
 ): f32[];
 
@@ -617,5 +618,5 @@ export function getVector(
     console.error("Key is empty.");
     return [];
   }
-  return hostGetVector(collection, namespace, key);
+  return hostGetVector(collection, namespace, searchMethod, key);
 }
