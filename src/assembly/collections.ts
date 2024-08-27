@@ -208,6 +208,25 @@ declare function hostGetTextsFromCollection(
 @external("hypermode", "getNamespacesFromCollection")
 declare function hostGetNamespacesFromCollection(collection: string): string[];
 
+// @ts-expect-error: decorator
+@external("hypermode", "getVector")
+declare function hostGetVector(
+  collection: string,
+  namespace: string,
+  key: string,
+): f32[];
+
+// @ts-expect-error: decorator
+@external("hypermode", "searchCollectionByVector")
+declare function hostSearchCollectionByVector(
+  collection: string,
+  namespaces: string[],
+  searchMethod: string,
+  vector: f32[],
+  limit: i32,
+  returnText: bool,
+): CollectionSearchResult;
+
 // add batch upsert
 export function upsertBatch(
   collection: string,
@@ -391,6 +410,44 @@ export function search(
   return result;
 }
 
+export function searchByVector(
+  collection: string,
+  searchMethod: string,
+  vector: f32[],
+  limit: i32,
+  returnText: bool = false,
+  namespaces: string[] = [],
+): CollectionSearchResult {
+  if (vector.length == 0) {
+    return new CollectionSearchResult(
+      collection,
+      CollectionStatus.Error,
+      "Vector is empty.",
+      searchMethod,
+      [],
+    );
+  }
+  const result = hostSearchCollectionByVector(
+    collection,
+    namespaces,
+    searchMethod,
+    vector,
+    limit,
+    returnText,
+  );
+  if (utils.resultIsInvalid(result)) {
+    console.error("Error searching Text index by vector.");
+    return new CollectionSearchResult(
+      collection,
+      CollectionStatus.Error,
+      "Error searching Text index by vector.",
+      searchMethod,
+      [],
+    );
+  }
+  return result;
+}
+
 // fetch embedders for collection & search method, run text through it and
 // classify Text index for similar Texts, return the result keys
 export function nnClassify(
@@ -540,4 +597,25 @@ export function getNamespaces(collection: string): string[] {
     return [];
   }
   return hostGetNamespacesFromCollection(collection);
+}
+
+export function getVector(
+  collection: string,
+  searchMethod: string,
+  key: string,
+  namespace: string = "",
+): f32[] {
+  if (collection.length == 0) {
+    console.error("Collection is empty.");
+    return [];
+  }
+  if (searchMethod.length == 0) {
+    console.error("Search method is empty.");
+    return [];
+  }
+  if (key.length == 0) {
+    console.error("Key is empty.");
+    return [];
+  }
+  return hostGetVector(collection, namespace, key);
 }

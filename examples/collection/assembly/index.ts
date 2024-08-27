@@ -34,6 +34,10 @@ export function getProduct(key: string): string {
   return collections.getText(myProducts, key);
 }
 
+export function getProductVector(key: string): f32[] {
+  return collections.getVector(myProducts, searchMethods[0], key);
+}
+
 export function computeDistanceBetweenProducts(
   key1: string,
   key2: string,
@@ -52,6 +56,25 @@ export function searchProducts(
       myProducts,
       searchMethods[i],
       product,
+      maxItems,
+      true,
+    );
+    responseArr.push(response);
+  }
+  return responseArr;
+}
+
+export function searchProductsById(
+  productId: string,
+  maxItems: i32,
+): collections.CollectionSearchResult[] {
+  const responseArr: collections.CollectionSearchResult[] = [];
+  for (let i: i32 = 0; i < searchMethods.length; i++) {
+    const vec = collections.getVector(myProducts, searchMethods[i], productId);
+    const response = collections.searchByVector(
+      myProducts,
+      searchMethods[i],
+      vec,
       maxItems,
       true,
     );
