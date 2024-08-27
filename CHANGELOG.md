@@ -2,6 +2,7 @@
 
 ## UNRELEASED
 
+- redo dgraph fns to use single execute host function [#171](https://github.com/hypermodeAI/functions-as/pull/171)
 - Add get vector and search by vector functions to collections [#172](https://github.com/hypermodeAI/functions-as/pull/172)
 
 ## 2024-08-13 - Version 0.11.1

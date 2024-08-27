@@ -94,22 +94,16 @@ export function dropAll(hostName: string): string {
  *
  */
 export class Request {
-  constructor(
-    Query: Query | null = null,
-    Mutations: Mutation[] | null = null,
-    CommitNow: boolean = false,
-  ) {
+  constructor(Query: Query | null = null, Mutations: Mutation[] | null = null) {
     if (Query) {
       this.query = Query;
     }
     if (Mutations) {
       this.mutations = Mutations;
     }
-    this.CommitNow = CommitNow;
   }
   query: Query = new Query();
   mutations: Mutation[] = [];
-  CommitNow: boolean = false;
 }
 
 /**
