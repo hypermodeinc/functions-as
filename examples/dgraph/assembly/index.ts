@@ -125,7 +125,7 @@ export function upsertPerson(
     new dgraph.Mutation("", "", mutation),
   ];
 
-  const dgraphRequest = new dgraph.Request(dgraphQuery, mutationList, true);
+  const dgraphRequest = new dgraph.Request(dgraphQuery, mutationList);
 
   const response = dgraph.execute(hostName, dgraphRequest);
 
