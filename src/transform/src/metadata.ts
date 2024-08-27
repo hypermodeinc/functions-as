@@ -11,16 +11,16 @@ import { FunctionSignature, TypeDefinition } from "./types.js";
 import writeLogo from "./logo.js";
 
 export class HypermodeMetadata {
-  plugin: string;
-  module: string;
-  sdk: string;
-  buildId: string;
-  buildTs: string;
-  gitRepo?: string;
-  gitCommit?: string;
-  fnExports?: FunctionSignature[] = [];
-  fnImports?: FunctionSignature[] = [];
-  types: TypeDefinition[] = [];
+  public plugin: string;
+  public module: string;
+  public sdk: string;
+  public buildId: string;
+  public buildTs: string;
+  public gitRepo?: string;
+  public gitCommit?: string;
+  public fnExports?: FunctionSignature[] = [];
+  public fnImports?: FunctionSignature[] = [];
+  public types: TypeDefinition[] = [];
 
   static generate(): HypermodeMetadata {
     const m = new HypermodeMetadata();
@@ -119,8 +119,12 @@ export class HypermodeMetadata {
     ]);
     stream.write("\n");
 
-    writeHeader("Hypermode Functions:");
-    this.functions.forEach((f) => writeItem(f.toString()));
+    writeHeader("Exported Functions:");
+    this.fnExports.forEach((f) => writeItem(f.toString()));
+    stream.write("\n");
+    
+    writeHeader("Imported Functions:");
+    this.fnImports.forEach((f) => writeItem(f.toString()));
     stream.write("\n");
 
     const types = this.types.filter((t) => !t.isHidden());
