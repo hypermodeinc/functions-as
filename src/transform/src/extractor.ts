@@ -68,9 +68,9 @@ export class Extractor {
       functions
         .concat(hostFunctions)
         .flatMap((f) =>
-          f.parameters.map((p) => p.type.path).concat(f.returnType.path),
+          f.parameters.map((p) => p.type.path).concat(f.results[0]?.type),
         )
-        .map((p) => p.replace(/\|null$/, "")),
+        .map((p) => p?.replace(/\|null$/, "")),
     );
 
     const typesUsed = new Map<string, TypeDefinition>();
@@ -88,7 +88,7 @@ export class Extractor {
       (a.name + a.path).localeCompare(b.name + b.path),
     );
 
-    return { functions, types };
+    return { exportFns: functions, importFns: hostFunctions, types };
   }
 
   private expandDependentTypes(
@@ -206,11 +206,9 @@ export class Extractor {
         default: defaultValue,
       });
     }
-    return new FunctionSignature(
-      e.name,
-      params,
-      getTypeInfo(f.signature.returnType),
-    );
+    return new FunctionSignature(e.name, params, [
+      { type: getTypeInfo(f.signature.returnType).name },
+    ]);
   }
 }
 

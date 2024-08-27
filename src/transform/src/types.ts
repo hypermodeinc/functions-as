@@ -1,5 +1,6 @@
 export class ProgramInfo {
-  functions: FunctionSignature[];
+  exportFns: FunctionSignature[];
+  importFns: FunctionSignature[];
   types: TypeDefinition[];
 }
 
@@ -12,7 +13,7 @@ export class FunctionSignature {
   constructor(
     public name: string,
     public parameters?: Parameter[],
-    public results?: BasicType[]
+    public results?: BasicType[],
   ) {}
 
   toString() {
@@ -26,7 +27,7 @@ export class FunctionSignature {
       }
       params += ", ";
     }
-    return `${this.name}(${params.endsWith(", ") ? params.slice(0, params.length - 2) : params}): ${this.results[0]?.name}`;
+    return `${this.name}(${params.endsWith(", ") ? params.slice(0, params.length - 2) : params}): ${this.results[0].type}`;
   }
 }
 
@@ -81,6 +82,7 @@ export interface Parameter {
 }
 
 interface Field {
+  offset: number;
   name: string;
   type: TypeInfo;
 }
