@@ -1,5 +1,10 @@
 # Change Log
 
+## 2024-08-27 - Version 0.11.2
+
+- redo dgraph fns to use single execute host function [#171](https://github.com/hypermodeAI/functions-as/pull/171)
+- Add get vector and search by vector functions to collections [#172](https://github.com/hypermodeAI/functions-as/pull/172)
+
 ## 2024-08-13 - Version 0.11.1
 
 - Add dgraph support with host functions [#165](https://github.com/hypermodeAI/functions-as/pull/165)

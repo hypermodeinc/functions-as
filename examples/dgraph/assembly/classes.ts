@@ -2,9 +2,24 @@
 
 @json
 export class Person {
-  uid: string | null = null;
+  constructor(
+    uid: string = "",
+    firstName: string = "",
+    lastName: string = "",
+    dType: string[] = [],
+  ) {
+    this.uid = uid;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.dType = dType;
+  }
+  uid: string = "";
   firstName: string = "";
   lastName: string = "";
+
+
+  @alias("dgraph.type")
+  dType: string[] = [];
 }
 
 
