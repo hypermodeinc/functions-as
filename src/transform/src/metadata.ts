@@ -122,7 +122,7 @@ export class HypermodeMetadata {
     writeHeader("Exported Functions:");
     this.fnExports.forEach((f) => writeItem(f.toString()));
     stream.write("\n");
-    
+
     writeHeader("Imported Functions:");
     this.fnImports.forEach((f) => writeItem(f.toString()));
     stream.write("\n");
