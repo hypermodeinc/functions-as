@@ -2,16 +2,9 @@ version: 2
 updates:
   - package-ecosystem: "npm"
     versioning-strategy: increase
-    # multiple directories can be specified - see:
-    # https://github.blog/changelog/2024-04-29-dependabot-multi-directory-configuration-public-beta-now-available/
     directories:
       - "/src"
-      - "/examples/classification"
-      - "/examples/embedding"
-      - "/examples/graphql"
-      - "/examples/http"
-      - "/examples/simple"
-      - "/examples/textgeneration"
+      - "/examples/*"
     schedule:
       interval: "weekly"
       day: "wednesday"
@@ -24,7 +17,6 @@ updates:
           - "patch"
 
   - package-ecosystem: "github-actions"
-    # Workflow files stored in the default location of `.github/workflows`. (You don't need to specify `/.github/workflows` for `directory`. You can use `directory: "/"`.)
     directory: "/"
     schedule:
       interval: "weekly"
