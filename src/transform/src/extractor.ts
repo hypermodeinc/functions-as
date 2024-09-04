@@ -52,31 +52,28 @@ export class Extractor {
       Array.from(this.program.managedClasses.values())
         .filter((c) => c.id > 2) // skip built-in classes
         .map((c) => {
-          const info = getTypeInfo(c.type);
           return new TypeDefinition(
+            c.name,
             c.id,
-            c.nextMemoryOffset, // size
-            info.path,
-            info.name,
             this.getClassFields(c),
           );
         })
-        .map((t) => [t.path, t]),
+        .map((t) => [t.name, t]),
     );
 
     const typePathsUsed = new Set(
       functions
         .concat(hostFunctions)
         .flatMap((f) =>
-          f.parameters.map((p) => p.type.path).concat(f.results[0]?.type),
+          f.parameters.map((p) => p.type).concat(f.results[0]?.type),
         )
         .map((p) => p?.replace(/\|null$/, "")),
     );
 
     const typesUsed = new Map<string, TypeDefinition>();
     allTypes.forEach((t) => {
-      if (typePathsUsed.has(t.path)) {
-        typesUsed.set(t.path, t);
+      if (typePathsUsed.has(t.name)) {
+        typesUsed.set(t.name, t);
       }
     });
 
@@ -85,7 +82,7 @@ export class Extractor {
     });
 
     const types = Array.from(typesUsed.values()).sort((a, b) =>
-      (a.name + a.path).localeCompare(b.name + b.path),
+      (a.name).localeCompare(b.name),
     );
 
     return { exportFns: functions, importFns: hostFunctions, types };
@@ -102,7 +99,7 @@ export class Extractor {
     // include fields
     if (type.fields) {
       type.fields.forEach((f) => {
-        let path = f.type.path;
+        let path = f.type;
         if (path.endsWith("|null")) {
           path = path.slice(0, -5);
         }
@@ -126,8 +123,8 @@ export class Extractor {
 
     // recursively expand dependencies of dependent types
     dependentTypes.forEach((t) => {
-      if (!typesUsed.has(t.path)) {
-        typesUsed.set(t.path, t);
+      if (!typesUsed.has(t.name)) {
+        typesUsed.set(t.name, t);
         this.expandDependentTypes(t, allTypes, typesUsed);
       }
     });
@@ -150,9 +147,8 @@ export class Extractor {
       })
       .filter((p) => p && p.isField)
       .map((f) => ({
-        offset: f.memoryOffset,
         name: f.name,
-        type: getTypeInfo(f.type),
+        type: getTypeInfo(f.type).path,
       }));
   }
 
@@ -202,12 +198,12 @@ export class Extractor {
       const defaultValue = getLiteral(param.initializer);
       params.push({
         name,
-        type,
+        type: type.path,
         default: defaultValue,
       });
     }
     return new FunctionSignature(e.name, params, [
-      { type: getTypeInfo(f.signature.returnType).name },
+      { type: getTypeInfo(f.signature.returnType).path },
     ]);
   }
 }

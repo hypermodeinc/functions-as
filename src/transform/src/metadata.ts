@@ -53,7 +53,9 @@ export class HypermodeMetadata {
   writeToModule(module: binaryen.Module) {
     const encoder = new TextEncoder();
     const json = JSON.stringify(this);
+    const METADATA_VERSION = 1;
     module.addCustomSection("hypermode_meta", encoder.encode(json));
+    module.addCustomSection("hypermode_data", Uint8Array.from([METADATA_VERSION]));
   }
 
   logToStream(stream: FSWriteStream | TTYWriteStream, markdown = false) {
