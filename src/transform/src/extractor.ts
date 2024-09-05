@@ -14,7 +14,6 @@ import {
   Program,
   Property,
   StringLiteralExpression,
-  Type,
 } from "assemblyscript/dist/assemblyscript.js";
 import {
   FunctionSignature,
@@ -22,7 +21,6 @@ import {
   Parameter,
   ProgramInfo,
   TypeDefinition,
-  TypeInfo,
   typeMap,
 } from "./types.js";
 import HypermodeTransform from "./index.js";
@@ -48,19 +46,20 @@ export class Extractor {
       .map((e) => this.convertToFunctionSignature(e))
       .sort((a, b) => a.name.localeCompare(b.name));
 
+    hostFunctions.forEach((e) => (e.name = "hypermode." + e.name));
+
     const allTypes = new Map<string, TypeDefinition>(
       Array.from(this.program.managedClasses.values())
         .filter((c) => c.id > 2) // skip built-in classes
         .map((c) => {
           return new TypeDefinition(
-            c.name,
+            c.type.toString(),
             c.id,
             this.getClassFields(c),
           );
         })
         .map((t) => [t.name, t]),
     );
-
     const typePathsUsed = new Set(
       functions
         .concat(hostFunctions)
@@ -71,6 +70,7 @@ export class Extractor {
     );
 
     const typesUsed = new Map<string, TypeDefinition>();
+
     allTypes.forEach((t) => {
       if (typePathsUsed.has(t.name)) {
         typesUsed.set(t.name, t);
@@ -82,7 +82,7 @@ export class Extractor {
     });
 
     const types = Array.from(typesUsed.values()).sort((a, b) =>
-      (a.name).localeCompare(b.name),
+      a.name.localeCompare(b.name),
     );
 
     return { exportFns: functions, importFns: hostFunctions, types };
@@ -148,7 +148,7 @@ export class Extractor {
       .filter((p) => p && p.isField)
       .map((f) => ({
         name: f.name,
-        type: getTypeInfo(f.type).path,
+        type: f.type.toString(),
       }));
   }
 
@@ -192,18 +192,18 @@ export class Extractor {
     const params: Parameter[] = [];
     for (let i = 0; i < f.signature.parameterTypes.length; i++) {
       const param = d.signature.parameters[i];
-      const _type = f.signature.parameterTypes[i];
+      const type = f.signature.parameterTypes[i];
       const name = param.name.text;
-      const type = getTypeInfo(_type);
       const defaultValue = getLiteral(param.initializer);
       params.push({
         name,
-        type: type.path,
+        type: type.toString(),
         default: defaultValue,
       });
     }
+
     return new FunctionSignature(e.name, params, [
-      { type: getTypeInfo(f.signature.returnType).path },
+      { type: f.signature.returnType.toString() },
     ]);
   }
 }
@@ -213,41 +213,44 @@ interface importExportInfo {
   function: string;
 }
 
-export function getTypeInfo(t: Type): TypeInfo {
-  const path = t.toString();
+export function getTypeName(path: string): string {
+  const isNullable = path.endsWith("|null");
 
-  if (t.isNullableReference) {
-    const ti = getTypeInfo(t.nonNullableType);
-    return { name: `${ti.name} | null`, path: path.replace(/ /g, "") };
+  if (path.startsWith("~lib/array/Array")) {
+    const type = getTypeName(
+      path.slice(path.indexOf("<") + 1, path.lastIndexOf(">")),
+    );
+    if (isNullable) return "(" + type + ")[]";
+    return type + "[]";
   }
 
-  let name = typeMap.get(path);
-  if (name) {
-    return { name, path };
+  if (isNullable)
+    return getTypeName(path.slice(0, path.length - 5)) + " | null";
+
+  const name = typeMap.get(path);
+  if (name) return name;
+
+  if (path.startsWith("~lib/map/Map")) {
+    const firstType = getTypeName(
+      path.slice(path.indexOf("<") + 1, path.indexOf(",")),
+    );
+    const secondType = getTypeName(
+      path.slice(path.indexOf(",") + 1, path.lastIndexOf(">")),
+    );
+    return "Map<" + firstType + ", " + secondType + ">";
   }
 
-  const c = t.classReference;
-  if (!c) {
-    return { name: path, path };
+  if (path.startsWith("~lib/@hypermode")) {
+    const lastIndex = path.lastIndexOf("/");
+    const module = path.slice(
+      path.lastIndexOf("/", lastIndex - 1) + 1,
+      lastIndex,
+    );
+    const ty = path.slice(lastIndex + 1);
+    return module + "." + ty;
   }
 
-  switch (c.prototype?.internalName) {
-    case "~lib/array/Array": {
-      const wrap = c.typeArguments[0].isNullableReference;
-      const open = wrap ? "(" : "";
-      const close = wrap ? ")" : "";
-      name = `${open}${getTypeInfo(c.typeArguments[0]).name}${close}[]`;
-      break;
-    }
-    case "~lib/map/Map": {
-      name = `Map<${getTypeInfo(c.typeArguments[0]).name}, ${getTypeInfo(c.typeArguments[1]).name}>`;
-      break;
-    }
-    default:
-      name = c.name;
-  }
-
-  return { name, path };
+  return path.slice(path.lastIndexOf("/") + 1);
 }
 
 export function getLiteral(node: Expression | null): JsonLiteral {

@@ -1,3 +1,5 @@
+import { getTypeName } from "./extractor.js";
+
 export class ProgramInfo {
   exportFns: FunctionSignature[];
   importFns: FunctionSignature[];
@@ -11,7 +13,7 @@ export class Result {
 
 export class FunctionSignature {
   constructor(
-    public name: string,
+    public name?: string,
     public parameters?: Parameter[],
     public results?: Result[],
   ) {}
@@ -21,13 +23,13 @@ export class FunctionSignature {
     for (let i = 0; i < this.parameters.length; i++) {
       const param = this.parameters[i]!;
       const defaultValue = param.default;
-      params += `${param.name}: ${param.type}`;
+      params += `${param.name}: ${getTypeName(param.type)}`;
       if (defaultValue !== undefined) {
         params += ` = ${JSON.stringify(defaultValue)}`;
       }
       params += ", ";
     }
-    return `${this.name}(${params.endsWith(", ") ? params.slice(0, params.length - 2) : params}): ${this.results[0].type}`;
+    return `${this.name}(${params.endsWith(", ") ? params.slice(0, params.length - 2) : params}): ${getTypeName(this.results[0].type)}`;
   }
 }
 
@@ -39,22 +41,21 @@ export class TypeDefinition {
   ) {}
 
   toString() {
-    const s = this.name;
+    const name = getTypeName(this.name);
     if (!this.fields || this.fields.length === 0) {
-      return s;
+      return name;
     }
 
     const fields = this.fields
-      .map((f) => `${f.name}: ${f.type}`)
+      .map((f) => `${f.name}: ${getTypeName(f.type)}`)
       .join(", ");
-    return `${s} { ${fields} }`;
+    return `${name} { ${fields} }`;
   }
 
   isHidden() {
     if (typeMap.has(this.name)) return true;
     if (this.name.startsWith("~lib/array/Array<")) return true;
     if (this.name.startsWith("~lib/map/Map<")) return true;
-    if (this.name.startsWith("~lib/@hypermode/")) return true;
 
     return false;
   }

@@ -18,8 +18,8 @@ export class HypermodeMetadata {
   public buildTs: string;
   public gitRepo?: string;
   public gitCommit?: string;
-  public fnExports?: FunctionSignature[] = [];
-  public fnImports?: FunctionSignature[] = [];
+  public fnExports: { [key: string]: FunctionSignature } = {};
+  public fnImports: { [key: string]: FunctionSignature } = {};
   public types: TypeDefinition[] = [];
 
   static generate(): HypermodeMetadata {
@@ -39,11 +39,16 @@ export class HypermodeMetadata {
   }
 
   addExportFn(functions: FunctionSignature[]) {
-    this.fnExports.push(...functions);
+    for (const fn of functions) {
+      const name = fn.name;
+      this.fnExports[name] = fn;
+    }
   }
 
   addImportFn(functions: FunctionSignature[]) {
-    this.fnImports.push(...functions);
+    for (const fn of functions) {
+      this.fnImports[fn.name] = fn;
+    }
   }
 
   addTypes(types: TypeDefinition[]) {
@@ -52,10 +57,21 @@ export class HypermodeMetadata {
 
   writeToModule(module: binaryen.Module) {
     const encoder = new TextEncoder();
+
+    const fnExports = this.fnExports;
+    const fnImports = this.fnImports;
+
     const json = JSON.stringify(this);
+
+    this.fnExports = fnExports;
+    this.fnImports = fnImports;
+
     const METADATA_VERSION = 1;
     module.addCustomSection("hypermode_meta", encoder.encode(json));
-    module.addCustomSection("hypermode_data", Uint8Array.from([METADATA_VERSION]));
+    module.addCustomSection(
+      "hypermode_data",
+      Uint8Array.from([METADATA_VERSION]),
+    );
   }
 
   logToStream(stream: FSWriteStream | TTYWriteStream, markdown = false) {
@@ -110,28 +126,28 @@ export class HypermodeMetadata {
       });
     };
 
-    writeHeader("Plugin Metadata:");
+    writeHeader("Metadata:");
     writeTable([
-      ["Name", this.plugin],
-      ["SDK", this.sdk],
+      ["Plugin Name", this.plugin],
+      ["Hypermode SDK", this.sdk],
       ["Build ID", this.buildId],
       ["Build Timestamp", this.buildTs],
-      this.gitRepo ? ["Git Repo", this.gitRepo] : undefined,
+      this.gitRepo ? ["Git Repository", this.gitRepo] : undefined,
       this.gitCommit ? ["Git Commit", this.gitCommit] : undefined,
     ]);
     stream.write("\n");
 
-    writeHeader("Exported Functions:");
-    this.fnExports.forEach((f) => writeItem(f.toString()));
+    writeHeader("Functions:");
+    Object.values(this.fnExports).forEach((v) => writeItem(v.toString()));
     stream.write("\n");
 
-    writeHeader("Imported Functions:");
-    this.fnImports.forEach((f) => writeItem(f.toString()));
+    writeHeader("Imports:");
+    Object.values(this.fnImports).forEach((v) => writeItem(v.toString()));
     stream.write("\n");
 
     const types = this.types.filter((t) => !t.isHidden());
     if (types.length > 0) {
-      writeHeader("Custom Data Types:");
+      writeHeader("Custom Types:");
       types.forEach((t) => writeItem(t.toString()));
       stream.write("\n");
     }

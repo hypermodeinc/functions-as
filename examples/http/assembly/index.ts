@@ -1,6 +1,8 @@
 import { http } from "@hypermode/functions-as";
 import { Quote, Image, Issue } from "./classes";
 
+declare function foo(): void
+
 // This function makes a simple HTTP GET request to example.com,
 // and returns the HTML text of the response.
 export function getExampleHtml(): string {
@@ -13,7 +15,7 @@ export function getExampleHtml(): string {
 // It also demonstrates how to check the HTTP response status.
 export function getRandomQuote(): Quote {
   const request = new http.Request("https://zenquotes.io/api/random");
-
+foo()
   const response = http.fetch(request);
   if (!response.ok) {
     throw new Error(
