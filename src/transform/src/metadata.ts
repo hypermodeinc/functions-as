@@ -10,6 +10,8 @@ import { WriteStream as TTYWriteStream } from "tty";
 import { FunctionSignature, TypeDefinition } from "./types.js";
 import writeLogo from "./logo.js";
 
+const METADATA_VERSION = 2;
+
 export class HypermodeMetadata {
   public plugin: string;
   public module: string;
@@ -68,12 +70,12 @@ export class HypermodeMetadata {
     this.fnExports = fnExports;
     this.fnImports = fnImports;
 
-    const METADATA_VERSION = 1;
-    module.addCustomSection("hypermode_meta", encoder.encode(json));
     module.addCustomSection(
-      "hypermode_data",
+      "hypermode_version",
       Uint8Array.from([METADATA_VERSION]),
     );
+
+    module.addCustomSection("hypermode_meta", encoder.encode(json));
   }
 
   logToStream(stream: FSWriteStream | TTYWriteStream, markdown = false) {
