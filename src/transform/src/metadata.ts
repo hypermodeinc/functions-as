@@ -20,7 +20,7 @@ export class HypermodeMetadata {
   public gitCommit?: string;
   public fnExports: { [key: string]: FunctionSignature } = {};
   public fnImports: { [key: string]: FunctionSignature } = {};
-  public types: TypeDefinition[] = [];
+  public types: { [key: string]: TypeDefinition } = {};
 
   static generate(): HypermodeMetadata {
     const m = new HypermodeMetadata();
@@ -52,7 +52,9 @@ export class HypermodeMetadata {
   }
 
   addTypes(types: TypeDefinition[]) {
-    this.types.push(...types);
+    for (const t of types) {
+      this.types[t.name] = t;
+    }
   }
 
   writeToModule(module: binaryen.Module) {
@@ -145,7 +147,7 @@ export class HypermodeMetadata {
     Object.values(this.fnImports).forEach((v) => writeItem(v.toString()));
     stream.write("\n");
 
-    const types = this.types.filter((t) => !t.isHidden());
+    const types = Object.values(this.types).filter((t) => !t.isHidden());
     if (types.length > 0) {
       writeHeader("Custom Types:");
       types.forEach((t) => writeItem(t.toString()));
