@@ -23,13 +23,14 @@ export class FunctionSignature {
     for (let i = 0; i < this.parameters.length; i++) {
       const param = this.parameters[i]!;
       const defaultValue = param.default;
+      if (i > 0) params += ", ";
       params += `${param.name}: ${getTypeName(param.type)}`;
       if (defaultValue !== undefined) {
         params += ` = ${JSON.stringify(defaultValue)}`;
       }
-      params += ", ";
     }
-    return `${this.name}(${params.endsWith(", ") ? params.slice(0, params.length - 2) : params}): ${getTypeName(this.results[0].type)}`;
+    return `${this.name}(${params}): ${getTypeName(this.results[0].type)}`;
+  }
 
   toJSON() {
     const output = {};
