@@ -13,9 +13,9 @@ export class Result {
 
 export class FunctionSignature {
   constructor(
-    public name?: string,
-    public parameters?: Parameter[],
-    public results?: Result[],
+    public name: string,
+    public parameters: Parameter[],
+    public results: Result[],
   ) {}
 
   toString() {
@@ -30,6 +30,23 @@ export class FunctionSignature {
       params += ", ";
     }
     return `${this.name}(${params.endsWith(", ") ? params.slice(0, params.length - 2) : params}): ${getTypeName(this.results[0].type)}`;
+
+  toJSON() {
+    const output = {};
+
+    // always omit the function name
+
+    // omit empty parameters
+    if (this.parameters.length > 0) {
+      output["parameters"] = this.parameters;
+    }
+
+    // omit void result types
+    if (this.results[0].type !== "void") {
+      output["results"] = this.results;
+    }
+
+    return output;
   }
 }
 
@@ -50,6 +67,13 @@ export class TypeDefinition {
       .map((f) => `${f.name}: ${getTypeName(f.type)}`)
       .join(", ");
     return `${name} { ${fields} }`;
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      fields: this.fields,
+    };
   }
 
   isHidden() {
