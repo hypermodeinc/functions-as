@@ -1,13 +1,21 @@
+import { getTypeName } from "./extractor.js";
+
 export class ProgramInfo {
-  functions: FunctionSignature[];
+  exportFns: FunctionSignature[];
+  importFns: FunctionSignature[];
   types: TypeDefinition[];
+}
+
+export class Result {
+  public name?: string;
+  public type: string;
 }
 
 export class FunctionSignature {
   constructor(
     public name: string,
     public parameters: Parameter[],
-    public returnType: TypeInfo,
+    public results: Result[],
   ) {}
 
   toString() {
@@ -15,50 +23,63 @@ export class FunctionSignature {
     for (let i = 0; i < this.parameters.length; i++) {
       const param = this.parameters[i]!;
       const defaultValue = param.default;
-      params += `${param.name}: ${param.type.name}`;
+      if (i > 0) params += ", ";
+      params += `${param.name}: ${getTypeName(param.type)}`;
       if (defaultValue !== undefined) {
         params += ` = ${JSON.stringify(defaultValue)}`;
       }
-      params += ", ";
     }
-    return `${this.name}(${params.endsWith(", ") ? params.slice(0, params.length - 2) : params}): ${this.returnType.name}`;
+    return `${this.name}(${params}): ${getTypeName(this.results[0].type)}`;
+  }
+
+  toJSON() {
+    const output = {};
+
+    // always omit the function name
+
+    // omit empty parameters
+    if (this.parameters.length > 0) {
+      output["parameters"] = this.parameters;
+    }
+
+    // omit void result types
+    if (this.results[0].type !== "void") {
+      output["results"] = this.results;
+    }
+
+    return output;
   }
 }
 
-export class TypeDefinition implements TypeInfo {
+export class TypeDefinition {
   constructor(
-    public id: number,
-    public size: number,
-    public path: string,
     public name: string,
+    public id: number,
     public fields?: Field[],
   ) {}
 
   toString() {
-    const s = this.name;
+    const name = getTypeName(this.name);
     if (!this.fields || this.fields.length === 0) {
-      return s;
+      return name;
     }
 
     const fields = this.fields
-      .map((f) => `${f.name}: ${f.type.name}`)
+      .map((f) => `${f.name}: ${getTypeName(f.type)}`)
       .join(", ");
-    return `${s} { ${fields} }`;
+    return `${name} { ${fields} }`;
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      fields: this.fields,
+    };
   }
 
   isHidden() {
-    if (typeMap.has(this.path)) return true;
-    if (this.path.startsWith("~lib/array/Array<")) return true;
-    if (this.path.startsWith("~lib/map/Map<")) return true;
-    if (this.path.startsWith("~lib/@hypermode/")) return true;
-
-    return false;
+    return this.name.startsWith("~lib/");
   }
-}
-
-export interface TypeInfo {
-  name: string;
-  path: string;
 }
 
 export type JsonLiteral =
@@ -71,14 +92,13 @@ export type JsonLiteral =
 
 export interface Parameter {
   name: string;
-  type: TypeInfo;
+  type: string;
   default?: JsonLiteral;
 }
 
 interface Field {
-  offset: number;
   name: string;
-  type: TypeInfo;
+  type: string;
 }
 
 export const typeMap = new Map<string, string>([

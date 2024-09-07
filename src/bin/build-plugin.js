@@ -7,7 +7,6 @@ import semver from "semver";
 
 const npmPath = process.env.npm_execpath;
 const pkg = process.env.npm_package_name;
-const ver = process.env.npm_package_version;
 
 if (!npmPath) {
   console.error("This script must be run with npm.");
@@ -28,7 +27,7 @@ if (target !== "debug" && target !== "release") {
 await validatePackageJson();
 await validateAsJson();
 
-console.log(`Building ${pkg}@${ver} in ${target} mode...`);
+console.log(`Building ${pkg}.wasm ...`);
 const cmd = `node "${npmPath}" exec -- asc assembly/index.ts -o build/${pkg}.wasm --target ${target}`;
 try {
   execSync(cmd, { stdio: "inherit" });

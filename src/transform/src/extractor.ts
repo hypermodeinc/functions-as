@@ -14,7 +14,6 @@ import {
   Program,
   Property,
   StringLiteralExpression,
-  Type,
 } from "assemblyscript/dist/assemblyscript.js";
 import {
   FunctionSignature,
@@ -22,7 +21,6 @@ import {
   Parameter,
   ProgramInfo,
   TypeDefinition,
-  TypeInfo,
   typeMap,
 } from "./types.js";
 import HypermodeTransform from "./index.js";
@@ -40,11 +38,11 @@ export class Extractor {
   }
 
   getProgramInfo(): ProgramInfo {
-    const functions = this.getExportedFunctions()
+    const exportedFunctions = this.getExportedFunctions()
       .map((e) => this.convertToFunctionSignature(e))
       .sort((a, b) => a.name.localeCompare(b.name));
 
-    const hostFunctions = this.getHostFunctions()
+    const importedFunctions = this.getImportedFunctions()
       .map((e) => this.convertToFunctionSignature(e))
       .sort((a, b) => a.name.localeCompare(b.name));
 
@@ -52,31 +50,28 @@ export class Extractor {
       Array.from(this.program.managedClasses.values())
         .filter((c) => c.id > 2) // skip built-in classes
         .map((c) => {
-          const info = getTypeInfo(c.type);
           return new TypeDefinition(
+            c.type.toString(),
             c.id,
-            c.nextMemoryOffset, // size
-            info.path,
-            info.name,
             this.getClassFields(c),
           );
         })
-        .map((t) => [t.path, t]),
+        .map((t) => [t.name, t]),
     );
-
     const typePathsUsed = new Set(
-      functions
-        .concat(hostFunctions)
+      exportedFunctions
+        .concat(importedFunctions)
         .flatMap((f) =>
-          f.parameters.map((p) => p.type.path).concat(f.returnType.path),
+          f.parameters.map((p) => p.type).concat(f.results[0]?.type),
         )
-        .map((p) => p.replace(/\|null$/, "")),
+        .map((p) => p?.replace(/\|null$/, "")),
     );
 
     const typesUsed = new Map<string, TypeDefinition>();
+
     allTypes.forEach((t) => {
-      if (typePathsUsed.has(t.path)) {
-        typesUsed.set(t.path, t);
+      if (typePathsUsed.has(t.name)) {
+        typesUsed.set(t.name, t);
       }
     });
 
@@ -85,10 +80,14 @@ export class Extractor {
     });
 
     const types = Array.from(typesUsed.values()).sort((a, b) =>
-      (a.name + a.path).localeCompare(b.name + b.path),
+      a.name.localeCompare(b.name),
     );
 
-    return { functions, types };
+    return {
+      exportFns: exportedFunctions,
+      importFns: importedFunctions,
+      types,
+    };
   }
 
   private expandDependentTypes(
@@ -102,7 +101,7 @@ export class Extractor {
     // include fields
     if (type.fields) {
       type.fields.forEach((f) => {
-        let path = f.type.path;
+        let path = f.type;
         if (path.endsWith("|null")) {
           path = path.slice(0, -5);
         }
@@ -126,8 +125,8 @@ export class Extractor {
 
     // recursively expand dependencies of dependent types
     dependentTypes.forEach((t) => {
-      if (!typesUsed.has(t.path)) {
-        typesUsed.set(t.path, t);
+      if (!typesUsed.has(t.name)) {
+        typesUsed.set(t.name, t);
         this.expandDependentTypes(t, allTypes, typesUsed);
       }
     });
@@ -150,9 +149,8 @@ export class Extractor {
       })
       .filter((p) => p && p.isField)
       .map((f) => ({
-        offset: f.memoryOffset,
         name: f.name,
-        type: getTypeInfo(f.type),
+        type: f.type.toString(),
       }));
   }
 
@@ -179,14 +177,20 @@ export class Extractor {
     return results;
   }
 
-  private getHostFunctions() {
+  private getImportedFunctions() {
     const results: importExportInfo[] = [];
-    const hypermodeImports = this.program.moduleImports.get("hypermode");
-    if (hypermodeImports) {
-      hypermodeImports.forEach((v, k) => {
-        results.push({ name: k, function: v.internalName });
+
+    this.program.moduleImports.forEach((module, modName) => {
+      module.forEach((e, fnName) => {
+        if (modName != "env" && !modName.startsWith("wasi")) {
+          results.push({
+            name: `${modName}.${fnName}`,
+            function: e.internalName,
+          });
+        }
       });
-    }
+    });
+
     return results;
   }
 
@@ -196,21 +200,19 @@ export class Extractor {
     const params: Parameter[] = [];
     for (let i = 0; i < f.signature.parameterTypes.length; i++) {
       const param = d.signature.parameters[i];
-      const _type = f.signature.parameterTypes[i];
+      const type = f.signature.parameterTypes[i];
       const name = param.name.text;
-      const type = getTypeInfo(_type);
       const defaultValue = getLiteral(param.initializer);
       params.push({
         name,
-        type,
+        type: type.toString(),
         default: defaultValue,
       });
     }
-    return new FunctionSignature(
-      e.name,
-      params,
-      getTypeInfo(f.signature.returnType),
-    );
+
+    return new FunctionSignature(e.name, params, [
+      { type: f.signature.returnType.toString() },
+    ]);
   }
 }
 
@@ -219,41 +221,44 @@ interface importExportInfo {
   function: string;
 }
 
-export function getTypeInfo(t: Type): TypeInfo {
-  const path = t.toString();
+export function getTypeName(path: string): string {
+  const isNullable = path.endsWith("|null");
 
-  if (t.isNullableReference) {
-    const ti = getTypeInfo(t.nonNullableType);
-    return { name: `${ti.name} | null`, path: path.replace(/ /g, "") };
+  if (path.startsWith("~lib/array/Array")) {
+    const type = getTypeName(
+      path.slice(path.indexOf("<") + 1, path.lastIndexOf(">")),
+    );
+    if (isNullable) return "(" + type + ")[]";
+    return type + "[]";
   }
 
-  let name = typeMap.get(path);
-  if (name) {
-    return { name, path };
+  if (isNullable)
+    return getTypeName(path.slice(0, path.length - 5)) + " | null";
+
+  const name = typeMap.get(path);
+  if (name) return name;
+
+  if (path.startsWith("~lib/map/Map")) {
+    const firstType = getTypeName(
+      path.slice(path.indexOf("<") + 1, path.indexOf(",")),
+    );
+    const secondType = getTypeName(
+      path.slice(path.indexOf(",") + 1, path.lastIndexOf(">")),
+    );
+    return "Map<" + firstType + ", " + secondType + ">";
   }
 
-  const c = t.classReference;
-  if (!c) {
-    return { name: path, path };
+  if (path.startsWith("~lib/@hypermode")) {
+    const lastIndex = path.lastIndexOf("/");
+    const module = path.slice(
+      path.lastIndexOf("/", lastIndex - 1) + 1,
+      lastIndex,
+    );
+    const ty = path.slice(lastIndex + 1);
+    return module + "." + ty;
   }
 
-  switch (c.prototype?.internalName) {
-    case "~lib/array/Array": {
-      const wrap = c.typeArguments[0].isNullableReference;
-      const open = wrap ? "(" : "";
-      const close = wrap ? ")" : "";
-      name = `${open}${getTypeInfo(c.typeArguments[0]).name}${close}[]`;
-      break;
-    }
-    case "~lib/map/Map": {
-      name = `Map<${getTypeInfo(c.typeArguments[0]).name}, ${getTypeInfo(c.typeArguments[1]).name}>`;
-      break;
-    }
-    default:
-      name = c.name;
-  }
-
-  return { name, path };
+  return path.slice(path.lastIndexOf("/") + 1);
 }
 
 export function getLiteral(node: Expression | null): JsonLiteral {
