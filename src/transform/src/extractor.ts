@@ -64,7 +64,7 @@ export class Extractor {
         .flatMap((f) =>
           f.parameters.map((p) => p.type).concat(f.results[0]?.type),
         )
-        .map((p) => p?.replace(/\|null$/, "")),
+        .map((p) => makeNonNullable(p)),
     );
 
     const typesUsed = new Map<string, TypeDefinition>();
@@ -101,10 +101,7 @@ export class Extractor {
     // include fields
     if (type.fields) {
       type.fields.forEach((f) => {
-        let path = f.type;
-        if (path.endsWith("|null")) {
-          path = path.slice(0, -5);
-        }
+        const path = makeNonNullable(f.type);
         const typeDef = allTypes.get(path);
         if (typeDef) {
           dependentTypes.add(typeDef);
@@ -222,30 +219,26 @@ interface importExportInfo {
 }
 
 export function getTypeName(path: string): string {
-  const isNullable = path.endsWith("|null");
-
   if (path.startsWith("~lib/array/Array")) {
     const type = getTypeName(
       path.slice(path.indexOf("<") + 1, path.lastIndexOf(">")),
     );
-    if (isNullable) return "(" + type + ")[]";
+    if (isNullable(type)) {
+      return "(" + type + ")[]";
+    }
     return type + "[]";
   }
 
-  if (isNullable)
-    return getTypeName(path.slice(0, path.length - 5)) + " | null";
+  if (isNullable(path)) {
+    return makeNullable(getTypeName(makeNonNullable(path)));
+  }
 
   const name = typeMap.get(path);
   if (name) return name;
 
   if (path.startsWith("~lib/map/Map")) {
-    const firstType = getTypeName(
-      path.slice(path.indexOf("<") + 1, path.indexOf(",")),
-    );
-    const secondType = getTypeName(
-      path.slice(path.indexOf(",") + 1, path.lastIndexOf(">")),
-    );
-    return "Map<" + firstType + ", " + secondType + ">";
+    const [keyType, valueType] = getMapSubtypes(path);
+    return "Map<" + getTypeName(keyType) + ", " + getTypeName(valueType) + ">";
   }
 
   if (path.startsWith("~lib/@hypermode")) {
@@ -298,4 +291,51 @@ export function getLiteral(node: Expression | null): JsonLiteral {
     }
   }
   return "";
+}
+
+const nullableTypeRegex = /\s?\|\s?null$/;
+
+function isNullable(type: string) {
+  return nullableTypeRegex.test(type);
+}
+
+function makeNonNullable(type?: string) {
+  return type?.replace(nullableTypeRegex, "");
+}
+
+function makeNullable(type?: string) {
+  if (isNullable(type)) {
+    return type;
+  } else {
+    return type + " | null";
+  }
+}
+
+function getMapSubtypes(type: string): [string, string] {
+  const prefix = "~lib/map/Map<";
+  if (!type.startsWith(prefix)) {
+    return ["", ""];
+  }
+
+  let n = 1;
+  let c = 0;
+  for (let i = prefix.length; i < type.length; i++) {
+    switch (type.charAt(i)) {
+      case "<":
+        n++;
+        break;
+      case ",":
+        if (n == 1) {
+          c = i;
+        }
+        break;
+      case ">":
+        n--;
+        if (n == 0) {
+          return [type.slice(prefix.length, c), type.slice(c + 1, i)];
+        }
+    }
+  }
+
+  return ["", ""];
 }
