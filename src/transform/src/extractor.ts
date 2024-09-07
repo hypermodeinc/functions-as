@@ -46,8 +46,6 @@ export class Extractor {
       .map((e) => this.convertToFunctionSignature(e))
       .sort((a, b) => a.name.localeCompare(b.name));
 
-    hostFunctions.forEach((e) => (e.name = "hypermode." + e.name));
-
     const allTypes = new Map<string, TypeDefinition>(
       Array.from(this.program.managedClasses.values())
         .filter((c) => c.id > 2) // skip built-in classes
@@ -177,12 +175,18 @@ export class Extractor {
 
   private getHostFunctions() {
     const results: importExportInfo[] = [];
-    const hypermodeImports = this.program.moduleImports.get("hypermode");
-    if (hypermodeImports) {
-      hypermodeImports.forEach((v, k) => {
-        results.push({ name: k, function: v.internalName });
+
+    this.program.moduleImports.forEach((module, modName) => {
+      module.forEach((e, fnName) => {
+        if (modName != "env" && !modName.startsWith("wasi")) {
+          results.push({
+            name: `${modName}.${fnName}`,
+            function: e.internalName,
+          });
+        }
       });
-    }
+    });
+
     return results;
   }
 
