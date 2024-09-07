@@ -1,5 +1,9 @@
 # Change Log
 
+## UNRELEASED
+
+- Update to v2 Hypermode metadata format [#176](https://github.com/hypermodeAI/functions-as/pull/176)
+
 ## 2024-08-27 - Version 0.11.2
 
 - redo dgraph fns to use single execute host function [#171](https://github.com/hypermodeAI/functions-as/pull/171)
