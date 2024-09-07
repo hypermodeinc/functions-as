@@ -145,10 +145,6 @@ export class HypermodeMetadata {
     Object.values(this.fnExports).forEach((v) => writeItem(v.toString()));
     stream.write("\n");
 
-    writeHeader("Imports:");
-    Object.values(this.fnImports).forEach((v) => writeItem(v.toString()));
-    stream.write("\n");
-
     const types = Object.values(this.types).filter((t) => !t.isHidden());
     if (types.length > 0) {
       writeHeader("Custom Types:");
