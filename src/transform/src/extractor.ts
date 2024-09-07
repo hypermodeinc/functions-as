@@ -38,11 +38,11 @@ export class Extractor {
   }
 
   getProgramInfo(): ProgramInfo {
-    const functions = this.getExportedFunctions()
+    const exportedFunctions = this.getExportedFunctions()
       .map((e) => this.convertToFunctionSignature(e))
       .sort((a, b) => a.name.localeCompare(b.name));
 
-    const hostFunctions = this.getHostFunctions()
+    const importedFunctions = this.getImportedFunctions()
       .map((e) => this.convertToFunctionSignature(e))
       .sort((a, b) => a.name.localeCompare(b.name));
 
@@ -59,8 +59,8 @@ export class Extractor {
         .map((t) => [t.name, t]),
     );
     const typePathsUsed = new Set(
-      functions
-        .concat(hostFunctions)
+      exportedFunctions
+        .concat(importedFunctions)
         .flatMap((f) =>
           f.parameters.map((p) => p.type).concat(f.results[0]?.type),
         )
@@ -83,7 +83,11 @@ export class Extractor {
       a.name.localeCompare(b.name),
     );
 
-    return { exportFns: functions, importFns: hostFunctions, types };
+    return {
+      exportFns: exportedFunctions,
+      importFns: importedFunctions,
+      types,
+    };
   }
 
   private expandDependentTypes(
@@ -173,7 +177,7 @@ export class Extractor {
     return results;
   }
 
-  private getHostFunctions() {
+  private getImportedFunctions() {
     const results: importExportInfo[] = [];
 
     this.program.moduleImports.forEach((module, modName) => {
