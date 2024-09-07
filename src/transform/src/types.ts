@@ -78,11 +78,7 @@ export class TypeDefinition {
   }
 
   isHidden() {
-    if (typeMap.has(this.name)) return true;
-    if (this.name.startsWith("~lib/array/Array<")) return true;
-    if (this.name.startsWith("~lib/map/Map<")) return true;
-
-    return false;
+    return this.name.startsWith("~lib/");
   }
 }
 
