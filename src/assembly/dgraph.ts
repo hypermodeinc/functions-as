@@ -141,7 +141,7 @@ export class Mutation {
  *
  */
 export class Response {
-  Json: string | null = null;
+  Json: string = "";
   Uids: Map<string, string> | null = null;
 }
 
