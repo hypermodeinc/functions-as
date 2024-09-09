@@ -10,15 +10,19 @@ import { WriteStream as TTYWriteStream } from "tty";
 import { FunctionSignature, TypeDefinition } from "./types.js";
 import writeLogo from "./logo.js";
 
+const METADATA_VERSION = 2;
+
 export class HypermodeMetadata {
-  buildId: string;
-  buildTs: string;
-  plugin: string;
-  sdk: string;
-  gitRepo?: string;
-  gitCommit?: string;
-  functions: FunctionSignature[] = [];
-  types: TypeDefinition[] = [];
+  public plugin: string;
+  public module: string;
+  public sdk: string;
+  public buildId: string;
+  public buildTs: string;
+  public gitRepo?: string;
+  public gitCommit?: string;
+  public fnExports: { [key: string]: FunctionSignature } = {};
+  public fnImports: { [key: string]: FunctionSignature } = {};
+  public types: { [key: string]: TypeDefinition } = {};
 
   static generate(): HypermodeMetadata {
     const m = new HypermodeMetadata();
@@ -36,17 +40,41 @@ export class HypermodeMetadata {
     return m;
   }
 
-  addFunctions(functions: FunctionSignature[]) {
-    this.functions.push(...functions);
+  addExportFn(functions: FunctionSignature[]) {
+    for (const fn of functions) {
+      const name = fn.name;
+      this.fnExports[name] = fn;
+    }
+  }
+
+  addImportFn(functions: FunctionSignature[]) {
+    for (const fn of functions) {
+      this.fnImports[fn.name] = fn;
+    }
   }
 
   addTypes(types: TypeDefinition[]) {
-    this.types.push(...types);
+    for (const t of types) {
+      this.types[t.name] = t;
+    }
   }
 
   writeToModule(module: binaryen.Module) {
     const encoder = new TextEncoder();
+
+    const fnExports = this.fnExports;
+    const fnImports = this.fnImports;
+
     const json = JSON.stringify(this);
+
+    this.fnExports = fnExports;
+    this.fnImports = fnImports;
+
+    module.addCustomSection(
+      "hypermode_version",
+      Uint8Array.from([METADATA_VERSION]),
+    );
+
     module.addCustomSection("hypermode_meta", encoder.encode(json));
   }
 
@@ -102,24 +130,24 @@ export class HypermodeMetadata {
       });
     };
 
-    writeHeader("Plugin Metadata:");
+    writeHeader("Metadata:");
     writeTable([
-      ["Name", this.plugin],
-      ["SDK", this.sdk],
+      ["Plugin Name", this.plugin],
+      ["Hypermode SDK", this.sdk],
       ["Build ID", this.buildId],
       ["Build Timestamp", this.buildTs],
-      this.gitRepo ? ["Git Repo", this.gitRepo] : undefined,
+      this.gitRepo ? ["Git Repository", this.gitRepo] : undefined,
       this.gitCommit ? ["Git Commit", this.gitCommit] : undefined,
     ]);
     stream.write("\n");
 
-    writeHeader("Hypermode Functions:");
-    this.functions.forEach((f) => writeItem(f.toString()));
+    writeHeader("Functions:");
+    Object.values(this.fnExports).forEach((v) => writeItem(v.toString()));
     stream.write("\n");
 
-    const types = this.types.filter((t) => !t.isHidden());
+    const types = Object.values(this.types).filter((t) => !t.isHidden());
     if (types.length > 0) {
-      writeHeader("Custom Data Types:");
+      writeHeader("Custom Types:");
       types.forEach((t) => writeItem(t.toString()));
       stream.write("\n");
     }
