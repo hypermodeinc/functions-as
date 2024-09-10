@@ -4,6 +4,7 @@
 
 - Update to v2 Hypermode metadata format [#176](https://github.com/hypermodeAI/functions-as/pull/176)
 - Fix display output of certain types during build [#180](https://github.com/hypermodeAI/functions-as/pull/180)
+- Make json in dgraph response not nullable [#181](https://github.com/hypermodeAI/functions-as/pull/181)
 
 ## 2024-08-27 - Version 0.11.2
 

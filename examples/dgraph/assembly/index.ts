@@ -28,7 +28,7 @@ export function alterSchema(): string {
 }
 
 // This function returns the results of querying for all people in the database.
-export function queryPeople(): Person[] | null {
+export function queryPeople(): Person[] {
   const query = `
   {
     people(func: type(Person)) {
@@ -44,8 +44,7 @@ export function queryPeople(): Person[] | null {
     new dgraph.Request(new dgraph.Query(query)),
   );
 
-  if (resp.Json === null) return null;
-  return JSON.parse<PeopleData>(resp.Json!).people;
+  return JSON.parse<PeopleData>(resp.Json).people;
 }
 
 // This function returns the results of querying for a specific person in the database.
@@ -72,8 +71,7 @@ export function querySpecificPerson(
     new dgraph.Request(new dgraph.Query(statement, vars)),
   );
 
-  if (resp.Json === null) return null;
-  const people = JSON.parse<PeopleData>(resp.Json!).people;
+  const people = JSON.parse<PeopleData>(resp.Json).people;
 
   if (people.length === 0) return null;
   return people[0];
@@ -141,7 +139,7 @@ export function deletePerson(uid: string): Map<string, string> | null {
 }
 
 // This function demonstrates what happens when a bad query is executed.
-export function testBadQuery(): Person[] | null {
+export function testBadQuery(): Person[] {
   const query = "this is a bad query";
 
   const resp = dgraph.execute(
@@ -149,6 +147,5 @@ export function testBadQuery(): Person[] | null {
     new dgraph.Request(new dgraph.Query(query)),
   );
 
-  if (resp.Json === null) return null;
-  return JSON.parse<PeopleData>(resp.Json!).people;
+  return JSON.parse<PeopleData>(resp.Json).people;
 }
