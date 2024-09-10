@@ -44,7 +44,7 @@ export function queryPeople(): Person[] {
     new dgraph.Request(new dgraph.Query(query)),
   );
 
-  return JSON.parse<PeopleData>(resp.Json!).people;
+  return JSON.parse<PeopleData>(resp.Json).people;
 }
 
 // This function returns the results of querying for a specific person in the database.
@@ -71,7 +71,7 @@ export function querySpecificPerson(
     new dgraph.Request(new dgraph.Query(statement, vars)),
   );
 
-  const people = JSON.parse<PeopleData>(resp.Json!).people;
+  const people = JSON.parse<PeopleData>(resp.Json).people;
 
   if (people.length === 0) return null;
   return people[0];
