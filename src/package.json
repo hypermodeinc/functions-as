@@ -1,6 +1,6 @@
 {
   "name": "@hypermode/functions-as",
-  "version": "0.11.2",
+  "version": "0.12.0",
   "description": "Hypermode library for AssemblyScript functions",
   "author": "Hypermode, Inc.",
   "license": "MIT",

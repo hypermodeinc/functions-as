@@ -1,6 +1,6 @@
 # Change Log
 
-## UNRELEASED
+## 2024-09-12 - Version 0.12.0
 
 - Update to v2 Hypermode metadata format [#176](https://github.com/hypermodeAI/functions-as/pull/176)
 - Fix display output of certain types during build [#180](https://github.com/hypermodeAI/functions-as/pull/180)
