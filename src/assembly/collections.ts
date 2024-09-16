@@ -71,6 +71,7 @@ export class CollectionSearchResultObject {
   namespace: string;
   key: string;
   text: string;
+  labels: string[];
   distance: f64;
   score: f64;
 
@@ -78,12 +79,14 @@ export class CollectionSearchResultObject {
     namespace: string,
     key: string,
     text: string,
+    labels: string[],
     distance: f64,
     score: f64,
   ) {
     this.namespace = namespace;
     this.key = key;
     this.text = text;
+    this.labels = labels;
     this.distance = distance;
     this.score = score;
   }
@@ -216,6 +219,14 @@ declare function hostGetVector(
   searchMethod: string,
   key: string,
 ): f32[];
+
+// @ts-expect-error: decorator
+@external("hypermode", "getLabels")
+declare function hostGetLabels(
+  collection: string,
+  namespace: string,
+  key: string,
+): string[];
 
 // @ts-expect-error: decorator
 @external("hypermode", "searchCollectionByVector")
@@ -548,19 +559,19 @@ export function computeDistance(
 ): CollectionSearchResultObject {
   if (collection.length == 0) {
     console.error("Collection is empty.");
-    return new CollectionSearchResultObject("", "", "", 0.0, 0.0);
+    return new CollectionSearchResultObject("", "", "", [], 0.0, 0.0);
   }
   if (searchMethod.length == 0) {
     console.error("Search method is empty.");
-    return new CollectionSearchResultObject("", "", "", 0.0, 0.0);
+    return new CollectionSearchResultObject("", "", "", [], 0.0, 0.0);
   }
   if (key1.length == 0) {
     console.error("Key1 is empty.");
-    return new CollectionSearchResultObject("", "", "", 0.0, 0.0);
+    return new CollectionSearchResultObject("", "", "", [], 0.0, 0.0);
   }
   if (key2.length == 0) {
     console.error("Key2 is empty.");
-    return new CollectionSearchResultObject("", "", "", 0.0, 0.0);
+    return new CollectionSearchResultObject("", "", "", [], 0.0, 0.0);
   }
   return hostComputeDistance(collection, namespace, searchMethod, key1, key2);
 }
@@ -619,4 +630,20 @@ export function getVector(
     return [];
   }
   return hostGetVector(collection, namespace, searchMethod, key);
+}
+
+export function getLabels(
+  collection: string,
+  key: string,
+  namespace: string = "",
+): string[] {
+  if (collection.length == 0) {
+    console.error("Collection is empty.");
+    return [];
+  }
+  if (key.length == 0) {
+    console.error("Key is empty.");
+    return [];
+  }
+  return hostGetLabels(collection, namespace, key);
 }
