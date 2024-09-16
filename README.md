@@ -96,12 +96,12 @@ On a successful build, you'll find the output in the example's `build` folder.
 ### Creating your own Hypermode plugin
 
 When you are ready to start writing your own Hypermode plugin, we recommend starting
-from the [Hypermode Template Project](https://github.com/hypermodeAI/template-project).
+from the [Hypermode Base Template](https://github.com/hypermodeAI/base-template).
 
 It is pre-configured to use the latest version of this library, and has all of the
 necessary configuration, scripts, and workflows needed to develop your Hypermode functions.
 
-1. Navigate to the [Hypermode Template Project](https://github.com/hypermodeAI/template-project) repository.
+1. Navigate to the [Hypermode Base Template](https://github.com/hypermodeAI/base-template) repository.
 2. Click the "Use this template" button in the upper-right corner to create your own repository.
 3. In the `functions` folder, edit the `package.json` file to update the `name`, `version`, `description`,
    `author`, and `license` properties as needed for your purposes.
