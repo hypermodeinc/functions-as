@@ -34,6 +34,10 @@ export function getProduct(key: string): string {
   return collections.getText(myProducts, key);
 }
 
+export function getProducts(): Map<string, string> {
+  return collections.getTexts(myProducts);
+}
+
 export function getProductVector(key: string): f32[] {
   return collections.getVector(myProducts, searchMethods[0], key);
 }
