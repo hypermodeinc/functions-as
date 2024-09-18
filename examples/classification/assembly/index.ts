@@ -44,11 +44,7 @@ function getLabels(prediction: ClassifierResult): Map<string, f32> {
   return labels;
 }
 
-// This function is similar to the previous, but allows multiple items to be
-// classified at a time. Note that it might be nicer to have passed in a
-// Map<string, string> instead of two arrays. However, that is not yet
-// supported in Hypermode. This example may be updated in the future when
-// that is supported.
+// This function is similar to the previous, but allows multiple items to be classified at a time.
 export function getMultipleClassificationLabels(
   ids: string[],
   texts: string[],
