@@ -1,5 +1,9 @@
 # Change Log
 
+## UNRELEASED
+
+- Lock version of `xid-ts` library to resolve build issues [#189](https://github.com/hypermodeAI/functions-as/pull/189)
+
 ## 2024-09-16 - Version 0.12.0
 
 - Update to v2 Hypermode metadata format [#176](https://github.com/hypermodeAI/functions-as/pull/176)
