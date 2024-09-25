@@ -19,19 +19,19 @@
     "@hypermode/models-as": "^0.2.4",
     "json-as": "^0.9.21",
     "semver": "^7.6.3",
-    "xid-ts": "1.1.1"
+    "xid-ts": "1.1.3"
   },
   "devDependencies": {
-    "@eslint/js": "^9.10.0",
+    "@eslint/js": "^9.11.1",
     "@types/eslint__js": "^8.42.3",
-    "@types/node": "^20.16.5",
+    "@types/node": "^20.16.8",
     "as-test": "^0.3.4",
     "assemblyscript": "^0.27.29",
     "assemblyscript-prettier": "^3.0.1",
-    "eslint": "^9.10.0",
+    "eslint": "^9.11.1",
     "prettier": "^3.3.3",
     "typescript": "^5.6.2",
-    "typescript-eslint": "^8.6.0",
+    "typescript-eslint": "^8.7.0",
     "visitor-as": "^0.11.4"
   },
   "overrides": {
